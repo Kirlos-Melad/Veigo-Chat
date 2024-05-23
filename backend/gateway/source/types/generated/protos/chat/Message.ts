@@ -1,0 +1,20 @@
+import type * as grpc from '@grpc/grpc-js';
+import type { MessageTypeDefinition } from '@grpc/proto-loader';
+
+import type { MessageClient as _MessagePackage_MessageClient, MessageDefinition as _MessagePackage_MessageDefinition } from './MessagePackage/Message';
+
+type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> = {
+  new(...args: ConstructorParameters<Constructor>): Subtype;
+};
+
+export interface ProtoGrpcType {
+  MessagePackage: {
+    CreateRequest: MessageTypeDefinition
+    DeleteRequest: MessageTypeDefinition
+    Message: SubtypeConstructor<typeof grpc.Client, _MessagePackage_MessageClient> & { service: _MessagePackage_MessageDefinition }
+    MessageObject: MessageTypeDefinition
+    ReadRequest: MessageTypeDefinition
+    UpdateRequest: MessageTypeDefinition
+  }
+}
+

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package MessagePackage;
+
+message CreateRequest {
+    required string roomId = 1;
+    required string senderId = 2;
+    required string content = 3;
+}
+
+message ReadRequest {
+    required string id = 1;
+}
+
+message UpdateRequest {
+    required string id = 1;
+
+    string content = 2;
+}
+
+message DeleteRequest {
+    required string id = 1;
+}
+
+message MessageObject {
+    string id = 1;
+
+    string roomId = 2;
+    string senderId = 3;
+    string content = 4;
+
+    string createdAt = 5;
+    string updatedAt = 6;
+}
+
+service Message {
+    rpc Create (CreateRequest) returns (MessageObject) {}
+    rpc Read (ReadRequest) returns (MessageObject) {}
+    rpc Update (UpdateRequest) returns (MessageObject) {}
+    rpc Delete (DeleteRequest) returns (MessageObject) {}
+}

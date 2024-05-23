@@ -1,0 +1,108 @@
+name: "vchat-backend"
+
+services:
+  gateway:
+    container_name: "${GATEWAY_CONTAINER_NAME}"
+    build:
+      context: ${GATEWAY_SERVICE_PATH}
+    depends_on:
+      - chat
+      - realtime
+    ports:
+      - "${GATEWAY_HOST_PORT}:${GATEWAY_CONTAINER_PORT}"
+    environment:
+      - IS_DEVELOPMENT=1
+      - SERVICE_PORT=${GATEWAY_CONTAINER_PORT}
+      - CHAT_SERVICE_CONNECTION=${CHAT_CONTAINER_NAME}:${CHAT_CONTAINER_PORT}
+      - RT_SERVICE_CONNECTION=ws://${RT_CONTAINER_NAME}:${RT_CONTAINER_PORT}
+    volumes:
+      - ${GATEWAY_SERVICE_PATH}/source:/app/source
+
+  chat:
+    container_name: "${CHAT_CONTAINER_NAME}"
+    build:
+      context: ${CHAT_SERVICE_PATH}
+    depends_on:
+      - db
+      - kafka
+      # - storage
+    ports:
+      - "${CHAT_HOST_PORT}:${CHAT_CONTAINER_PORT}"
+    environment:
+      - IS_DEVELOPMENT=1
+      - SERVICE_ADDRESS=0.0.0.0:${CHAT_CONTAINER_PORT}
+      - DATABASE_CONNECTION=postgres://${DB_USER}:${DB_PASSWORD}@${DB_CONTAINER_NAME}:${DB_CONTAINER_PORT}/${DB_CHAT_NAME}
+      - KAFKA_CLIENT_ID=${CHAT_CONTAINER_NAME}
+      - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
+    env_file:
+      - ${CHAT_SERVICE_PATH}/.env
+    volumes:
+      - ${CHAT_SERVICE_PATH}/source:/app/source
+
+  realtime:
+    container_name: "${RT_CONTAINER_NAME}"
+    build:
+      context: ${RT_SERVICE_PATH}
+    depends_on:
+      - kafka
+    ports:
+      - "${RT_HOST_PORT}:${RT_CONTAINER_PORT}"
+    environment:
+      - IS_DEVELOPMENT=1
+      - NAME=${RT_CONTAINER_NAME}
+      - SERVICE_PORT=${RT_CONTAINER_PORT}
+      - REDIS_CONNECTION=redis://${REDIS_CONTAINER_NAME}:${REDIS_CONTAINER_PORT}
+      - KAFKA_GROUP_ID=${RT_GROUP_ID}
+      - KAFKA_CLIENT_ID=${RT_CONTAINER_NAME}
+      - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
+    volumes:
+      - ${RT_SERVICE_PATH}/source:/app/source
+
+  kafka:
+    container_name: "${KAFKA_CONTAINER_NAME}"
+    image: bitnami/kafka:3.7
+    ports:
+      - "${KAFKA_HOST_PORT}:${KAFKA_CONTAINER_PORT}"
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    # volumes:
+      # - ${KAFKA_SERVICE_PATH}:/bitnami/kafka
+
+  db:
+    container_name: "${DB_CONTAINER_NAME}"
+    image: postgres:16.3-alpine
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DEFAULT_NAME}
+      - MULTIPLE_DATABASES=${DB_CHAT_NAME}
+    ports:
+      - "${DB_HOST_PORT}:${DB_CONTAINER_PORT}"
+    volumes:
+      - ${STORAGE_SERVICE_PATH}/data:/var/lib/postgresql/data
+      - ${DB_CONFIG_FILE}:/docker-entrypoint-initdb.d/create-multiple-databases.sh
+
+  # storage:
+  #   container_name: "${STORAGE_CONTAINER_NAME}"
+  #   image: bitnami/minio:2024.5.10
+  #   ports:
+  #     - "${STORAGE_HOST_DATA_PORT}:${STORAGE_CONTAINER_DATA_PORT}"
+  #     - "${STORAGE_HOST_CONSOLE_PORT}:${STORAGE_CONTAINER_CONSOLE_PORT}"
+  #   environment:
+  #     - MINIO_ROOT_USER=${STORAGE_USER}
+  #     - MINIO_ROOT_PASSWORD=${STORAGE_PASSWORD}
+  #     - MINIO_API_PORT_NUMBER=${STORAGE_CONTAINER_DATA_PORT}
+  #     - MINIO_CONSOLE_PORT_NUMBER=${STORAGE_CONTAINER_CONSOLE_PORT}
+  #     - MINIO_DEFAULT_BUCKETS=${STORAGE_CHAT_BUCKET}:public
+  #   volumes:
+  #     - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
