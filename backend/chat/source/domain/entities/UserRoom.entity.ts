@@ -2,8 +2,8 @@ interface UserRoomEntity {
 	userId: string;
 	roomId: string;
 
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 }
 
 function IsUserRoomEntity(data: any): data is UserRoomEntity {
@@ -13,8 +13,8 @@ function IsUserRoomEntity(data: any): data is UserRoomEntity {
 		!Array.isArray(data) &&
 		typeof data.userId === "string" &&
 		typeof data.roomId === "string" &&
-		data.createdAt instanceof Date &&
-		data.updatedAt instanceof Date
+		typeof data.createdAt === "string" &&
+		typeof data.updatedAt === "string"
 	);
 }
 

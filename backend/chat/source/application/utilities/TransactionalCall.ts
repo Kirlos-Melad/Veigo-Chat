@@ -1,4 +1,4 @@
-import grpc, { UntypedHandleCall } from "@grpc/grpc-js";
+import grpc, { handleUnaryCall } from "@grpc/grpc-js";
 
 import DatabaseManager, {
 	DatabaseClient,
@@ -13,7 +13,9 @@ type HandlerFunction<T, U> = (
 	data: T,
 ) => Promise<HandlerResult<U>>;
 
-function TransactionalCall<T, U>(fn: HandlerFunction<T, U>): UntypedHandleCall {
+function TransactionalCall<T, U>(
+	fn: HandlerFunction<T, U>,
+): handleUnaryCall<T, U> {
 	return async (
 		request: grpc.ServerUnaryCall<T, U>,
 		respond: grpc.sendUnaryData<U>,

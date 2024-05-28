@@ -5,8 +5,8 @@ interface MessageEntity {
 	senderId: string;
 	content: string;
 
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 }
 
 function IsMessageEntity(data: any): data is MessageEntity {
@@ -18,8 +18,8 @@ function IsMessageEntity(data: any): data is MessageEntity {
 		typeof data.roomId === "string" &&
 		typeof data.senderId === "string" &&
 		typeof data.content === "string" &&
-		data.createdAt instanceof Date &&
-		data.updatedAt instanceof Date
+		typeof data.createdAt === "string" &&
+		typeof data.updatedAt === "string"
 	);
 }
 

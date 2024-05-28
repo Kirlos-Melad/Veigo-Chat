@@ -15,8 +15,8 @@ interface RoomEntity {
 	type: RoomTypeOption;
 	privacy: RoomPrivacyOption;
 
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 }
 
 function IsRoomEntity(data: any): data is RoomEntity {
@@ -30,8 +30,8 @@ function IsRoomEntity(data: any): data is RoomEntity {
 		typeof data.description === "string" &&
 		RoomType.schema.safeParse(data.type).success &&
 		RoomPrivacy.schema.safeParse(data.privacy).success &&
-		data.createdAt instanceof Date &&
-		data.updatedAt instanceof Date
+		typeof data.createdAt === "string" &&
+		typeof data.updatedAt === "string"
 	);
 }
 

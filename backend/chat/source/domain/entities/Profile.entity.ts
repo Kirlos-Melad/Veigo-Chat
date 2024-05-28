@@ -5,8 +5,8 @@ interface ProfileEntity {
 	name: string;
 	about: string;
 
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 }
 
 function IsProfileEntity(data: any): data is ProfileEntity {
@@ -18,8 +18,8 @@ function IsProfileEntity(data: any): data is ProfileEntity {
 		typeof data.photoPath === "string" &&
 		typeof data.name === "string" &&
 		typeof data.about === "string" &&
-		data.createdAt instanceof Date &&
-		data.updatedAt instanceof Date
+		typeof data.createdAt === "string" &&
+		typeof data.updatedAt === "string"
 	);
 }
 
