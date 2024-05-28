@@ -6,6 +6,7 @@ services:
     build:
       context: ${GATEWAY_SERVICE_PATH}
     depends_on:
+      - authentication
       - chat
       - realtime
     ports:
@@ -17,14 +18,40 @@ services:
       - RT_SERVICE_CONNECTION=ws://${RT_CONTAINER_NAME}:${RT_CONTAINER_PORT}
     volumes:
       - ${GATEWAY_SERVICE_PATH}/source:/app/source
+    restart: always
+
+  authentication:
+    container_name: "${AUTH_CONTAINER_NAME}"
+    build:
+      context: ${AUTH_SERVICE_PATH}
+    depends_on:
+      - db:
+        condition: service_healthy
+      - kafka:
+        condition: service_healthy
+    ports:
+      - "${AUTH_HOST_PORT}:${AUTH_CONTAINER_PORT}"
+    environment:
+      - IS_DEVELOPMENT=1
+      - SERVICE_ADDRESS=0.0.0.0:${AUTH_CONTAINER_PORT}
+      - DATABASE_CONNECTION=postgres://${DB_USER}:${DB_PASSWORD}@${DB_CONTAINER_NAME}:${DB_CONTAINER_PORT}/${DB_AUTH_NAME}
+      - KAFKA_CLIENT_ID=${AUTH_CONTAINER_NAME}
+      - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
+    env_file:
+      - ${AUTH_SERVICE_PATH}/.env
+    volumes:
+      - ${AUTH_SERVICE_PATH}/source:/app/source
+    restart: always
 
   chat:
     container_name: "${CHAT_CONTAINER_NAME}"
     build:
       context: ${CHAT_SERVICE_PATH}
     depends_on:
-      - db
-      - kafka
+      - db:
+        condition: service_healthy
+      - kafka:
+        condition: service_healthy
       # - storage
     ports:
       - "${CHAT_HOST_PORT}:${CHAT_CONTAINER_PORT}"
@@ -34,29 +61,29 @@ services:
       - DATABASE_CONNECTION=postgres://${DB_USER}:${DB_PASSWORD}@${DB_CONTAINER_NAME}:${DB_CONTAINER_PORT}/${DB_CHAT_NAME}
       - KAFKA_CLIENT_ID=${CHAT_CONTAINER_NAME}
       - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
-    env_file:
-      - ${CHAT_SERVICE_PATH}/.env
     volumes:
       - ${CHAT_SERVICE_PATH}/source:/app/source
+    restart: always
 
   realtime:
     container_name: "${RT_CONTAINER_NAME}"
     build:
       context: ${RT_SERVICE_PATH}
     depends_on:
-      - kafka
+      - kafka:
+        condition: service_healthy
     ports:
       - "${RT_HOST_PORT}:${RT_CONTAINER_PORT}"
     environment:
       - IS_DEVELOPMENT=1
       - NAME=${RT_CONTAINER_NAME}
       - SERVICE_PORT=${RT_CONTAINER_PORT}
-      - REDIS_CONNECTION=redis://${REDIS_CONTAINER_NAME}:${REDIS_CONTAINER_PORT}
       - KAFKA_GROUP_ID=${RT_GROUP_ID}
       - KAFKA_CLIENT_ID=${RT_CONTAINER_NAME}
       - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
     volumes:
       - ${RT_SERVICE_PATH}/source:/app/source
+    restart: always
 
   kafka:
     container_name: "${KAFKA_CONTAINER_NAME}"
@@ -77,6 +104,11 @@ services:
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
     # volumes:
       # - ${KAFKA_SERVICE_PATH}:/bitnami/kafka
+    healthcheck:
+      test: kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
+      interval: 1s
+      timeout: 60s
+      retries: 60
 
   db:
     container_name: "${DB_CONTAINER_NAME}"
@@ -91,18 +123,46 @@ services:
     volumes:
       - ${STORAGE_SERVICE_PATH}/data:/var/lib/postgresql/data
       - ${DB_CONFIG_FILE}:/docker-entrypoint-initdb.d/create-multiple-databases.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_DEFAULT_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  # storage:
-  #   container_name: "${STORAGE_CONTAINER_NAME}"
-  #   image: bitnami/minio:2024.5.10
-  #   ports:
-  #     - "${STORAGE_HOST_DATA_PORT}:${STORAGE_CONTAINER_DATA_PORT}"
-  #     - "${STORAGE_HOST_CONSOLE_PORT}:${STORAGE_CONTAINER_CONSOLE_PORT}"
-  #   environment:
-  #     - MINIO_ROOT_USER=${STORAGE_USER}
-  #     - MINIO_ROOT_PASSWORD=${STORAGE_PASSWORD}
-  #     - MINIO_API_PORT_NUMBER=${STORAGE_CONTAINER_DATA_PORT}
-  #     - MINIO_CONSOLE_PORT_NUMBER=${STORAGE_CONTAINER_CONSOLE_PORT}
-  #     - MINIO_DEFAULT_BUCKETS=${STORAGE_CHAT_BUCKET}:public
-  #   volumes:
-  #     - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
+  opa:
+    image: openpolicyagent/opa:0.64.1
+    container_name: "${OPA_CONTAINER_NAME}"
+    ports:
+      - "${OPA_HOST_PORT}:${OPA_CONTAINER_PORT}"
+    volumes:
+      - ${OPA_CONFIG_FOLDER}/policies:/policies
+    command:
+      - "run"
+      - "--log-format=json-pretty"
+      - "--server"
+      - "/policies"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${OPA_CONTAINER_PORT}/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  storage:
+    container_name: "${STORAGE_CONTAINER_NAME}"
+    image: bitnami/minio:2024.5.10
+    ports:
+      - "${STORAGE_HOST_DATA_PORT}:${STORAGE_CONTAINER_DATA_PORT}"
+      - "${STORAGE_HOST_CONSOLE_PORT}:${STORAGE_CONTAINER_CONSOLE_PORT}"
+    environment:
+      - MINIO_ROOT_USER=${STORAGE_USER}
+      - MINIO_ROOT_PASSWORD=${STORAGE_PASSWORD}
+      - MINIO_API_PORT_NUMBER=${STORAGE_CONTAINER_DATA_PORT}
+      - MINIO_CONSOLE_PORT_NUMBER=${STORAGE_CONTAINER_CONSOLE_PORT}
+      - MINIO_DEFAULT_BUCKETS=${STORAGE_CHAT_BUCKET}:public
+    volumes:
+      - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${STORAGE_CONTAINER_DATA_PORT}/minio/health/live || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
