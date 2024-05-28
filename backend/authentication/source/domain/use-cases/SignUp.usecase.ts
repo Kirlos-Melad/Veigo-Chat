@@ -17,10 +17,11 @@ async function SignUpUseCase(
 		const signUpDto = AuthenticationDto.SignUp(data);
 		signUpDto.Serialize();
 
-		const account = await AccountRepository.Create(
-			connection,
-			signUpDto.data!,
-		);
+		const account = await AccountRepository.Create(connection, {
+			email: signUpDto.data!.email,
+			password: signUpDto.data!.password,
+			phone: signUpDto.data!.phone,
+		});
 
 		const device = await DeviceRepository.Create(connection, {
 			accountId: account.id,
