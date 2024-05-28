@@ -1,0 +1,58 @@
+import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
+import { HandlerResult } from "../../application/utilities/TransactionalCall";
+import AuthenticationDto from "../../application/dtos";
+import JsonWebToken from "../../application/utilities/JsonWebToken";
+import { EmptyObject } from "@root/source/types/generated/protos/AuthenticationPackage/EmptyObject";
+import { TokenRequest } from "@root/source/types/generated/protos/AuthenticationPackage/TokenRequest";
+import Logger from "@root/source/application/utilities/Logger";
+import DeviceRepository from "@root/source/infrastructure/database/repositories/Device.repository";
+
+async function RefreshTokenUseCase(
+	connection: DatabaseClient,
+	data: TokenRequest,
+): Promise<HandlerResult<EmptyObject>> {
+	try {
+		const refreshTokenDto = AuthenticationDto.RefreshToken(data);
+		refreshTokenDto.Serialize();
+
+		// Validate the access token
+		const { payload } = await JsonWebToken.VerifyRefreshToken(
+			refreshTokenDto.data!.token,
+		);
+
+		// Check if the claims are present
+		if (!payload.sub || !payload.jti) {
+			Logger.error(`Claims missing in token`);
+			throw new Error("Invalid token");
+		}
+
+		// Check if the device exists
+		const [accountId, clientId] = payload.sub.split(":");
+		const device = await DeviceRepository.Read(connection, {
+			accountId,
+			clientId,
+		});
+		if (!device) {
+			Logger.error(`Device not found`);
+			throw new Error("Invalid token");
+		}
+
+		// Check if the token is still valid
+		if (device.refreshTokenId !== payload.jti || device.forceSignIn) {
+			Logger.error(`User must sign in again`);
+			await DeviceRepository.Update(
+				connection,
+				{ accountId, clientId },
+				{ forceSignIn: true },
+			);
+			throw new Error("Invalid token");
+		}
+
+		// Success
+		return { error: null, result: null };
+	} catch (error) {
+		return { error, result: null };
+	}
+}
+
+export default RefreshTokenUseCase;
