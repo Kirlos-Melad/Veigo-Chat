@@ -1,6 +1,7 @@
 import Environments from "@root/source/configurations/Environments";
 import * as jose from "jose";
 import moment from "moment";
+import crypto from "crypto";
 
 type Audience = "any" | "authentication";
 
@@ -17,14 +18,24 @@ type Payload = {
 };
 
 class JsonWebToken {
-	private CreateSubject(subject: Subject) {
+	private StringifySubject(subject: Subject) {
 		return `${subject.accountId}:${subject.clientId}`;
+	}
+
+	private ParseSubject(subject?: string): Subject | undefined {
+		const arr = subject?.split(":");
+		if (!arr) return undefined;
+
+		return { accountId: arr[0], clientId: arr[1] };
 	}
 
 	private async Generate(payload: Payload) {
 		const { algorithm, encryption, secret, issuer, duration } =
 			Environments.JWT_CONFIGURATION;
-		const encodedSecret = jose.base64url.decode(secret);
+		const secretKeyObject = crypto.createSecretKey(
+			new TextEncoder().encode(secret),
+		);
+
 		const { id, subject, audience } = payload;
 
 		const now = moment();
@@ -35,7 +46,7 @@ class JsonWebToken {
 			.setIssuedAt(now.unix())
 			.setNotBefore(now.unix())
 			.setAudience(audience)
-			.setSubject(this.CreateSubject(subject));
+			.setSubject(this.StringifySubject(subject));
 
 		if (payload.expires) {
 			jwe.setExpirationTime(
@@ -43,7 +54,7 @@ class JsonWebToken {
 			);
 		}
 
-		return await jwe.encrypt(encodedSecret);
+		return await jwe.encrypt(secretKeyObject);
 	}
 
 	public async GenerateAccessToken(payload: Pick<Payload, "id" | "subject">) {
@@ -65,12 +76,19 @@ class JsonWebToken {
 
 	private async Verify(jwt: string, audience: Payload["audience"]) {
 		const { secret, issuer } = Environments.JWT_CONFIGURATION;
-		const encodedSecret = jose.base64url.decode(secret);
+		const secretKeyObject = crypto.createSecretKey(
+			new TextEncoder().encode(secret),
+		);
 
-		return await jose.jwtDecrypt(jwt, encodedSecret, {
+		const { payload } = await jose.jwtDecrypt(jwt, secretKeyObject, {
 			issuer: issuer,
 			subject: audience,
 		});
+
+		return {
+			id: payload.jti,
+			subject: this.ParseSubject(payload.sub),
+		}
 	}
 
 	public async VerifyAccessToken(jwt: string) {
