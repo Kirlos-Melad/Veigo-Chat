@@ -52,7 +52,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      # - storage
+      storage:
+        condition: service_healthy
     ports:
       - "${CHAT_HOST_PORT}:${CHAT_CONTAINER_PORT}"
     environment:
@@ -121,7 +122,7 @@ services:
     ports:
       - "${DB_HOST_PORT}:${DB_CONTAINER_PORT}"
     volumes:
-      - ${STORAGE_SERVICE_PATH}/data:/var/lib/postgresql/data
+      # - ${STORAGE_SERVICE_PATH}/data:/var/lib/postgresql/data
       - ${DB_CONFIG_FILE}:/docker-entrypoint-initdb.d/create-multiple-databases.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DEFAULT_NAME}"]
@@ -159,8 +160,8 @@ services:
       - MINIO_API_PORT_NUMBER=${STORAGE_CONTAINER_DATA_PORT}
       - MINIO_CONSOLE_PORT_NUMBER=${STORAGE_CONTAINER_CONSOLE_PORT}
       - MINIO_DEFAULT_BUCKETS=${STORAGE_CHAT_BUCKET}:public
-    volumes:
-      - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
+    # volumes:
+    #   - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:${STORAGE_CONTAINER_DATA_PORT}/minio/health/live || exit 1"]
       interval: 30s
