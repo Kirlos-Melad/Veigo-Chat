@@ -16,21 +16,20 @@ async function RefreshTokenUseCase(
 		refreshTokenDto.Serialize();
 
 		// Validate the access token
-		const { payload } = await JsonWebToken.VerifyRefreshToken(
+		const jwt = await JsonWebToken.VerifyRefreshToken(
 			refreshTokenDto.data!.token,
 		);
 
 		// Check if the claims are present
-		if (!payload.sub || !payload.jti) {
+		if (!jwt.id || !jwt.subject) {
 			Logger.error(`Claims missing in token`);
 			throw new Error("Invalid token");
 		}
 
 		// Check if the device exists
-		const [accountId, clientId] = payload.sub.split(":");
 		const device = await DeviceRepository.Read(connection, {
-			accountId,
-			clientId,
+			accountId: jwt.subject.accountId,
+			clientId: jwt.subject.clientId,
 		});
 		if (!device) {
 			Logger.error(`Device not found`);
@@ -38,11 +37,14 @@ async function RefreshTokenUseCase(
 		}
 
 		// Check if the token is still valid
-		if (device.refreshTokenId !== payload.jti || device.forceSignIn) {
+		if (device.refreshTokenId !== jwt.id || device.forceSignIn) {
 			Logger.error(`User must sign in again`);
 			await DeviceRepository.Update(
 				connection,
-				{ accountId, clientId },
+				{
+					accountId: jwt.subject.accountId,
+					clientId: jwt.subject.clientId,
+				},
 				{ forceSignIn: true },
 			);
 			throw new Error("Invalid token");

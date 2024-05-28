@@ -17,21 +17,20 @@ async function ValidateAccessTokenUseCase(
 		validateAccessTokenDto.Serialize();
 
 		// Validate the access token
-		const { payload } = await JsonWebToken.VerifyAccessToken(
+		const jwt = await JsonWebToken.VerifyAccessToken(
 			validateAccessTokenDto.data!.token,
 		);
 
 		// Check if the claims are present
-		if (!payload.sub || !payload.jti) {
+		if (!jwt.id || !jwt.subject) {
 			Logger.error(`Claims missing in token`);
 			throw new Error("Invalid token");
 		}
 
 		// Check if the device exists
-		const [accountId, clientId] = payload.sub.split(":");
 		const device = await DeviceRepository.Read(connection, {
-			accountId,
-			clientId,
+			accountId: jwt.subject.accountId,
+			clientId: jwt.subject.clientId,
 		});
 		if (!device) {
 			Logger.error(`Device not found`);
@@ -39,7 +38,7 @@ async function ValidateAccessTokenUseCase(
 		}
 
 		// Check if the token is still valid
-		if (device.accessTokenId !== payload.jti || device.forceRefreshToken) {
+		if (device.accessTokenId !== jwt.id || device.forceRefreshToken) {
 			Logger.error(`Token must be refreshed`);
 			throw new Error("Invalid token");
 		}
