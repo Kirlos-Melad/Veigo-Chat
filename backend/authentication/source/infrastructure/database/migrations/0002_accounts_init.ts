@@ -11,6 +11,8 @@ async function up(connection: DatabaseClient) {
             "phone" TEXT UNIQUE,
             "isPhoneVerified" BOOLEAN NOT NULL DEFAULT FALSE,
 
+            "password" TEXT NOT NULL,
+
             "createdAt" TIMESTAMP NOT NULL DEFAULT current_timestamp,
             "updatedAt" TIMESTAMP NOT NULL DEFAULT current_timestamp
         );
