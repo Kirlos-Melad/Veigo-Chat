@@ -25,9 +25,9 @@ services:
     build:
       context: ${AUTH_SERVICE_PATH}
     depends_on:
-      - db:
+      db:
         condition: service_healthy
-      - kafka:
+      kafka:
         condition: service_healthy
     ports:
       - "${AUTH_HOST_PORT}:${AUTH_CONTAINER_PORT}"
@@ -48,9 +48,9 @@ services:
     build:
       context: ${CHAT_SERVICE_PATH}
     depends_on:
-      - db:
+      db:
         condition: service_healthy
-      - kafka:
+      kafka:
         condition: service_healthy
       # - storage
     ports:
@@ -70,7 +70,7 @@ services:
     build:
       context: ${RT_SERVICE_PATH}
     depends_on:
-      - kafka:
+      kafka:
         condition: service_healthy
     ports:
       - "${RT_HOST_PORT}:${RT_CONTAINER_PORT}"
@@ -117,14 +117,14 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_DEFAULT_NAME}
-      - MULTIPLE_DATABASES=${DB_CHAT_NAME}
+      - MULTIPLE_DATABASES=${DB_AUTH_NAME},${DB_CHAT_NAME}
     ports:
       - "${DB_HOST_PORT}:${DB_CONTAINER_PORT}"
     volumes:
       - ${STORAGE_SERVICE_PATH}/data:/var/lib/postgresql/data
       - ${DB_CONFIG_FILE}:/docker-entrypoint-initdb.d/create-multiple-databases.sh
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_DEFAULT_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DEFAULT_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
