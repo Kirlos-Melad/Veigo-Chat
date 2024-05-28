@@ -2,14 +2,14 @@
 	"name": "gateway-service",
 	"version": "1.0.0",
 	"description": "",
+	"author": "Kirlos Melad",
+	"license": "MIT",
 	"type": "module",
 	"scripts": {
 		"build": "bash \"./scripts/Protocol Buffers Builder.sh\"",
 		"start": "tsx ./source/index.ts",
 		"start:watch": "nodemon -L --exec tsx ./source/index.ts"
 	},
-	"author": "Kirlos Melad",
-	"license": "MIT",
 	"devDependencies": {
 		"nodemon": "^3.1.0"
 	},
