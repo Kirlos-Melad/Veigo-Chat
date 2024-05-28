@@ -82,7 +82,7 @@ class JsonWebToken {
 
 		const { payload } = await jose.jwtDecrypt(jwt, secretKeyObject, {
 			issuer: issuer,
-			subject: audience,
+			audience: audience,
 		});
 
 		return {

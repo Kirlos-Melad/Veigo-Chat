@@ -27,8 +27,8 @@ class DeviceRepository implements IDeviceRepository {
 		const query = `
 			SELECT *
 			FROM devices
-			WHERE account_id = '${filter.accountId}'
-			AND client_id = '${filter.clientId}';
+			WHERE "accountId" = '${filter.accountId}'
+			AND "clientId" = '${filter.clientId}';
 		`;
 
 		const result = await connection.Execute<DeviceEntity>(query);
@@ -56,8 +56,8 @@ class DeviceRepository implements IDeviceRepository {
 		const query = `
 			UPDATE devices
 			SET ${setClause}
-			WHERE account_id = '${filter.accountId}'
-			AND client_id = '${filter.clientId}'
+			WHERE "accountId" = '${filter.accountId}'
+			AND "clientId" = '${filter.clientId}'
 			RETURNING *;
 		`;
 
@@ -94,7 +94,7 @@ class DeviceRepository implements IDeviceRepository {
 			INSERT INTO devices
 			(${createFieldsString})
 			VALUES(${createValuesString})
-			ON CONFLICT (account_id, client_id)
+			ON CONFLICT ("accountId", "clientId")
 			DO UPDATE SET
 			${setClause}
 			RETURNING *;
