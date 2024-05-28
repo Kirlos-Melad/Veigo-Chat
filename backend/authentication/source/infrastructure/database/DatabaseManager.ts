@@ -161,7 +161,7 @@ class DatabaseManager extends Database {
         `);
 
 		await db.Execute(`
-			CREATE TRIGGER update_${this.mMigrationsTableName}_updated_at
+			CREATE OR REPLACE TRIGGER update_${this.mMigrationsTableName}_updated_at
 				BEFORE UPDATE
 				ON "${this.mMigrationsTableName}"
 				FOR EACH ROW
