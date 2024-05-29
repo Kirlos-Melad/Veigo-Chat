@@ -48,7 +48,7 @@ class MessageRepository implements IMessageRepository {
 		if (!values.length) return await this.Read(connection, filter);
 
 		const setClause = fields
-			.map((key, idx) => `"${key}" = $${idx + 1}`)
+			.map((key, idx) => `${key} = $${idx + 1}`)
 			.join(", ");
 
 		const query = `
