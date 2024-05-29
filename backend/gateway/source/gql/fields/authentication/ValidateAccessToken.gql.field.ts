@@ -1,0 +1,56 @@
+import {
+	GraphQLFieldConfigArgumentMap,
+	GraphQLFieldResolver,
+	GraphQLNonNull,
+	GraphQLString,
+} from "graphql";
+import { ServiceError } from "@grpc/grpc-js";
+
+import GQLField from "@source/types/GQLField";
+import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
+import SuccessGQLType from "../../types/Success.gql.type";
+import { EmptyObject } from "@root/source/types/generated/protos/authentication/AuthenticationPackage/EmptyObject";
+import { GQLContext } from "../../GQLHandler";
+
+const Args: GraphQLFieldConfigArgumentMap = {
+	token: { type: new GraphQLNonNull(GraphQLString) },
+};
+
+type Args = typeof Args;
+
+class ValidateAccessTokenGQLField extends GQLField<Args> {
+	constructor() {
+		super({
+			type: "mutation",
+			name: "ValidateAccessToken",
+			args: Args,
+			outputType: SuccessGQLType,
+			isGuarded: false,
+		});
+	}
+
+	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
+		async function (source: any, args: Args) {
+			try {
+				const result = await new Promise<EmptyObject>(
+					(resolve, reject) =>
+						GRPCServiceManagerRegistry.instance
+							.Get("Auth")
+							.Get("Authentication")
+							.ValidateAccessToken(
+								args,
+								(error: ServiceError | null) =>
+									error
+										? reject(error)
+										: resolve({ success: true }),
+							),
+				);
+
+				return result;
+			} catch (error) {
+				throw error;
+			}
+		};
+}
+
+export default new ValidateAccessTokenGQLField();
