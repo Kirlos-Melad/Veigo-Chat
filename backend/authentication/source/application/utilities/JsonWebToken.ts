@@ -30,10 +30,10 @@ class JsonWebToken {
 	}
 
 	private async Generate(payload: Payload) {
-		const { algorithm, encryption, secret, issuer, duration } =
+		const { algorithm, encryption, issuer, duration } =
 			Environments.JWT_CONFIGURATION;
 		const secretKeyObject = crypto.createSecretKey(
-			new TextEncoder().encode(secret),
+			new TextEncoder().encode(Environments.SECRET_KEY),
 		);
 
 		const { id, subject, audience } = payload;
@@ -75,9 +75,9 @@ class JsonWebToken {
 	}
 
 	private async Verify(jwt: string, audience: Payload["audience"]) {
-		const { secret, issuer } = Environments.JWT_CONFIGURATION;
+		const { issuer } = Environments.JWT_CONFIGURATION;
 		const secretKeyObject = crypto.createSecretKey(
-			new TextEncoder().encode(secret),
+			new TextEncoder().encode(Environments.SECRET_KEY),
 		);
 
 		const { payload } = await jose.jwtDecrypt(jwt, secretKeyObject, {

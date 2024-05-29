@@ -17,6 +17,7 @@ const environmentVariables = z.object({
 		.transform((value) => Boolean(value))
 		.pipe(z.boolean())
 		.or(z.undefined()),
+	SECRET_KEY: z.string(),
 	SERVICE_ADDRESS: z.string(),
 	DATABASE_CONNECTION: z.string(),
 	KAFKA_CLIENT_ID: z.string(),
@@ -29,7 +30,6 @@ const environmentVariables = z.object({
 		.transform((value) => JSON.parse(value))
 		.pipe(
 			z.object({
-				secret: z.string(),
 				algorithm: z.string(),
 				encryption: z.string(),
 				issuer: z.string(),
