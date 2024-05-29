@@ -53,7 +53,7 @@ abstract class GQLField<T extends GraphQLFieldConfigArgumentMap> {
 			context: GQLContext,
 			info: any,
 		) => {
-			await Authorize(context.authorizationHeader);
+			context.token = await Authorize(context.authorizationHeader);
 			await resolver(source, args, context, info);
 		};
 		return guard as GraphQLFieldResolver<any, GQLContext, T, unknown>;

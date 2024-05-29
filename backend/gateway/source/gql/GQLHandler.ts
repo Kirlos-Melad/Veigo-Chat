@@ -31,7 +31,7 @@ for (const { default: field } of loadedFields) {
 	}
 }
 
-type GQLContext = { authorizationHeader?: string };
+type GQLContext = { authorizationHeader?: string; token?: string };
 
 const GQLHandler = createHandler({
 	context(request, params) {
