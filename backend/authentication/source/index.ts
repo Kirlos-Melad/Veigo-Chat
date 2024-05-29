@@ -38,7 +38,7 @@ async function Start() {
 		grpc.ServerCredentials.createInsecure(),
 	);
 	serverManager.AddService(
-		"source/types/generated/definitions/Authentication.proto",
+		"source/types/generated/protos/definitions/Authentication.proto",
 		authService,
 	);
 
