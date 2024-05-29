@@ -11,6 +11,7 @@ import { DeleteRequest } from "@source/types/generated/protos/chat/UserRoomPacka
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { UserRoomObject } from "@source/types/generated/protos/chat/UserRoomPackage/UserRoomObject";
 import UserRoomGQLType from "../../types/UserRoom.gql.type";
+import { GQLContext } from "../../GQLHandler";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	userId: { type: new GraphQLNonNull(GraphQLString) },
@@ -21,10 +22,16 @@ type Args = typeof Args;
 
 class UserRoomDeleteGQLField extends GQLField<Args> {
 	constructor() {
-		super("DeleteUserRoom", UserRoomGQLType, Args);
+		super({
+			type: "mutation",
+			name: "DeleteUserRoom",
+			args: Args,
+			outputType: UserRoomGQLType,
+			isGuarded: true,
+		});
 	}
 
-	protected mResolver: GraphQLFieldResolver<any, Args, any, unknown> =
+	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
 		async function (source: any, args: Args) {
 			try {
 				const result = await new Promise<DeleteRequest>(

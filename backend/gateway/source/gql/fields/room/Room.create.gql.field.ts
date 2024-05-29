@@ -14,6 +14,7 @@ import RoomGQLType, {
 	RoomPrivacyGQLType,
 	RoomTypeGQLType,
 } from "../../types/Room.gql.type";
+import { GQLContext } from "../../GQLHandler";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	photoPath: { type: GraphQLString },
@@ -27,10 +28,16 @@ type Args = typeof Args;
 
 class RoomCreateGQLField extends GQLField<Args> {
 	constructor() {
-		super("CreateRoom", RoomGQLType, Args);
+		super({
+			type: "mutation",
+			name: "CreateRoom",
+			args: Args,
+			outputType: RoomGQLType,
+			isGuarded: true,
+		});
 	}
 
-	protected mResolver: GraphQLFieldResolver<any, Args, any, unknown> =
+	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
 		async function (source: any, args: Args) {
 			try {
 				const result = await new Promise<CreateRequest>(

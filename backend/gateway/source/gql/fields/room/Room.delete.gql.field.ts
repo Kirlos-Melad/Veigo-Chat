@@ -11,6 +11,7 @@ import { DeleteRequest } from "@source/types/generated/protos/chat/RoomPackage/D
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { RoomObject } from "@source/types/generated/protos/chat/RoomPackage/RoomObject";
 import RoomGQLType from "../../types/Room.gql.type";
+import { GQLContext } from "../../GQLHandler";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	id: { type: new GraphQLNonNull(GraphQLString) },
@@ -20,10 +21,16 @@ type Args = typeof Args;
 
 class RoomDeleteGQLField extends GQLField<Args> {
 	constructor() {
-		super("DeleteRoom", RoomGQLType, Args);
+		super({
+			type: "mutation",
+			name: "DeleteRoom",
+			args: Args,
+			outputType: RoomGQLType,
+			isGuarded: true,
+		});
 	}
 
-	protected mResolver: GraphQLFieldResolver<any, Args, any, unknown> =
+	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
 		async function (source: any, args: Args) {
 			try {
 				const result = await new Promise<DeleteRequest>(

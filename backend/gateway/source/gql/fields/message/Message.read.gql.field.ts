@@ -11,6 +11,7 @@ import { ReadRequest } from "@source/types/generated/protos/chat/MessagePackage/
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { MessageObject } from "@source/types/generated/protos/chat/MessagePackage/MessageObject";
 import MessageGQLType from "../../types/Message.gql.type";
+import { GQLContext } from "../../GQLHandler";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	id: { type: new GraphQLNonNull(GraphQLString) },
@@ -20,10 +21,16 @@ type Args = typeof Args;
 
 class MessageReadGQLField extends GQLField<Args> {
 	constructor() {
-		super("ReadMessage", MessageGQLType, Args);
+		super({
+			type: "query",
+			name: "ReadMessage",
+			args: Args,
+			outputType: MessageGQLType,
+			isGuarded: true,
+		});
 	}
 
-	protected mResolver: GraphQLFieldResolver<any, Args, any, unknown> =
+	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
 		async function (source: any, args: Args) {
 			try {
 				const result = await new Promise<ReadRequest>(
