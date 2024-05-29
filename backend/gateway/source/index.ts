@@ -8,8 +8,10 @@ import GRPCServiceManagerRegistry from "./grpc/GRPCServiceManagerRegistry.ts";
 import GQLHandler from "./gql/GQLHandler.ts";
 import GQLPlayground from "./gql/GQLPlayground.ts";
 import WebSocketProxy from "./websocket/WebSocketProxy.ts";
+import AuthService from "./grpc/services/Authentication.service.ts";
 
 const grpcServiceRegistry = GRPCServiceManagerRegistry.CreateInstance({
+	Auth: AuthService,
 	Chat: ChatService,
 });
 
