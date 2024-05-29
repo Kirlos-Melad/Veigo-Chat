@@ -10,7 +10,6 @@ const environmentVariables = z.object({
 		.string()
 		.transform((value) => Number(value))
 		.pipe(z.number()),
-	REDIS_CONNECTION: z.string(),
 	KAFKA_GROUP_ID: z.string(),
 	KAFKA_CLIENT_ID: z.string(),
 	KAFKA_BROKERS: z
