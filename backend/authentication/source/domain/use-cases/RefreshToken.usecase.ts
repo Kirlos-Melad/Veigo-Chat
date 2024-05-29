@@ -1,16 +1,18 @@
+import { ulid } from "ulidx";
+
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import { HandlerResult } from "../../application/utilities/TransactionalCall";
 import AuthenticationDto from "../../application/dtos";
 import JsonWebToken from "../../application/utilities/JsonWebToken";
-import { EmptyObject } from "@root/source/types/generated/protos/AuthenticationPackage/EmptyObject";
 import { TokenRequest } from "@root/source/types/generated/protos/AuthenticationPackage/TokenRequest";
 import Logger from "@root/source/application/utilities/Logger";
 import DeviceRepository from "@root/source/infrastructure/database/repositories/Device.repository";
+import { TokenObject } from "@root/source/types/generated/protos/AuthenticationPackage/TokenObject";
 
 async function RefreshTokenUseCase(
 	connection: DatabaseClient,
 	data: TokenRequest,
-): Promise<HandlerResult<EmptyObject>> {
+): Promise<HandlerResult<TokenObject>> {
 	try {
 		const refreshTokenDto = AuthenticationDto.RefreshToken(data);
 		refreshTokenDto.Serialize();
@@ -50,8 +52,41 @@ async function RefreshTokenUseCase(
 			throw new Error("Invalid token");
 		}
 
-		// Success
-		return { error: null, result: null };
+		const nDevice = await DeviceRepository.Update(
+			connection,
+			{
+				accountId: jwt.subject.accountId,
+				clientId: jwt.subject.clientId,
+			},
+			{
+				accessTokenId: ulid(),
+				refreshTokenId: ulid(),
+				forceSignIn: false,
+				forceRefreshToken: false,
+			},
+		);
+
+		const [accessToken, refreshToken] = await Promise.all([
+			JsonWebToken.GenerateAccessToken({
+				id: nDevice.accessTokenId,
+				subject: {
+					accountId: nDevice.accountId,
+					clientId: nDevice.clientId,
+				},
+			}),
+			JsonWebToken.GenerateRefreshToken({
+				id: nDevice.refreshTokenId,
+				subject: {
+					accountId: nDevice.accountId,
+					clientId: nDevice.clientId,
+				},
+			}),
+		]);
+
+		return {
+			error: null,
+			result: { access: accessToken, refresh: refreshToken },
+		};
 	} catch (error) {
 		return { error, result: null };
 	}
