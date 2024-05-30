@@ -4,6 +4,7 @@ import DatabaseManager, {
 	DatabaseClient,
 } from "@source/infrastructure/database/DatabaseManager";
 import Logger from "./Logger";
+import ErrorSerializer from "./SerializeError";
 
 type HandlerResult<T> = { error: any | null; result: T | null };
 type HandlerFunction<T, U> = (
@@ -23,9 +24,11 @@ function TransactionalCall<T, U>(
 		if (error) {
 			await conn.RollbackTransaction();
 			Logger.error(error);
+			const errorSerializer = new ErrorSerializer(error);
+			errorSerializer.Serialize();
 			respond({
 				name: "Error",
-				message: JSON.stringify(error),
+				message: JSON.stringify(errorSerializer.serializedError),
 			});
 		} else {
 			await conn.CommitTransaction();

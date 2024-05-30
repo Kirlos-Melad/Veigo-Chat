@@ -4,8 +4,7 @@ import DatabaseManager, {
 	DatabaseClient,
 } from "@source/infrastructure/database/DatabaseManager";
 import Logger from "./Logger";
-import KafkaProducer from "@source/infrastructure/kafka/KafkaProducer";
-import MessageEntity from "@source/domain/entities/Message.entity";
+import ErrorSerializer from "./SerializeError";
 
 type HandlerResult<T> = { error: any | null; result: T | null };
 type HandlerFunction<T, U> = (
@@ -25,25 +24,15 @@ function TransactionalCall<T, U>(
 		if (error) {
 			await conn.RollbackTransaction();
 			Logger.error(error);
+			const errorSerializer = new ErrorSerializer(error);
+			errorSerializer.Serialize();
 			respond({
 				name: "Error",
-				message: JSON.stringify(error),
+				message: JSON.stringify(errorSerializer.serializedError),
 			});
 		} else {
 			await conn.CommitTransaction();
-			try {
-				if (request.getPath().endsWith("Message/Create")) {
-					KafkaProducer.instance.Send({
-						room: (result as MessageEntity).roomId,
-						type: "MESSAGE",
-						content: (result as MessageEntity).content,
-					});
-				}
-			} catch (error) {
-				Logger.error(error);
-			} finally {
-				respond(null, result);
-			}
+			respond(null, result);
 		}
 
 		conn.Release();
