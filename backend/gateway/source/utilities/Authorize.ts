@@ -3,12 +3,12 @@ import { ServiceError } from "@grpc/grpc-js";
 import GRPCServiceManagerRegistry from "../grpc/GRPCServiceManagerRegistry";
 import { EmptyObject } from "../types/generated/protos/authentication/AuthenticationPackage/EmptyObject";
 
-async function Authorize(authorizationHeader?: string): Promise<string> {
-	if (!authorizationHeader) {
+async function Authorize(token?: string | null): Promise<string> {
+	if (!token) {
 		throw new Error("No authorization token provided");
 	}
 
-	const arr = authorizationHeader.split(" ");
+	const arr = token.split(" ");
 	if (arr.length !== 2 || arr[0] !== "SuperDoperUser") {
 		throw new Error("Invalid authorization format");
 	}
