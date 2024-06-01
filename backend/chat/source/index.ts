@@ -55,19 +55,19 @@ async function Start() {
 		grpc.ServerCredentials.createInsecure(),
 	);
 	serverManager.AddService(
-		"source/types/generated/definitions/protos/Profile.proto",
+		"source/types/generated/protos/definitions/Profile.proto",
 		profileService.handlers,
 	);
 	serverManager.AddService(
-		"source/types/generated/definitions/protos/Room.proto",
+		"source/types/generated/protos/definitions/Room.proto",
 		roomService.handlers,
 	);
 	serverManager.AddService(
-		"source/types/generated/definitions/protos/Message.proto",
+		"source/types/generated/protos/definitions/Message.proto",
 		messageService.handlers,
 	);
 	serverManager.AddService(
-		"source/types/generated/definitions/protos/MemberRoom.proto",
+		"source/types/generated/protos/definitions/MemberRoom.proto",
 		userRoomService.handlers,
 	);
 
