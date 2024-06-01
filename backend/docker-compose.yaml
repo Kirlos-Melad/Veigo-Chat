@@ -9,6 +9,8 @@ services:
       - authentication
       - chat
       - realtime
+      - aggregator
+      - opa
     ports:
       - "${GATEWAY_HOST_PORT}:${GATEWAY_CONTAINER_PORT}"
     environment:
@@ -26,9 +28,11 @@ services:
     build:
       context: ${AUTH_SERVICE_PATH}
     depends_on:
-      db:
+      pg_db:
         condition: service_healthy
       kafka:
+        condition: service_healthy
+      opa:
         condition: service_healthy
     ports:
       - "${AUTH_HOST_PORT}:${AUTH_CONTAINER_PORT}"
@@ -36,7 +40,7 @@ services:
       - IS_DEVELOPMENT=1
       - SECRET_KEY=${SHARED_SECRET_KEY}
       - SERVICE_ADDRESS=0.0.0.0:${AUTH_CONTAINER_PORT}
-      - DATABASE_CONNECTION=postgres://${DB_USER}:${DB_PASSWORD}@${DB_CONTAINER_NAME}:${DB_CONTAINER_PORT}/${DB_AUTH_NAME}
+      - DATABASE_CONNECTION=postgres://${PG_DB_USER}:${PG_DB_PASSWORD}@${PG_DB_CONTAINER_NAME}:${PG_DB_CONTAINER_PORT}/${PG_DB_AUTH_NAME}
       - KAFKA_CLIENT_ID=${AUTH_CONTAINER_NAME}
       - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
     env_file:
@@ -50,18 +54,20 @@ services:
     build:
       context: ${CHAT_SERVICE_PATH}
     depends_on:
-      db:
+      pg_db:
+        condition: service_healthy
+      storage:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      storage:
+      opa:
         condition: service_healthy
     ports:
       - "${CHAT_HOST_PORT}:${CHAT_CONTAINER_PORT}"
     environment:
       - IS_DEVELOPMENT=1
       - SERVICE_ADDRESS=0.0.0.0:${CHAT_CONTAINER_PORT}
-      - DATABASE_CONNECTION=postgres://${DB_USER}:${DB_PASSWORD}@${DB_CONTAINER_NAME}:${DB_CONTAINER_PORT}/${DB_CHAT_NAME}
+      - DATABASE_CONNECTION=postgres://${PG_DB_USER}:${PG_DB_PASSWORD}@${PG_DB_CONTAINER_NAME}:${PG_DB_CONTAINER_PORT}/${PG_DB_CHAT_NAME}
       - KAFKA_CLIENT_ID=${CHAT_CONTAINER_NAME}
       - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
     volumes:
@@ -74,6 +80,8 @@ services:
       context: ${RT_SERVICE_PATH}
     depends_on:
       kafka:
+        condition: service_healthy
+      opa:
         condition: service_healthy
     ports:
       - "${RT_HOST_PORT}:${RT_CONTAINER_PORT}"
@@ -88,6 +96,135 @@ services:
       - ${RT_SERVICE_PATH}/source:/app/source
     restart: always
 
+  aggregator:
+    container_name: "${AGGREGATOR_CONTAINER_NAME}"
+    build:
+      context: ${AGGREGATOR_SERVICE_PATH}
+    depends_on:
+      mongo_db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+    ports:
+      - "${AGGREGATOR_HOST_PORT}:${AGGREGATOR_CONTAINER_PORT}"
+    environment:
+      - IS_DEVELOPMENT=1
+      - SERVICE_PORT=${AGGREGATOR_CONTAINER_PORT}
+      - MONGODB_CONNECTION=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASSWORD}@${MONGO_DB_CONTAINER_NAME}:${MONGO_DB_CONTAINER_PORT}
+      - KAFKA_GROUP_ID=${AGGREGATOR_GROUP_ID}
+      - KAFKA_CLIENT_ID=${AGGREGATOR_CONTAINER_NAME}
+      - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
+    volumes:
+      - ${AGGREGATOR_SERVICE_PATH}/source:/app/source
+  
+  pg_db:
+    container_name: "${PG_DB_CONTAINER_NAME}"
+    image: postgres:16.3-alpine
+    environment:
+      - POSTGRES_USER=${PG_DB_USER}
+      - POSTGRES_PASSWORD=${PG_DB_PASSWORD}
+      - POSTGRES_DB=${PG_DB_DEFAULT_NAME}
+      - MULTIPLE_DATABASES=${PG_DB_AUTH_NAME},${PG_DB_CHAT_NAME}
+    ports:
+      - "${PG_DB_HOST_PORT}:${PG_DB_CONTAINER_PORT}"
+    volumes:
+      # - ${STORAGE_SERVICE_PATH}/data:/var/lib/postgresql/data
+      - ${PG_DB_CONFIG_FILE}:/docker-entrypoint-initdb.d/create-multiple-databases.sh
+    command: [ "postgres", "-c", "wal_level=logical" ]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_DB_USER} -d ${PG_DB_DEFAULT_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mongo_db:
+    container_name: "${MONGO_DB_CONTAINER_NAME}"
+    image: mongo:7.0.11
+    ports:
+      - "${MONGO_DB_HOST_PORT}:${MONGO_DB_CONTAINER_PORT}"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASSWORD}
+    # volumes:
+    #   - ${MONGO_DB_SERVICE_PATH}/data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  storage:
+    container_name: "${STORAGE_CONTAINER_NAME}"
+    image: bitnami/minio:2024.5.10
+    ports:
+      - "${STORAGE_HOST_DATA_PORT}:${STORAGE_CONTAINER_DATA_PORT}"
+      - "${STORAGE_HOST_CONSOLE_PORT}:${STORAGE_CONTAINER_CONSOLE_PORT}"
+    environment:
+      - MINIO_ROOT_USER=${STORAGE_USER}
+      - MINIO_ROOT_PASSWORD=${STORAGE_PASSWORD}
+      - MINIO_API_PORT_NUMBER=${STORAGE_CONTAINER_DATA_PORT}
+      - MINIO_CONSOLE_PORT_NUMBER=${STORAGE_CONTAINER_CONSOLE_PORT}
+      - MINIO_DEFAULT_BUCKETS=${STORAGE_CHAT_BUCKET}:public
+    # volumes:
+    #   - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${STORAGE_CONTAINER_DATA_PORT}/minio/health/live || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  debezium:
+    container_name: "${DEBEZIUM_CONTAINER_NAME}"
+    image: debezium/connect:2.7
+    depends_on:
+      kafka:
+        condition: service_healthy
+      pg_db:
+        condition: service_healthy
+    ports:
+      - "${DEBEZIUM_HOST_PORT}:${DEBEZIUM_CONTAINER_PORT}"
+    environment:
+      - BOOTSTRAP_SERVERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
+      - GROUP_ID=${DEBEZIUM_GROUP_ID}
+      - CONFIG_STORAGE_TOPIC=${DEBEZIUM_CONFIG_TOPIC}
+      - OFFSET_STORAGE_TOPIC=${DEBEZIUM_OFFSET_TOPIC}
+      - STATUS_STORAGE_TOPIC=${DEBEZIUM_STATUS_TOPIC}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${DEBEZIUM_CONTAINER_PORT}/connectors || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  debezium-ui:
+    image: debezium/debezium-ui:2.5
+    container_name: ${DEBEZIUM_UI_CONTAINER_NAME}
+    depends_on:
+      debezium:
+        condition: service_healthy
+    ports:
+      - "${DEBEZIUM_UI_HOST_PORT}:${DEBEZIUM_UI_CONTAINER_PORT}"
+    environment:
+      KAFKA_CONNECT_URIS: http://${DEBEZIUM_CONTAINER_NAME}:${DEBEZIUM_CONTAINER_PORT}
+    restart: always
+
+  debezium-init:
+    container_name: ${DEBEZIUM_INIT_CONTAINER_NAME}
+    build:
+      context: ${DEBEZIUM_CONFIG_FOLDER}
+    depends_on:
+      debezium:
+        condition: service_healthy
+    environment:
+      - DEBEZIUM_CONNECTION=${DEBEZIUM_CONTAINER_NAME}:${DEBEZIUM_CONTAINER_PORT}
+      - DB_HOST=${PG_DB_CONTAINER_NAME}
+      - DB_PORT=${PG_DB_CONTAINER_PORT}
+      - DB_AUTH_NAME=${PG_DB_AUTH_NAME}
+      - DB_CHAT_NAME=${PG_DB_CHAT_NAME}
+      - DB_USER=${PG_DB_USER}
+      - DB_PASSWORD=${PG_DB_PASSWORD}
+  
   kafka:
     container_name: "${KAFKA_CONTAINER_NAME}"
     image: bitnami/kafka:3.7
@@ -114,59 +251,29 @@ services:
       timeout: 60s
       retries: 60
 
-  db:
-    container_name: "${DB_CONTAINER_NAME}"
-    image: postgres:16.3-alpine
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_DEFAULT_NAME}
-      - MULTIPLE_DATABASES=${DB_AUTH_NAME},${DB_CHAT_NAME}
+  kafka-ui:
+    container_name: ${KAFKA_UI_CONTAINER_NAME}
+    image: provectuslabs/kafka-ui:v0.7.2
     ports:
-      - "${DB_HOST_PORT}:${DB_CONTAINER_PORT}"
-    volumes:
-      # - ${STORAGE_SERVICE_PATH}/data:/var/lib/postgresql/data
-      - ${DB_CONFIG_FILE}:/docker-entrypoint-initdb.d/create-multiple-databases.sh
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DEFAULT_NAME}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - "${KAFKA_UI_HOST_PORT}:${KAFKA_UI_CONTAINER_PORT}"
+    environment:
+      - DYNAMIC_CONFIG_ENABLED=true
+    depends_on:
+      kafka:
+        condition: service_healthy
 
   opa:
-    image: openpolicyagent/opa:0.64.1
     container_name: "${OPA_CONTAINER_NAME}"
+    build:
+      context: ${OPA_CONFIG_FOLDER}
     ports:
       - "${OPA_HOST_PORT}:${OPA_CONTAINER_PORT}"
+    environment:
+      AGGRAGATOR_CONNECTION: http://${AGGREGATOR_CONTAINER_NAME}:${AGGREGATOR_CONTAINER_PORT}
     volumes:
       - ${OPA_CONFIG_FOLDER}/policies:/policies
-    command:
-      - "run"
-      - "--log-format=json-pretty"
-      - "--server"
-      - "/policies"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${OPA_CONTAINER_PORT}/health || exit 1"]
-      interval: 10s
+      test: ["CMD-SHELL", "curl -f http://0.0.0.0:${OPA_CONTAINER_PORT}/health || exit 1"]
+      interval: 5s
       timeout: 5s
-      retries: 5
-
-  storage:
-    container_name: "${STORAGE_CONTAINER_NAME}"
-    image: bitnami/minio:2024.5.10
-    ports:
-      - "${STORAGE_HOST_DATA_PORT}:${STORAGE_CONTAINER_DATA_PORT}"
-      - "${STORAGE_HOST_CONSOLE_PORT}:${STORAGE_CONTAINER_CONSOLE_PORT}"
-    environment:
-      - MINIO_ROOT_USER=${STORAGE_USER}
-      - MINIO_ROOT_PASSWORD=${STORAGE_PASSWORD}
-      - MINIO_API_PORT_NUMBER=${STORAGE_CONTAINER_DATA_PORT}
-      - MINIO_CONSOLE_PORT_NUMBER=${STORAGE_CONTAINER_CONSOLE_PORT}
-      - MINIO_DEFAULT_BUCKETS=${STORAGE_CHAT_BUCKET}:public
-    # volumes:
-    #   - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${STORAGE_CONTAINER_DATA_PORT}/minio/health/live || exit 1"]
-      interval: 30s
-      timeout: 10s
       retries: 3
