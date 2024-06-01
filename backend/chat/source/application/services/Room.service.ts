@@ -1,8 +1,8 @@
-import { RoomHandlers } from "@source/types/generated/RoomPackage/Room";
-import { CreateRequest } from "@source/types/generated/RoomPackage/CreateRequest";
-import { ReadRequest } from "@source/types/generated/RoomPackage/ReadRequest";
-import { UpdateRequest } from "@source/types/generated/RoomPackage/UpdateRequest";
-import { DeleteRequest } from "@source/types/generated/RoomPackage/DeleteRequest";
+import { RoomHandlers } from "@source/types/generated/protos/RoomPackage/Room";
+import { CreateRequest } from "@source/types/generated/protos/RoomPackage/CreateRequest";
+import { ReadRequest } from "@source/types/generated/protos/RoomPackage/ReadRequest";
+import { UpdateRequest } from "@source/types/generated/protos/RoomPackage/UpdateRequest";
+import { DeleteRequest } from "@source/types/generated/protos/RoomPackage/DeleteRequest";
 import DatabaseManager, {
 	DatabaseClient,
 } from "@source/infrastructure/database/DatabaseManager";

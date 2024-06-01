@@ -10,8 +10,8 @@ import RoomRepository from "./infrastructure/database/repositories/Room.reposito
 import RoomService from "./application/services/Room.service.ts";
 import MessageRepository from "./infrastructure/database/repositories/Message.repository.ts";
 import MessageService from "./application/services/Message.service.ts";
-import UserRoomRepository from "./infrastructure/database/repositories/UserRoom.repository.ts";
-import UserRoomService from "./application/services/UserRoom.service.ts";
+import MemberRoomRepository from "./infrastructure/database/repositories/MemberRoom.repository.ts";
+import MemberRoomService from "./application/services/MemberRoom.service.ts";
 import KafkaProducer from "./infrastructure/kafka/KafkaProducer.ts";
 
 async function Migrate() {
@@ -47,8 +47,8 @@ async function Start() {
 	const messageRepository = new MessageRepository();
 	const messageService = new MessageService(messageRepository);
 
-	const userRoomRepository = new UserRoomRepository();
-	const userRoomService = new UserRoomService(userRoomRepository);
+	const userRoomRepository = new MemberRoomRepository();
+	const userRoomService = new MemberRoomService(userRoomRepository);
 
 	const serverManager = ServerManager.CreateInstance(
 		Environments.SERVICE_ADDRESS,
@@ -67,7 +67,7 @@ async function Start() {
 		messageService.handlers,
 	);
 	serverManager.AddService(
-		"source/types/generated/definitions/UserRoom.proto",
+		"source/types/generated/definitions/MemberRoom.proto",
 		userRoomService.handlers,
 	);
 

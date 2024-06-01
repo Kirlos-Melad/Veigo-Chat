@@ -1,8 +1,8 @@
-import { ProfileHandlers } from "@source/types/generated/ProfilePackage/Profile";
-import { CreateRequest } from "@source/types/generated/ProfilePackage/CreateRequest";
-import { ReadRequest } from "@source/types/generated/ProfilePackage/ReadRequest";
-import { UpdateRequest } from "@source/types/generated/ProfilePackage/UpdateRequest";
-import { DeleteRequest } from "@source/types/generated/ProfilePackage/DeleteRequest";
+import { ProfileHandlers } from "@source/types/generated/protos/ProfilePackage/Profile";
+import { CreateRequest } from "@source/types/generated/protos/ProfilePackage/CreateRequest";
+import { ReadRequest } from "@source/types/generated/protos/ProfilePackage/ReadRequest";
+import { UpdateRequest } from "@source/types/generated/protos/ProfilePackage/UpdateRequest";
+import { DeleteRequest } from "@source/types/generated/protos/ProfilePackage/DeleteRequest";
 import DatabaseManager, {
 	DatabaseClient,
 } from "@source/infrastructure/database/DatabaseManager";

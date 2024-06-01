@@ -1,8 +1,8 @@
-import { MessageHandlers } from "@source/types/generated/MessagePackage/Message";
-import { CreateRequest } from "@source/types/generated/MessagePackage/CreateRequest";
-import { ReadRequest } from "@source/types/generated/MessagePackage/ReadRequest";
-import { UpdateRequest } from "@source/types/generated/MessagePackage/UpdateRequest";
-import { DeleteRequest } from "@source/types/generated/MessagePackage/DeleteRequest";
+import { MessageHandlers } from "@source/types/generated/protos/MessagePackage/Message";
+import { CreateRequest } from "@source/types/generated/protos/MessagePackage/CreateRequest";
+import { ReadRequest } from "@source/types/generated/protos/MessagePackage/ReadRequest";
+import { UpdateRequest } from "@source/types/generated/protos/MessagePackage/UpdateRequest";
+import { DeleteRequest } from "@source/types/generated/protos/MessagePackage/DeleteRequest";
 import DatabaseManager, {
 	DatabaseClient,
 } from "@source/infrastructure/database/DatabaseManager";
