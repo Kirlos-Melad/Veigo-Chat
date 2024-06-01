@@ -14,8 +14,11 @@ abstract class EventEmitter<
 		this.mEventsPath = eventsPath;
 	}
 
-	public async LoadEvents() {
-		const loadedEvents = await DependencyLoader(this.mEventsPath);
+	public async LoadEvents(recursive?: boolean) {
+		const loadedEvents = await DependencyLoader(
+			this.mEventsPath,
+			recursive,
+		);
 
 		for (const { default: event } of loadedEvents) {
 			if (event instanceof Event) {

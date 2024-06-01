@@ -1,6 +1,5 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 
-
 import DependencyLoader from "@source/utilities/DependencyLoader";
 import Logger from "@source/utilities/Logger";
 import Event from "./Event";
@@ -15,8 +14,11 @@ abstract class EventEmitter<
 		this.mEventsPath = eventsPath;
 	}
 
-	public async LoadEvents() {
-		const loadedEvents = await DependencyLoader(this.mEventsPath);
+	public async LoadEvents(recursive?: boolean) {
+		const loadedEvents = await DependencyLoader(
+			this.mEventsPath,
+			recursive,
+		);
 
 		for (const { default: event } of loadedEvents) {
 			if (event instanceof Event) {
