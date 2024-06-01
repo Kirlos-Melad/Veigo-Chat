@@ -12,7 +12,6 @@ import MessageRepository from "./infrastructure/database/repositories/Message.re
 import MessageService from "./application/services/Message.service.ts";
 import MemberRoomRepository from "./infrastructure/database/repositories/MemberRoom.repository.ts";
 import MemberRoomService from "./application/services/MemberRoom.service.ts";
-import KafkaProducer from "./infrastructure/kafka/KafkaProducer.ts";
 
 async function Migrate() {
 	Logger.information("Creating database manager");
@@ -29,13 +28,6 @@ async function Start() {
 	const databaseManager = DatabaseManager.CreateInstance(
 		Environments.DATABASE_CONNECTION,
 	);
-
-	Logger.information("Creating Kafka producer");
-	const kafkaProducer = KafkaProducer.CreateInstance(
-		Environments.KAFKA_CLIENT_ID,
-		Environments.KAFKA_BROKERS,
-	);
-	await kafkaProducer.Start();
 
 	Logger.information("Creating services");
 	const profileRepository = new ProfileRepository();
