@@ -18,10 +18,9 @@ abstract class EventEmitter<
 		const loadedEvents = await DependencyLoader(this.mEventsPath);
 
 		for (const { default: event } of loadedEvents) {
-			const e = new event();
-			if (e instanceof Event) {
-				Logger.information(`Loaded event ${e.name}`);
-				this.AddEvent(e);
+			if (event instanceof Event) {
+				Logger.information(`Loaded event ${event.name}`);
+				this.AddEvent(event);
 			} else {
 				Logger.warning(`An event is missing`);
 			}

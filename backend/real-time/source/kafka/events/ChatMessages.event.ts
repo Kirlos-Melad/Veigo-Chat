@@ -22,4 +22,4 @@ class ChatMessageEvent extends Event<KafkaEvents, "CHAT_MESSAGE"> {
 	};
 }
 
-export default ChatMessageEvent;
+export default new ChatMessageEvent();
