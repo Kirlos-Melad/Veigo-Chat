@@ -10,9 +10,32 @@ type Configurations = {
 	brokers: string[];
 };
 
+type CHAT_DB_PREFIX = "CHAT";
+type CHAT_DB_SUFFIX = "MEMBERS_ROOMS" | "MESSAGES";
+
 type KafkaEvents = {
-	CHAT_MESSAGE: [message: KafkaMessage];
+	[K in `${CHAT_DB_PREFIX}_DB_PUBLIC_${CHAT_DB_SUFFIX}`]: [
+		message: KafkaMessage,
+	];
 };
+function GetTopic<T extends CHAT_DB_PREFIX, U extends CHAT_DB_SUFFIX>(
+	prefix: T,
+	suffix: U,
+): `${Lowercase<T>}.db.public.${Lowercase<U>}` {
+	return `${prefix.toLowerCase()}.db.public.${suffix.toLowerCase()}` as `${Lowercase<T>}.db.public.${Lowercase<U>}`;
+}
+
+function TopicToEvent(topic: string): keyof KafkaEvents {
+	const chatRegex =
+		/^chat\.db\.public\.(profiles|rooms|members_rooms|messages)$/;
+
+	if (chatRegex.test(topic)) {
+		const suffix = topic.split(".")[3].toUpperCase() as CHAT_DB_SUFFIX;
+		return `CHAT_DB_PUBLIC_${suffix}` as keyof KafkaEvents;
+	}
+
+	throw new Error("Invalid topic format");
+}
 
 class KafkaConsumer extends EventEmitter<KafkaEvents> {
 	private mClient: Consumer;
@@ -41,13 +64,16 @@ class KafkaConsumer extends EventEmitter<KafkaEvents> {
 	public async Start(): Promise<void> {
 		await this.mClient.connect();
 		await this.mClient.subscribe({
-			topics: ["CHAT_MESSAGE"],
+			topics: [
+				GetTopic("CHAT", "MEMBERS_ROOMS"),
+				GetTopic("CHAT", "MESSAGES"),
+			],
 			fromBeginning: false,
 		});
 		await this.mClient.run({
 			eachMessage: async (messagePayload: EachMessagePayload) => {
 				const { topic, message } = messagePayload;
-				this.emit(topic as keyof KafkaEvents, message);
+				this.emit(TopicToEvent(topic), message);
 			},
 		});
 	}
