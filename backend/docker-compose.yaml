@@ -161,8 +161,8 @@ services:
     ports:
       - "${MONGO_UI_HOST_PORT}:${MONGO_UI_CONTAINER_PORT}"
     environment:
-      - ME_CONFIG_MONGODB_SERVER=${MONGO_DB_CONTAINER_NAME}
-      - ME_CONFIG_MONGODB_PORT=${MONGO_DB_CONTAINER_PORT}
+      - ME_CONFIG_BASICAUTH=false
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASSWORD}@${MONGO_DB_CONTAINER_NAME}:${MONGO_DB_CONTAINER_PORT}
     depends_on:
       mongo-db:
         condition: service_healthy
@@ -206,7 +206,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:${DEBEZIUM_CONTAINER_PORT}/connectors || exit 1"]
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 5
 
   debezium-ui:

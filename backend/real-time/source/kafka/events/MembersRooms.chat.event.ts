@@ -31,24 +31,30 @@ class MembersRoomsChatEvent extends KafkaEvent<
 	}
 
 	public listener = async (message: KafkaMessage) => {
-		const debeziumMessage = new DebeziumMessage(
-			message.value,
-			this.mSchema,
-		);
-		debeziumMessage.Serialize();
+		try {
+			const debeziumMessage = new DebeziumMessage(
+				message.value,
+				this.mSchema,
+			);
+			debeziumMessage.Serialize();
 
-		switch (debeziumMessage.data!.payload.op) {
-			case "d":
-				await this.HandleDelete(debeziumMessage.data!.payload.before!);
-				break;
+			switch (debeziumMessage.data!.payload.op) {
+				case "d":
+					await this.HandleDelete(
+						debeziumMessage.data!.payload.before!,
+					);
+					break;
 
-			default:
-				Logger.warning(
-					`[CHAT_DB_PUBLIC_MEMBERS_ROOMS]=> Unhandled operation ${
-						debeziumMessage.data!.payload.op
-					}`,
-				);
-				break;
+				default:
+					Logger.warning(
+						`[CHAT_DB_PUBLIC_MEMBERS_ROOMS]=> Unhandled operation ${
+							debeziumMessage.data!.payload.op
+						}`,
+					);
+					break;
+			}
+		} catch (error) {
+			Logger.error(error);
 		}
 	};
 }

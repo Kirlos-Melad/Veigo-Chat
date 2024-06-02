@@ -25,7 +25,7 @@ const configurationSchema = new Schema<ConfigurationDocument>(
 			required: [true, "{PATH} not found"],
 		},
 	},
-	{ _id: false, versionKey: false },
+	{ versionKey: false },
 );
 
 configurationSchema.index({ type: 1, resource: 1 }, { unique: true });

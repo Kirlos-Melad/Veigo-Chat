@@ -42,24 +42,30 @@ class MessagesChatEvent extends KafkaEvent<
 	}
 
 	public listener = async (message: KafkaMessage) => {
-		const debeziumMessage = new DebeziumMessage(
-			message.value,
-			this.mSchema,
-		);
-		debeziumMessage.Serialize();
+		try {
+			const debeziumMessage = new DebeziumMessage(
+				message.value,
+				this.mSchema,
+			);
+			debeziumMessage.Serialize();
 
-		switch (debeziumMessage.data!.payload.op) {
-			case "c":
-				await this.HandleCreate(debeziumMessage.data!.payload.after!);
-				break;
+			switch (debeziumMessage.data!.payload.op) {
+				case "c":
+					await this.HandleCreate(
+						debeziumMessage.data!.payload.after!,
+					);
+					break;
 
-			default:
-				Logger.warning(
-					`[CHAT_DB_PUBLIC_MESSAGES]=> Unhandled operation ${
-						debeziumMessage.data!.payload.op
-					}`,
-				);
-				break;
+				default:
+					Logger.warning(
+						`[CHAT_DB_PUBLIC_MESSAGES]=> Unhandled operation ${
+							debeziumMessage.data!.payload.op
+						}`,
+					);
+					break;
+			}
+		} catch (error) {
+			Logger.error(error);
 		}
 	};
 }

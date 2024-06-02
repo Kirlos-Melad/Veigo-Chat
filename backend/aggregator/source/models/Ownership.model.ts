@@ -18,7 +18,7 @@ const OwnershipSchema = new Schema<OwnershipDocument>(
 		resource: { type: String, required: [true, "{PATH} not found"] },
 		owner: { type: String, required: [true, "{PATH} not found"] },
 	},
-	{ _id: false, versionKey: false },
+	{ versionKey: false },
 );
 
 OwnershipSchema.index({ type: 1, resource: 1 }, { unique: true });

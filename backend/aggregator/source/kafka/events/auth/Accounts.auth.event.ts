@@ -75,32 +75,42 @@ class AccountssAuthEvent extends KafkaEvent<
 	}
 
 	public listener = async (message: KafkaMessage) => {
-		const debeziumMessage = new DebeziumMessage(
-			message.value,
-			this.mSchema,
-		);
-		debeziumMessage.Serialize();
+		try {
+			const debeziumMessage = new DebeziumMessage(
+				message.value,
+				this.mSchema,
+			);
+			debeziumMessage.Serialize();
 
-		switch (debeziumMessage.data!.payload.op) {
-			case "c":
-				await this.HandleCreate(debeziumMessage.data!.payload.after!);
-				break;
+			switch (debeziumMessage.data!.payload.op) {
+				case "c":
+					await this.HandleCreate(
+						debeziumMessage.data!.payload.after!,
+					);
+					break;
 
-			case "u":
-				await this.HandleUpdate(debeziumMessage.data!.payload.after!);
-				break;
+				case "u":
+					await this.HandleUpdate(
+						debeziumMessage.data!.payload.after!,
+					);
+					break;
 
-			case "d":
-				await this.HandleDelete(debeziumMessage.data!.payload.before!);
-				break;
+				case "d":
+					await this.HandleDelete(
+						debeziumMessage.data!.payload.before!,
+					);
+					break;
 
-			default:
-				Logger.warning(
-					`[AUTH_DB_PUBLIC_ACCOUNTS]=> Unhandled operation ${
-						debeziumMessage.data!.payload.op
-					}`,
-				);
-				break;
+				default:
+					Logger.warning(
+						`[AUTH_DB_PUBLIC_ACCOUNTS]=> Unhandled operation ${
+							debeziumMessage.data!.payload.op
+						}`,
+					);
+					break;
+			}
+		} catch (error) {
+			Logger.error(error);
 		}
 	};
 }

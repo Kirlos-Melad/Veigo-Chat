@@ -1,4 +1,5 @@
 import { ZodType, z } from "zod";
+import Logger from "./Logger";
 
 type Payload<T> = {
 	before?: T | null;
@@ -16,10 +17,23 @@ type Message<T> = {
 	payload: Payload<T>;
 };
 const MessageSchema = <T>(dataSchema: ZodType<T>): ZodType<Message<T>> =>
-	z.object({
-		schema: z.object({}).passthrough(),
-		payload: PayloadSchema(dataSchema),
-	});
+	z
+		.any()
+		.transform((data) => {
+			try {
+				if (data instanceof Buffer) return JSON.parse(data.toString());
+				throw new Error("Invalid data type");
+			} catch (error) {
+				Logger.error(`[DebeziumMessage] Error: `, error);
+				return null;
+			}
+		})
+		.pipe(
+			z.object({
+				schema: z.object({}).passthrough(),
+				payload: PayloadSchema(dataSchema),
+			}),
+		);
 
 class DebeziumMessage<T> {
 	private mRawData: any;

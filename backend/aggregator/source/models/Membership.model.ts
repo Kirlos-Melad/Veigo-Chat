@@ -25,7 +25,7 @@ const MembershipSchema = new Schema<MembershipDocument>(
 			default: [],
 		},
 	},
-	{ _id: false, versionKey: false },
+	{ versionKey: false },
 );
 
 MembershipSchema.index({ type: 1, resource: 1 }, { unique: true });
