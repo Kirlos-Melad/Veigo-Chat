@@ -207,8 +207,8 @@ services:
       - STATUS_STORAGE_TOPIC=${DEBEZIUM_STATUS_TOPIC}
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:${DEBEZIUM_CONTAINER_PORT}/connectors || exit 1"]
-      interval: 5s
-      timeout: 5s
+      interval: 10s
+      timeout: 10s
       retries: 5
 
   debezium-ui:
