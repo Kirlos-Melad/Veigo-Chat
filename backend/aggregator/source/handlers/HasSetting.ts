@@ -1,4 +1,5 @@
 import ConfigurationModel from "../models/Configuration.model";
+import Logger from "../utilities/Logger";
 import { ConfigurationSchema } from "./RequestBodySchema";
 
 function GetNestedValue(obj: any, path: string) {
@@ -8,20 +9,25 @@ function GetNestedValue(obj: any, path: string) {
 async function HasConfiguration(
 	setting: typeof ConfigurationSchema._output,
 ): Promise<boolean> {
-	const result = await ConfigurationModel.findOne({
-		type: setting.type,
-		resource: setting.resource,
-	})
-		.lean()
-		.exec();
+	try {
+		const result = await ConfigurationModel.findOne({
+			type: setting.type,
+			resource: setting.resource,
+		})
+			.lean()
+			.exec();
 
-	if (!result) {
+		if (!result) {
+			return false;
+		}
+
+		const value = GetNestedValue(result.settings, setting.path);
+
+		return JSON.stringify(setting.value) === JSON.stringify(value);
+	} catch (error) {
+		Logger.error(`[HasConfiguration] Error: `, error);
 		return false;
 	}
-
-	const value = GetNestedValue(result.settings, setting.path);
-
-	return JSON.stringify(setting.value) === JSON.stringify(value);
 }
 
 export default HasConfiguration;
