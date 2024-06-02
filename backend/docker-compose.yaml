@@ -8,7 +8,7 @@ services:
     depends_on:
       - authentication
       - chat
-      - realtime
+      - real-time
       - aggregator
       - opa
     ports:
@@ -28,7 +28,7 @@ services:
     build:
       context: ${AUTH_SERVICE_PATH}
     depends_on:
-      pg_db:
+      pg-db:
         condition: service_healthy
       kafka:
         condition: service_healthy
@@ -54,7 +54,7 @@ services:
     build:
       context: ${CHAT_SERVICE_PATH}
     depends_on:
-      pg_db:
+      pg-db:
         condition: service_healthy
       storage:
         condition: service_healthy
@@ -101,7 +101,7 @@ services:
     build:
       context: ${AGGREGATOR_SERVICE_PATH}
     depends_on:
-      mongo_db:
+      mongo-db:
         condition: service_healthy
       kafka:
         condition: service_healthy
@@ -195,7 +195,7 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-      pg_db:
+      pg-db:
         condition: service_healthy
     ports:
       - "${DEBEZIUM_HOST_PORT}:${DEBEZIUM_CONTAINER_PORT}"
