@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 import Environments from "./configurations/Environments";
 import RequestBodySchema from "./handlers/RequestBodySchema";
-import HasConfiguration from "./handlers/HasSetting";
+import IsConfigured from "./handlers/IsConfigured";
 import IsMember from "./handlers/IsMember";
 import IsOwner from "./handlers/IsOwner";
 import Logger from "./utilities/Logger";
@@ -39,13 +39,13 @@ app.post("/", async (request: Request, response: Response) => {
 		const results = await Promise.all([
 			ownership ? IsOwner(ownership) : false,
 			membership ? IsMember(membership) : false,
-			configuration ? HasConfiguration(configuration) : false,
+			configuration ? IsConfigured(configuration) : false,
 		]);
 
 		response.status(200).json({
 			owner: results[0],
 			member: results[1],
-			configuration: results[2],
+			configured: results[2],
 		});
 	} catch (error: any) {
 		Logger.error(`[POST /] Error: `, error);

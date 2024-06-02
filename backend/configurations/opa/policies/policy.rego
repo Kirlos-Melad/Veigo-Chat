@@ -6,7 +6,7 @@ import future.keywords.if
 default is = {
     "owner": false,
     "member": false,
-    "configuration": false
+    "configured": false
 }
 
 is := Ask({})
@@ -29,6 +29,6 @@ Ask(_) = output if {
     output := {
         "owner": response_body.owner,
         "member": response_body.member,
-        "configuration": response_body.configuration
+        "configured": response_body.configured
     }
 }

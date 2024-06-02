@@ -39,7 +39,7 @@ function DeepEqual(a: any, b: any): boolean {
 	return false;
 }
 
-async function HasConfiguration(
+async function IsConfigured(
 	setting: typeof ConfigurationSchema._output,
 ): Promise<boolean> {
 	try {
@@ -59,9 +59,9 @@ async function HasConfiguration(
 			GetNestedValue(result.settings, setting.path),
 		);
 	} catch (error) {
-		Logger.error(`[HasConfiguration] Error: `, error);
+		Logger.error(`[IsConfigured] Error: `, error);
 		return false;
 	}
 }
 
-export default HasConfiguration;
+export default IsConfigured;
