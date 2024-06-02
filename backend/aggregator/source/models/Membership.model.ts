@@ -1,14 +1,23 @@
 import { Schema, model, Document } from "mongoose";
 
 interface MembershipDocument extends Document {
-	type: string;
+	type: "room-members" | "room-messages";
 	resource: string;
 	members: string[];
 }
 
-const memberSchema = new Schema<MembershipDocument>(
+const MembershipTypes: [string, ...string[]] = [
+	"room-members",
+	"room-messages",
+];
+
+const MembershipSchema = new Schema<MembershipDocument>(
 	{
-		type: { type: String, required: [true, "{PATH} not found"] },
+		type: {
+			type: String,
+			enum: MembershipTypes,
+			required: [true, "{PATH} not found"],
+		},
 		resource: { type: String, required: [true, "{PATH} not found"] },
 		members: {
 			type: [String],
@@ -19,9 +28,13 @@ const memberSchema = new Schema<MembershipDocument>(
 	{ _id: false, versionKey: false },
 );
 
-memberSchema.index({ type: 1, resource: 1 }, { unique: true });
+MembershipSchema.index({ type: 1, resource: 1 }, { unique: true });
 
-const MembershipModel = model<MembershipDocument>("membership", memberSchema);
+const MembershipModel = model<MembershipDocument>(
+	"membership",
+	MembershipSchema,
+);
 
 export default MembershipModel;
+export { MembershipTypes };
 export type { MembershipDocument };

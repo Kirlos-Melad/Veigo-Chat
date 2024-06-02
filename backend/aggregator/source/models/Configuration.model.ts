@@ -1,14 +1,24 @@
 import { Schema, model, Document } from "mongoose";
 
 interface ConfigurationDocument extends Document {
-	type: string;
+	type: "account" | "device" | "room";
 	resource: string;
 	settings: any;
 }
 
+const ConfigurationsTypes: [string, ...string[]] = [
+	"account",
+	"device",
+	"room",
+];
+
 const configurationSchema = new Schema<ConfigurationDocument>(
 	{
-		type: { type: String, required: [true, "{PATH} not found"] },
+		type: {
+			type: String,
+			enum: ConfigurationsTypes,
+			required: [true, "{PATH} not found"],
+		},
 		resource: { type: String, required: [true, "{PATH} not found"] },
 		settings: {
 			type: Schema.Types.Mixed,
@@ -26,4 +36,5 @@ const ConfigurationModel = model<ConfigurationDocument>(
 );
 
 export default ConfigurationModel;
+export { ConfigurationsTypes };
 export type { ConfigurationDocument };

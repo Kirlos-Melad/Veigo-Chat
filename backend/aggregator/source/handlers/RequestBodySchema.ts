@@ -1,20 +1,23 @@
 import { z } from "zod";
+import { OwnershipTypes } from "../models/Ownership.model";
+import { MembershipTypes } from "../models/Membership.model";
+import { ConfigurationsTypes } from "../models/Configuration.model";
 
 // Define specific schemas for each type of query
 const OwnerSchema = z.object({
-	type: z.string(),
+	type: z.enum(OwnershipTypes),
 	resource: z.string(),
 	user: z.string(),
 });
 
 const MemberSchema = z.object({
-	type: z.string(),
+	type: z.enum(MembershipTypes),
 	resource: z.string(),
 	user: z.string(),
 });
 
 const ConfigurationSchema = z.object({
-	type: z.string(),
+	type: z.enum(ConfigurationsTypes),
 	resource: z.string(),
 	path: z.string(),
 	value: z.any(),
