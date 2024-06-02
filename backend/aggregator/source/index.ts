@@ -29,24 +29,13 @@ await kafkaConsumer.Start();
 
 // Define a route to handle POST requests
 app.post("/", async (request: Request, response: Response) => {
-	const parseResult = RequestBodySchema.safeParse(request.body);
-
-	if (!parseResult.success) {
-		return response.status(400).json({
-			error: "Invalid request body",
-			details: parseResult.error.errors,
-		});
-	}
-
-	response.status(200).json({
-		owner: false,
-		member: false,
-		configuration: false,
-	});
-
-	const { ownership, membership, configuration } = parseResult.data;
-
 	try {
+		const parseResult = RequestBodySchema.safeParse(request.body);
+
+		if (!parseResult.success) throw parseResult.error;
+
+		const { ownership, membership, configuration } = parseResult.data;
+
 		const results = await Promise.all([
 			ownership ? IsOwner(ownership) : false,
 			membership ? IsMember(membership) : false,
@@ -59,6 +48,7 @@ app.post("/", async (request: Request, response: Response) => {
 			configuration: results[2],
 		});
 	} catch (error: any) {
+		Logger.error(`[POST /] Error: `, error);
 		response.status(500).json({ error: error.message });
 	}
 });
