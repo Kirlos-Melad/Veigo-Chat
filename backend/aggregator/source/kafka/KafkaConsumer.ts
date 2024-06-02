@@ -11,7 +11,7 @@ type Configurations = {
 };
 
 type AUTH_DB_PREFIX = "AUTH";
-type AUTH_DB_SUFFIX = "USERS" | "DEVICES" | "OTP";
+type AUTH_DB_SUFFIX = "ACCOUNTS" | "DEVICES" | "OTP";
 type CHAT_DB_PREFIX = "CHAT";
 type CHAT_DB_SUFFIX = "PROFILES" | "ROOMS" | "MEMBERS_ROOMS" | "MESSAGES";
 function AuthTopicGuard(args: { first: any; second: any }): args is {
@@ -20,7 +20,7 @@ function AuthTopicGuard(args: { first: any; second: any }): args is {
 } {
 	return (
 		args.first === "AUTH" &&
-		(args.second === "USERS" ||
+		(args.second === "ACCOUNTS" ||
 			args.second === "DEVICES" ||
 			args.second === "OTP")
 	);
@@ -73,7 +73,23 @@ function GetTopic<
 	return `${prefix.toLowerCase()}.db.public.${suffix.toLowerCase()}` as `${Lowercase<T>}.db.public.${Lowercase<U>}`;
 }
 
+function TopicToEvent(topic: string): keyof KafkaEvents {
+	const authRegex = /^auth\.db\.public\.(accounts|devices|otp)$/;
+	const chatRegex =
+		/^chat\.db\.public\.(profiles|rooms|members_rooms|messages)$/;
 
+	if (authRegex.test(topic)) {
+		const suffix = topic.split(".")[3].toUpperCase() as AUTH_DB_SUFFIX;
+		return `AUTH_DB_PUBLIC_${suffix}` as keyof KafkaEvents;
+	}
+
+	if (chatRegex.test(topic)) {
+		const suffix = topic.split(".")[3].toUpperCase() as CHAT_DB_SUFFIX;
+		return `CHAT_DB_PUBLIC_${suffix}` as keyof KafkaEvents;
+	}
+
+	throw new Error("Invalid topic format");
+}
 
 class KafkaConsumer extends EventEmitter<KafkaEvents> {
 	private mClient: Consumer;
@@ -103,10 +119,10 @@ class KafkaConsumer extends EventEmitter<KafkaEvents> {
 		await this.mClient.connect();
 		await this.mClient.subscribe({
 			topics: [
-				GetTopic("AUTH", "USERS"),
+				GetTopic("AUTH", "ACCOUNTS"),
 				GetTopic("AUTH", "DEVICES"),
-				GetTopic("AUTH", "OTP"),
-				GetTopic("CHAT", "PROFILES"),
+				// GetTopic("AUTH", "OTP"),
+				// GetTopic("CHAT", "PROFILES"),
 				GetTopic("CHAT", "ROOMS"),
 				GetTopic("CHAT", "MEMBERS_ROOMS"),
 				GetTopic("CHAT", "MESSAGES"),
@@ -116,7 +132,7 @@ class KafkaConsumer extends EventEmitter<KafkaEvents> {
 		await this.mClient.run({
 			eachMessage: async (messagePayload: EachMessagePayload) => {
 				const { topic, message } = messagePayload;
-				this.emit(topic as keyof KafkaEvents, message);
+				this.emit(TopicToEvent(topic), message);
 			},
 		});
 	}
