@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
+
 import Logger from "./Logger";
 
 class AuthorizationManager {
@@ -28,29 +29,31 @@ class AuthorizationManager {
 		return AuthorizationManager.sInstance;
 	}
 
-	private async Ask(
-		policy: string,
-		question: any,
-	): Promise<AxiosResponse<any, any>> {
-		Logger.information(`${this.mConnection}/v1/data/${policy}`, question);
-		return await axios.post(`${this.mConnection}/v1/data/${policy}`, {
-			input: question,
-		});
+	private async Ask(policy: string, question: any): Promise<boolean> {
+		try {
+			const response = await axios.post(
+				`${this.mConnection}/v1/data/${policy}`,
+				{
+					input: question,
+				},
+			);
+
+			return response.data.result && response.data.result.allow;
+		} catch (error) {
+			Logger.error(
+				`${this.mConnection}/v1/data/${policy}`,
+				question,
+				error,
+			);
+			return false;
+		}
 	}
 
 	public async CanJoinRoom(user: string, room: string): Promise<boolean> {
-		try {
-			const response = await this.Ask("join_room", {
-				roomId: room,
-				userId: user,
-			});
-
-			Logger.information(response.data);
-			return false;
-		} catch (error) {
-			Logger.error(error);
-			return false;
-		}
+		return await this.Ask("join_room", {
+			roomId: room,
+			userId: user,
+		});
 	}
 }
 
