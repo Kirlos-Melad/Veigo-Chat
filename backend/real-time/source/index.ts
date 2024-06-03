@@ -23,8 +23,8 @@ const httpServer = http.createServer();
 
 const socketServer = SocketServer.CreateInstance({ httpServer: httpServer });
 
-Logger.information("Loading Socket Server Events");
-await socketServer.LoadEvents();
+// Logger.information("Loading Socket Server Events");
+// await socketServer.LoadEvents();
 
 Logger.information("Starting Socket Server");
 httpServer.listen(Environments.SERVICE_PORT, () =>
