@@ -9,14 +9,14 @@ default is = {
     "configured": false
 }
 
-is := Ask({})
+is := Ask(input)
 
-Ask(_) = output if {
+Ask(question) = output if {
     # Make a single HTTP request to the server with the input data
     response := http.send({
         "method": "post",
         "url": opa.runtime().env["AGGRAGATOR_CONNECTION"],
-        "body": input,
+        "body": question,
         "headers": {
             "Content-Type": "application/json"
         }
