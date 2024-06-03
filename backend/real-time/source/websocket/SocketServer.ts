@@ -5,6 +5,7 @@ import { z } from "zod";
 import AbsolutePath from "@source/utilities/AbsolutePath";
 import Logger from "@source/utilities/Logger";
 import EventEmitter from "../types/EventEmitter";
+import JsonWebToken from "../utilities/JsonWebToken";
 
 type ClientToServer = {
 	JOIN_ROOM: [connection: SocketClient, { name: string }];
@@ -62,17 +63,14 @@ class SocketClient extends EventEmitter<SocketClientEvents> {
 	private mConnection: websocket.connection;
 	private mId: string;
 
-	public constructor(connection: websocket.connection) {
-		super(path.join(AbsolutePath(import.meta.url), "events"));
+	public constructor(id: string, connection: websocket.connection) {
+		super(path.join(AbsolutePath(import.meta.url), "client-events"));
 
-		//TODO: Change this!
-		this.mId = connection.remoteAddress;
+		this.mId = id;
 
 		this.mConnection = connection;
 		this.mConnection.on("close", () =>
-			Logger.information(
-				`Client[${this.mConnection.remoteAddress}] closed connection`,
-			),
+			Logger.information(`Client[${this.mId}] closed connection`),
 		);
 		this.mConnection.on("message", (message) => {
 			if (message.type === "binary") {
@@ -126,31 +124,35 @@ class SocketServer extends EventEmitter<{}> {
 
 	private mConnection: websocket.server;
 	private mUsers: Record<string, SocketClient[]>; // user, conn[]
-	private mRooms: Record<string, string[]>; // room, users[]
+	private mClients: Record<string, string>; // conn, user
+	private mRooms: Record<string, string[]>; // room, conn[]
 
 	private constructor(configs: websocket.IServerConfig) {
-		super(path.join(AbsolutePath(import.meta.url), "events"));
+		super(path.join(AbsolutePath(import.meta.url), "server-events"));
 
 		this.mUsers = {};
+		this.mClients = {};
 		this.mRooms = {};
 
 		this.mConnection = new websocket.server(configs);
 		this.mConnection.on("request", async (request) => {
-			//TODO: don't accept all
-			request.accept(null, request.origin);
-		});
-		this.mConnection.on("connect", async (connection) => {
-			const client = new SocketClient(connection);
+			const token: string = (
+				request.resourceURL.query["token"] as string
+			).split(" ")[1];
+
+			const { subject: data } = await JsonWebToken.Verify(token);
+			const connection = request.accept(null, request.origin);
+
+			const client = new SocketClient(data!.clientId, connection);
 			await client.LoadEvents();
 
-			// ? The user can have multiple devices/connections
-			if (!this.mUsers[client.id]) {
-				this.mUsers[client.id] = [client];
+			if (!this.mUsers[data!.accountId]) {
+				this.mUsers[data!.accountId] = [client];
 			} else {
-				this.mUsers[client.id].push(client);
+				this.mUsers[data!.accountId].push(client);
 			}
 
-			Logger.information(`Client[${client.id}] started new connection`);
+			this.mClients[client.id] = data!.accountId;
 		});
 	}
 

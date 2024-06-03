@@ -16,4 +16,4 @@ class ChatMessageEvent extends Event<SocketClientEvents, "LEAVE_ROOM"> {
 	};
 }
 
-export default ChatMessageEvent;
+export default new ChatMessageEvent();
