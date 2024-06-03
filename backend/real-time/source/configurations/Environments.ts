@@ -10,6 +10,7 @@ const environmentVariables = z.object({
 		.string()
 		.transform((value) => Number(value))
 		.pipe(z.number()),
+	ACCEPTED_ORIGIN: z.string(),
 	JWT_SECRET_KEY: z.string(),
 	JWT_ISSUER: z.string(),
 	AUTHORIZATION_CONNECTION: z.string(),

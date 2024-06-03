@@ -6,6 +6,7 @@ import AbsolutePath from "@source/utilities/AbsolutePath";
 import Logger from "@source/utilities/Logger";
 import EventEmitter from "../types/EventEmitter";
 import JsonWebToken from "../utilities/JsonWebToken";
+import Environments from "../configurations/Environments";
 
 type ClientToServer = {
 	JOIN_ROOM: [connection: SocketClient, { name: string }];
@@ -136,6 +137,10 @@ class SocketServer extends EventEmitter<{}> {
 
 		this.mConnection = new websocket.server(configs);
 		this.mConnection.on("request", async (request) => {
+			if (request.origin !== Environments.ACCEPTED_ORIGIN) {
+				return request.reject(401, "Unauthorized origin");
+			}
+
 			const token: string = (
 				request.resourceURL.query["token"] as string
 			).split(" ")[1];
