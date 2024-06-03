@@ -2,8 +2,6 @@ import Environments from "@root/source/configurations/Environments";
 import * as jose from "jose";
 import crypto from "crypto";
 
-type Audience = "any" | "authentication";
-
 type Subject = {
 	accountId: string;
 	clientId: string;
