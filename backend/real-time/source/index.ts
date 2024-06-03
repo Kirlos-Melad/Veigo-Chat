@@ -4,6 +4,9 @@ import Environments from "./configurations/Environments";
 import Logger from "./utilities/Logger";
 import KafkaConsumer from "./kafka/KafkaConsumer";
 import SocketServer from "./websocket/SocketServer";
+import AuthorizationManager from "./utilities/AuthorizationManager";
+
+AuthorizationManager.CreateInstance(Environments.AUTHORIZATION_CONNECTION);
 
 const kafkaConsumer = new KafkaConsumer({
 	groupId: Environments.KAFKA_GROUP_ID,
