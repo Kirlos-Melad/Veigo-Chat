@@ -2,9 +2,9 @@ import { z } from "zod";
 import { Dto } from "../Dto";
 import ProfileEntity from "@source/domain/entities/Profile.entity";
 
-type ProfileRead = Pick<ProfileEntity, "id">;
+type ReadRequestSerialized = Pick<ProfileEntity, "id">;
 
-class ProfileReadDto extends Dto<ProfileRead> {
+class ProfileReadDto extends Dto<ReadRequestSerialized> {
 	constructor(data: unknown) {
 		super(
 			data,
@@ -16,4 +16,4 @@ class ProfileReadDto extends Dto<ProfileRead> {
 }
 
 export default ProfileReadDto;
-export type { ProfileRead };
+export type { ReadRequestSerialized };

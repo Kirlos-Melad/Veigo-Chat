@@ -1,6 +1,6 @@
-import RoomCreateDto, { RoomCreate } from "./Room.create.dto";
-import RoomReadDto, { RoomRead } from "./Room.read.dto";
-import RoomUpdateDto, { RoomUpdate } from "./Room.update.dto";
+import RoomCreateDto, { CreateRequestSerialized } from "./Room.create.dto";
+import RoomReadDto, { ReadRequestSerialized } from "./Room.read.dto";
+import RoomUpdateDto, { UpdateRequestSerialized } from "./Room.update.dto";
 
 class RoomDto {
 	public static Create(data: any) {
@@ -17,4 +17,8 @@ class RoomDto {
 }
 
 export default RoomDto;
-export type { RoomCreate, RoomRead, RoomUpdate };
+export type {
+	CreateRequestSerialized,
+	ReadRequestSerialized,
+	UpdateRequestSerialized,
+};

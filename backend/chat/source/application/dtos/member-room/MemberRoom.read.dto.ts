@@ -2,9 +2,9 @@ import { z } from "zod";
 import { Dto } from "../Dto";
 import MemberRoomEntity from "@root/source/domain/entities/MemberRoom.entity";
 
-type MemberRoomRead = Pick<MemberRoomEntity, "memberId" | "roomId">;
+type ReadRequestSerialized = Pick<MemberRoomEntity, "memberId" | "roomId">;
 
-class MemberRoomReadDto extends Dto<MemberRoomRead> {
+class MemberRoomReadDto extends Dto<ReadRequestSerialized> {
 	constructor(data: unknown) {
 		super(
 			data,
@@ -17,4 +17,4 @@ class MemberRoomReadDto extends Dto<MemberRoomRead> {
 }
 
 export default MemberRoomReadDto;
-export type { MemberRoomRead };
+export type { ReadRequestSerialized };

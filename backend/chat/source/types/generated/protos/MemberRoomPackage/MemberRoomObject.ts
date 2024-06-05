@@ -2,14 +2,14 @@
 
 
 export interface MemberRoomObject {
-  'userId'?: (string);
+  'memberId'?: (string);
   'roomId'?: (string);
   'createdAt'?: (string);
   'updatedAt'?: (string);
 }
 
 export interface MemberRoomObject__Output {
-  'userId'?: (string);
+  'memberId'?: (string);
   'roomId'?: (string);
   'createdAt'?: (string);
   'updatedAt'?: (string);

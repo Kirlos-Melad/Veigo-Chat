@@ -2,17 +2,16 @@ import { z } from "zod";
 import { Dto } from "../Dto";
 import ProfileEntity from "@source/domain/entities/Profile.entity";
 
-type ProfileCreate = Optional<
-	Pick<ProfileEntity, "id" | "photoPath" | "name" | "about">,
+type CreateRequestSerialized = Optional<
+	Pick<ProfileEntity, "photoPath" | "name" | "about">,
 	"about" | "photoPath"
 >;
 
-class ProfileCreateDto extends Dto<ProfileCreate> {
+class ProfileCreateDto extends Dto<CreateRequestSerialized> {
 	constructor(data: any) {
 		super(
 			data,
 			z.object({
-				id: z.string().uuid(),
 				name: z.string(),
 				photoPath: z.string().optional(),
 				about: z
@@ -25,4 +24,4 @@ class ProfileCreateDto extends Dto<ProfileCreate> {
 }
 
 export default ProfileCreateDto;
-export type { ProfileCreate };
+export type { CreateRequestSerialized };

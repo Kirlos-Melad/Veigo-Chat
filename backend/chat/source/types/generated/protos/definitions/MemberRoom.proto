@@ -3,22 +3,21 @@ syntax = "proto3";
 package MemberRoomPackage;
 
 message CreateRequest {
-    required string userId = 1;
     required string roomId = 2;
 }
 
 message ReadRequest {
-    string userId = 1;
+    string memberId = 1;
     string roomId = 2;
 }
 
 message DeleteRequest {
-    required string userId = 1;
+    required string memberId = 1;
     required string roomId = 2;
 }
 
 message MemberRoomObject {
-    string userId = 1;
+    string memberId = 1;
     string roomId = 2;
 
     string createdAt = 3;

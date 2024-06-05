@@ -1,14 +1,18 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import IMessageRepository from "@source/domain/repositories/IMessage.repository";
-import { MessageCreate, MessageRead } from "@source/application/dtos/message";
-import MessagesEntity from "@source/domain/entities/Message.entity";
+import MessageEntity from "@source/domain/entities/Message.entity";
 import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
 
-class MessageRepository implements IMessageRepository {
+type MessageCreate = Pick<MessageEntity, "roomId" | "senderId" | "content">;
+
+type MessageRead = Pick<MessageEntity, "id">;
+
+type MessageUpdate = Partial<Pick<MessageEntity, "content">>;
+
+class MessageRepository {
 	public async Create(
 		connection: DatabaseClient,
 		Messages: MessageCreate,
-	): Promise<MessagesEntity> {
+	): Promise<MessageEntity> {
 		const { fields, values } = ConvertObjectToArrays(Messages);
 
 		const fieldsString = fields.join(", ");
@@ -21,28 +25,27 @@ class MessageRepository implements IMessageRepository {
             RETURNING *;
         `;
 
-		return (await connection.Execute<MessagesEntity>(query, values))
-			.rows[0];
+		return (await connection.Execute<MessageEntity>(query, values)).rows[0];
 	}
 
 	public async Read(
 		connection: DatabaseClient,
 		filter: MessageRead,
-	): Promise<MessagesEntity> {
+	): Promise<MessageEntity> {
 		const query = `
             SELECT *
             FROM messages
             WHERE "id" = ${filter.id};
         `;
 
-		return (await connection.Execute<MessagesEntity>(query)).rows[0];
+		return (await connection.Execute<MessageEntity>(query)).rows[0];
 	}
 
 	public async Update(
 		connection: DatabaseClient,
 		filter: MessageRead,
-		update: Partial<Pick<MessagesEntity, "content">>,
-	): Promise<MessagesEntity> {
+		update: MessageUpdate,
+	): Promise<MessageEntity> {
 		const { fields, values } = ConvertObjectToArrays(update);
 
 		if (!values.length) return await this.Read(connection, filter);
@@ -58,21 +61,20 @@ class MessageRepository implements IMessageRepository {
 			RETURNING *;
 		`;
 
-		return (await connection.Execute<MessagesEntity>(query, values))
-			.rows[0];
+		return (await connection.Execute<MessageEntity>(query, values)).rows[0];
 	}
 
 	public async Delete(
 		connection: DatabaseClient,
 		filter: MessageRead,
-	): Promise<MessagesEntity> {
+	): Promise<MessageEntity> {
 		const query = `
 			DELETE FROM messages
 			WHERE "id" = ${filter.id}
 			RETURNING *;
 		`;
 
-		return (await connection.Execute<MessagesEntity>(query)).rows[0];
+		return (await connection.Execute<MessageEntity>(query)).rows[0];
 	}
 }
 

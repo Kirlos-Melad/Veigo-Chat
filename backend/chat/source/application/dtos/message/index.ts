@@ -1,6 +1,10 @@
-import MessageCreateDto, { MessageCreate } from "./Message.create.dto";
-import MessageReadDto, { MessageRead } from "./Message.read.dto";
-import MessageUpdateDto, { MessageUpdate } from "./Message.update.dto";
+import MessageCreateDto, {
+	CreateRequestSerialized,
+} from "./Message.create.dto";
+import MessageReadDto, { ReadRequestSerialized } from "./Message.read.dto";
+import MessageUpdateDto, {
+	UpdateRequestSerialized,
+} from "./Message.update.dto";
 
 class MessageDto {
 	public static Create(data: any) {
@@ -17,4 +21,8 @@ class MessageDto {
 }
 
 export default MessageDto;
-export type { MessageCreate, MessageRead, MessageUpdate };
+export type {
+	CreateRequestSerialized,
+	ReadRequestSerialized,
+	UpdateRequestSerialized,
+};

@@ -13,22 +13,8 @@ const environmentVariables = z.object({
 		.string()
 		.transform((value) => value.split(",").map((v) => v.trim()))
 		.pipe(z.array(z.string())),
-	TOKEN_CONFIGURATIONS: z.string().or(z.undefined()),
-	NODE_MAILER_AUTH: z
-		.string()
-		.transform((value) => JSON.parse(value))
-		.pipe(
-			z.object({
-				hostName: z.string(),
-				hostAddress: z.string(),
-				hostPort: z.number(),
-				secure: z.boolean(),
-				userName: z.string(),
-				userAddress: z.string(),
-				userPassword: z.string(),
-			}),
-		)
-		.or(z.undefined()),
+	JWT_SECRET_KEY: z.string(),
+	JWT_ISSUER: z.string(),
 });
 
 export default environmentVariables.parse(process.env);

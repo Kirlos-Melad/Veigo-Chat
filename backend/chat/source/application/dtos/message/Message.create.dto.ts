@@ -2,15 +2,14 @@ import { z } from "zod";
 import { Dto } from "../Dto";
 import MessageEntity from "@source/domain/entities/Message.entity";
 
-type MessageCreate = Pick<MessageEntity, "roomId" | "senderId" | "content">;
+type CreateRequestSerialized = Pick<MessageEntity, "roomId" | "content">;
 
-class MessageCreateDto extends Dto<MessageCreate> {
+class MessageCreateDto extends Dto<CreateRequestSerialized> {
 	constructor(data: any) {
 		super(
 			data,
 			z.object({
 				roomId: z.string().uuid(),
-				senderId: z.string().uuid(),
 				content: z.string(),
 			}),
 		);
@@ -18,4 +17,4 @@ class MessageCreateDto extends Dto<MessageCreate> {
 }
 
 export default MessageCreateDto;
-export type { MessageCreate };
+export type { CreateRequestSerialized };

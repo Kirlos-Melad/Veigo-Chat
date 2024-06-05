@@ -3,15 +3,16 @@ import { Dto } from "../Dto";
 import RoomEntity from "@source/domain/entities/Room.entity";
 import RoomPrivacy from "@source/domain/value-objects/RoomPrivacy";
 
-type RoomUpdate = Partial<
-	Pick<RoomEntity, "photoPath" | "name" | "description" | "privacy">
->;
+type UpdateRequestSerialized = Partial<
+	Omit<RoomEntity, "type" | "createdAt" | "updatedAt">
+> & { id: string };
 
-class RoomUpdateDto extends Dto<RoomUpdate> {
+class RoomUpdateDto extends Dto<UpdateRequestSerialized> {
 	constructor(data: unknown) {
 		super(
 			data,
 			z.object({
+				id: z.string(),
 				photoPath: z.string().optional(),
 				name: z.string().optional(),
 				description: z.string().optional(),
@@ -22,4 +23,4 @@ class RoomUpdateDto extends Dto<RoomUpdate> {
 }
 
 export default RoomUpdateDto;
-export type { RoomUpdate };
+export type { UpdateRequestSerialized };

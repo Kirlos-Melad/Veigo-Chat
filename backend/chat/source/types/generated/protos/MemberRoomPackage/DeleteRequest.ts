@@ -2,11 +2,11 @@
 
 
 export interface DeleteRequest {
-  'userId'?: (string);
+  'memberId'?: (string);
   'roomId'?: (string);
 }
 
 export interface DeleteRequest__Output {
-  'userId'?: (string);
+  'memberId'?: (string);
   'roomId'?: (string);
 }

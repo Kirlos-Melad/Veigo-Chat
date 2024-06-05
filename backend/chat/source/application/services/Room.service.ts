@@ -1,115 +1,36 @@
 import { RoomHandlers } from "@source/types/generated/protos/RoomPackage/Room";
-import { CreateRequest } from "@source/types/generated/protos/RoomPackage/CreateRequest";
-import { ReadRequest } from "@source/types/generated/protos/RoomPackage/ReadRequest";
-import { UpdateRequest } from "@source/types/generated/protos/RoomPackage/UpdateRequest";
-import { DeleteRequest } from "@source/types/generated/protos/RoomPackage/DeleteRequest";
-import DatabaseManager, {
-	DatabaseClient,
-} from "@source/infrastructure/database/DatabaseManager";
-import RoomDto from "../dtos/room";
-import IRoomRepository from "@source/domain/repositories/IRoom.repository";
+import TransactionalCall from "../utilities/TransactionalCall";
+import CreateRoomUseCase from "@root/source/domain/use-cases/rooms/Create.room.usecase";
+import ReadRoomUseCase from "@root/source/domain/use-cases/rooms/Read.room.usecase";
+import UpdateRoomUseCase from "@root/source/domain/use-cases/rooms/Update.room.usecase";
+import DeleteRoomUseCase from "@root/source/domain/use-cases/rooms/Delete.room.usecase";
 
-import GrpcService from "@source/infrastructure/grpc/Grpc.service";
-import TransactionalCall, {
-	HandlerResult,
-} from "../utilities/TransactionalCall";
-import RoomEntity from "@source/domain/entities/Room.entity";
+class RoomService implements RoomHandlers {
+	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;
 
-class RoomService extends GrpcService<RoomHandlers> {
-	private mRepository: IRoomRepository;
+	Create = TransactionalCall(
+		CreateRoomUseCase.Serializer,
+		CreateRoomUseCase.Authorize,
+		CreateRoomUseCase.Handle,
+	);
 
-	constructor(repository: IRoomRepository) {
-		super(DatabaseManager.instance);
-		this.mRepository = repository;
-	}
+	Read = TransactionalCall(
+		ReadRoomUseCase.Serializer,
+		ReadRoomUseCase.Authorize,
+		ReadRoomUseCase.Handle,
+	);
 
-	public get handlers(): RoomHandlers {
-		return {
-			Create: TransactionalCall(this.Create.bind(this)),
-			Read: TransactionalCall(this.Read.bind(this)),
-			Update: TransactionalCall(this.Update.bind(this)),
-			Delete: TransactionalCall(this.Delete.bind(this)),
-		} as RoomHandlers;
-	}
+	Update = TransactionalCall(
+		UpdateRoomUseCase.Serializer,
+		UpdateRoomUseCase.Authorize,
+		UpdateRoomUseCase.Handle,
+	);
 
-	public async Create(
-		connection: DatabaseClient,
-		data: CreateRequest,
-	): Promise<HandlerResult<RoomEntity>> {
-		try {
-			const roomCreateDto = RoomDto.Create(data);
-			roomCreateDto.Serialize();
-
-			const result = await this.mRepository.Create(
-				connection,
-				roomCreateDto.data!,
-			);
-
-			return { error: null, result };
-		} catch (error) {
-			return { error, result: null };
-		}
-	}
-
-	public async Read(
-		connection: DatabaseClient,
-		data: ReadRequest,
-	): Promise<HandlerResult<RoomEntity>> {
-		try {
-			const roomReadDto = RoomDto.Read(data);
-			roomReadDto.Serialize();
-
-			const result = await this.mRepository.Read(
-				connection,
-				roomReadDto.data!,
-			);
-
-			return { error: null, result };
-		} catch (error) {
-			return { error, result: null };
-		}
-	}
-
-	public async Update(
-		connection: DatabaseClient,
-		data: UpdateRequest,
-	): Promise<HandlerResult<RoomEntity>> {
-		try {
-			const roomReadDto = RoomDto.Read(data);
-			roomReadDto.Serialize();
-			const roomUpdateDto = RoomDto.Update(data);
-			roomUpdateDto.Serialize();
-
-			const result = await this.mRepository.Update(
-				connection,
-				roomReadDto.data!,
-				roomUpdateDto.data!,
-			);
-
-			return { error: null, result };
-		} catch (error) {
-			return { error, result: null };
-		}
-	}
-
-	public async Delete(
-		connection: DatabaseClient,
-		data: DeleteRequest,
-	): Promise<HandlerResult<RoomEntity>> {
-		try {
-			const roomReadDto = RoomDto.Read(data);
-			roomReadDto.Serialize();
-
-			const result = await this.mRepository.Delete(
-				connection,
-				roomReadDto.data!,
-			);
-
-			return { error: null, result };
-		} catch (error) {
-			return { error, result: null };
-		}
-	}
+	Delete = TransactionalCall(
+		DeleteRoomUseCase.Serializer,
+		DeleteRoomUseCase.Authorize,
+		DeleteRoomUseCase.Handle,
+	);
 }
 
-export default RoomService;
+export default new RoomService();

@@ -2,11 +2,11 @@
 
 
 export interface ReadRequest {
-  'userId'?: (string);
+  'memberId'?: (string);
   'roomId'?: (string);
 }
 
 export interface ReadRequest__Output {
-  'userId'?: (string);
+  'memberId'?: (string);
   'roomId'?: (string);
 }

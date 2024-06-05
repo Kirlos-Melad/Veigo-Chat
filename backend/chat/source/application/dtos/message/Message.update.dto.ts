@@ -2,13 +2,15 @@ import { z } from "zod";
 import { Dto } from "../Dto";
 import MessageEntity from "@source/domain/entities/Message.entity";
 
-type MessageUpdate = Partial<Pick<MessageEntity, "content">>;
+type UpdateRequestSerialized = Partial<Pick<MessageEntity, "content">> &
+	Pick<MessageEntity, "id">;
 
-class MessageUpdateDto extends Dto<MessageUpdate> {
+class MessageUpdateDto extends Dto<UpdateRequestSerialized> {
 	constructor(data: unknown) {
 		super(
 			data,
 			z.object({
+				id: z.string().uuid(),
 				content: z.string().optional(),
 			}),
 		);
@@ -16,4 +18,4 @@ class MessageUpdateDto extends Dto<MessageUpdate> {
 }
 
 export default MessageUpdateDto;
-export type { MessageUpdate };
+export type { UpdateRequestSerialized };

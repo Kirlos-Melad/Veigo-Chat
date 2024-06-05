@@ -1,43 +1,65 @@
-import grpc, { handleUnaryCall } from "@grpc/grpc-js";
+import grpc, { Metadata, handleUnaryCall } from "@grpc/grpc-js";
 
 import DatabaseManager, {
 	DatabaseClient,
 } from "@source/infrastructure/database/DatabaseManager";
 import Logger from "./Logger";
 import ErrorSerializer from "./SerializeError";
+import { Dto } from "../dtos/Dto";
+import AuthorizationManager from "./AuthorizationManager";
 
-type HandlerResult<T> = { error: any | null; result: T | null };
+type SerializerFunction<T, U> = (data: T) => Dto<U>;
+
+type AuthorizationFunction<T> = (
+	requesterId: string,
+	data: T,
+) => Promise<boolean>;
+
 type HandlerFunction<T, U> = (
 	connection: DatabaseClient,
 	data: T,
-) => Promise<HandlerResult<U>>;
+) => Promise<U>;
 
-function TransactionalCall<T, U>(
-	fn: HandlerFunction<T, U>,
-): handleUnaryCall<T, U> {
+function TransactionalCall<T, U, K>(
+	serializer: SerializerFunction<T, U>,
+	authorize: AuthorizationFunction<U>,
+	handle: HandlerFunction<U & { requesterId: string }, K>,
+): handleUnaryCall<T, K> {
 	return async (
 		request: grpc.ServerUnaryCall<T, U>,
-		respond: grpc.sendUnaryData<U>,
+		respond: grpc.sendUnaryData<K>,
 	) => {
-		const conn = await DatabaseManager.instance.LeaseConnection();
-		const { error, result } = await fn(conn, request.request);
-		if (error) {
-			await conn.RollbackTransaction();
+		let conn: DatabaseClient | null = null;
+
+		try {
+			const requesterId = await AuthorizationManager.instance.GetUserId(
+				request.metadata,
+			);
+			const _serializer = serializer(request.request);
+			_serializer.Serialize();
+			if (!(await authorize(requesterId, _serializer.data!)))
+				throw new Error("Unauthorized action");
+
+			conn = await DatabaseManager.instance.LeaseConnection();
+			const result = await handle(conn, {
+				..._serializer.data!,
+				requesterId,
+			});
+			await conn.CommitTransaction();
+			respond(null, result);
+		} catch (error) {
 			Logger.error(error);
+			await conn?.RollbackTransaction();
 			const errorSerializer = new ErrorSerializer(error);
 			errorSerializer.Serialize();
 			respond({
 				name: "Error",
 				message: JSON.stringify(errorSerializer.serializedError),
 			});
-		} else {
-			await conn.CommitTransaction();
-			respond(null, result);
+		} finally {
+			await conn?.Release();
 		}
-
-		conn.Release();
 	};
 }
 
 export default TransactionalCall;
-export type { HandlerResult };

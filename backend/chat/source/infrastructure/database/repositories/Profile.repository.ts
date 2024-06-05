@@ -1,14 +1,19 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import IProfileRepository from "@source/domain/repositories/IProfile.repository";
-import {
-	ProfileCreate,
-	ProfileRead,
-	ProfileUpdate,
-} from "@source/application/dtos/profile";
 import ProfileEntity from "@source/domain/entities/Profile.entity";
 import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
 
-class ProfileRepository implements IProfileRepository {
+type ProfileCreate = Optional<
+	Omit<ProfileEntity, "createdAt" | "updatedAt">,
+	"photoPath"
+>;
+
+type ProfileRead = Pick<ProfileEntity, "id">;
+
+type ProfileUpdate = Partial<
+	Pick<ProfileEntity, "photoPath" | "name" | "about">
+>;
+
+class ProfileRepository {
 	public async Create(
 		connection: DatabaseClient,
 		profile: ProfileCreate,

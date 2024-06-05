@@ -5,12 +5,8 @@ import ProfileService from "@source/application/services/Profile.service.ts";
 import Environments from "@source/configurations/Environments.js";
 import Logger from "./application/utilities/Logger.ts";
 import DatabaseManager from "./infrastructure/database/DatabaseManager.ts";
-import ProfileRepository from "./infrastructure/database/repositories/Profile.repository.ts";
-import RoomRepository from "./infrastructure/database/repositories/Room.repository.ts";
 import RoomService from "./application/services/Room.service.ts";
-import MessageRepository from "./infrastructure/database/repositories/Message.repository.ts";
 import MessageService from "./application/services/Message.service.ts";
-import MemberRoomRepository from "./infrastructure/database/repositories/MemberRoom.repository.ts";
 import MemberRoomService from "./application/services/MemberRoom.service.ts";
 
 async function Migrate() {
@@ -30,17 +26,6 @@ async function Start() {
 	);
 
 	Logger.information("Creating services");
-	const profileRepository = new ProfileRepository();
-	const profileService = new ProfileService(profileRepository);
-
-	const roomRepository = new RoomRepository();
-	const roomService = new RoomService(roomRepository);
-
-	const messageRepository = new MessageRepository();
-	const messageService = new MessageService(messageRepository);
-
-	const userRoomRepository = new MemberRoomRepository();
-	const userRoomService = new MemberRoomService(userRoomRepository);
 
 	const serverManager = ServerManager.CreateInstance(
 		Environments.SERVICE_ADDRESS,
@@ -48,19 +33,19 @@ async function Start() {
 	);
 	serverManager.AddService(
 		"source/types/generated/protos/definitions/Profile.proto",
-		profileService.handlers,
+		ProfileService,
 	);
 	serverManager.AddService(
 		"source/types/generated/protos/definitions/Room.proto",
-		roomService.handlers,
+		RoomService,
 	);
 	serverManager.AddService(
 		"source/types/generated/protos/definitions/Message.proto",
-		messageService.handlers,
+		MessageService,
 	);
 	serverManager.AddService(
 		"source/types/generated/protos/definitions/MemberRoom.proto",
-		userRoomService.handlers,
+		MemberRoomService,
 	);
 
 	Logger.information("Starting server");

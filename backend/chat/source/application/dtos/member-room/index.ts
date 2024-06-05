@@ -1,5 +1,9 @@
-import MemberRoomCreateDto, { MemberRoomCreate } from "./MemberRoom.create.dto";
-import MemberRoomReadDto, { MemberRoomRead } from "./MemberRoom.read.dto";
+import MemberRoomCreateDto, {
+	CreateRequestSerialized,
+} from "./MemberRoom.create.dto";
+import MemberRoomReadDto, {
+	ReadRequestSerialized,
+} from "./MemberRoom.read.dto";
 
 class MemberRoomDto {
 	public static Create(data: any) {
@@ -12,4 +16,4 @@ class MemberRoomDto {
 }
 
 export default MemberRoomDto;
-export type { MemberRoomCreate, MemberRoomRead };
+export type { CreateRequestSerialized, ReadRequestSerialized };

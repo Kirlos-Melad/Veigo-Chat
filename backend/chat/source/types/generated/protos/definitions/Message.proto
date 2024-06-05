@@ -4,7 +4,6 @@ package MessagePackage;
 
 message CreateRequest {
     required string roomId = 1;
-    required string senderId = 2;
     required string content = 3;
 }
 

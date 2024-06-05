@@ -1,6 +1,10 @@
-import ProfileCreateDto, { ProfileCreate } from "./Profile.create.dto";
-import ProfileReadDto, { ProfileRead } from "./Profile.read.dto";
-import ProfileUpdateDto, { ProfileUpdate } from "./Profile.update.dto";
+import ProfileCreateDto, {
+	CreateRequestSerialized,
+} from "./Profile.create.dto";
+import ProfileReadDto, { ReadRequestSerialized } from "./Profile.read.dto";
+import ProfileUpdateDto, {
+	UpdateRequestSerialized,
+} from "./Profile.update.dto";
 
 class ProfileDto {
 	public static Create(data: any) {
@@ -17,4 +21,8 @@ class ProfileDto {
 }
 
 export default ProfileDto;
-export type { ProfileCreate, ProfileRead, ProfileUpdate };
+export type {
+	CreateRequestSerialized,
+	ReadRequestSerialized,
+	UpdateRequestSerialized,
+};

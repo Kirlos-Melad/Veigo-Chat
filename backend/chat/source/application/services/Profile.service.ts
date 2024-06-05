@@ -1,115 +1,33 @@
 import { ProfileHandlers } from "@source/types/generated/protos/ProfilePackage/Profile";
-import { CreateRequest } from "@source/types/generated/protos/ProfilePackage/CreateRequest";
-import { ReadRequest } from "@source/types/generated/protos/ProfilePackage/ReadRequest";
-import { UpdateRequest } from "@source/types/generated/protos/ProfilePackage/UpdateRequest";
-import { DeleteRequest } from "@source/types/generated/protos/ProfilePackage/DeleteRequest";
-import DatabaseManager, {
-	DatabaseClient,
-} from "@source/infrastructure/database/DatabaseManager";
-import ProfileDto from "../dtos/profile";
-import IProfileRepository from "@source/domain/repositories/IProfile.repository";
+import TransactionalCall from "../utilities/TransactionalCall";
+import CreateProfileUseCase from "@source/domain/use-cases/profiles/Create.profile.usecase";
+import ReadProfileUseCase from "@source/domain/use-cases/profiles/Read.profile.usecase";
+import UpdateProfileUseCase from "@root/source/domain/use-cases/profiles/Update.profile.usecase";
+import DeleteProfileUseCase from "@root/source/domain/use-cases/profiles/Delete.profile.usecase";
 
-import GrpcService from "@source/infrastructure/grpc/Grpc.service";
-import TransactionalCall, {
-	HandlerResult,
-} from "../utilities/TransactionalCall";
-import ProfileEntity from "@source/domain/entities/Profile.entity";
+class ProfileService implements ProfileHandlers {
+	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;
 
-class ProfileService extends GrpcService<ProfileHandlers> {
-	private mRepository: IProfileRepository;
-
-	constructor(repository: IProfileRepository) {
-		super(DatabaseManager.instance);
-		this.mRepository = repository;
-	}
-
-	public get handlers(): ProfileHandlers {
-		return {
-			Create: TransactionalCall(this.Create.bind(this)),
-			Read: TransactionalCall(this.Read.bind(this)),
-			Update: TransactionalCall(this.Update.bind(this)),
-			Delete: TransactionalCall(this.Delete.bind(this)),
-		} as ProfileHandlers;
-	}
-
-	public async Create(
-		connection: DatabaseClient,
-		data: CreateRequest,
-	): Promise<HandlerResult<ProfileEntity>> {
-		try {
-			const profileCreateDto = ProfileDto.Create(data);
-			profileCreateDto.Serialize();
-
-			const result = await this.mRepository.Create(
-				connection,
-				profileCreateDto.data!,
-			);
-
-			return { error: null, result };
-		} catch (error) {
-			return { error, result: null };
-		}
-	}
-
-	public async Read(
-		connection: DatabaseClient,
-		data: ReadRequest,
-	): Promise<HandlerResult<ProfileEntity>> {
-		try {
-			const profileReadDto = ProfileDto.Read(data);
-			profileReadDto.Serialize();
-
-			const result = await this.mRepository.Read(
-				connection,
-				profileReadDto.data!,
-			);
-
-			return { error: null, result };
-		} catch (error) {
-			return { error, result: null };
-		}
-	}
-
-	public async Update(
-		connection: DatabaseClient,
-		data: UpdateRequest,
-	): Promise<HandlerResult<ProfileEntity>> {
-		try {
-			const profileReadDto = ProfileDto.Read(data);
-			profileReadDto.Serialize();
-			const profileUpdateDto = ProfileDto.Update(data);
-			profileUpdateDto.Serialize();
-
-			const result = await this.mRepository.Update(
-				connection,
-				profileReadDto.data!,
-				profileUpdateDto.data!,
-			);
-
-			return { error: null, result };
-		} catch (error) {
-			return { error, result: null };
-		}
-	}
-
-	public async Delete(
-		connection: DatabaseClient,
-		data: DeleteRequest,
-	): Promise<HandlerResult<ProfileEntity>> {
-		try {
-			const profileReadDto = ProfileDto.Read(data);
-			profileReadDto.Serialize();
-
-			const result = await this.mRepository.Delete(
-				connection,
-				profileReadDto.data!,
-			);
-
-			return { error: null, result };
-		} catch (error) {
-			return { error, result: null };
-		}
-	}
+	Create = TransactionalCall(
+		CreateProfileUseCase.Serializer,
+		CreateProfileUseCase.Authorize,
+		CreateProfileUseCase.Handle,
+	);
+	Read = TransactionalCall(
+		ReadProfileUseCase.Serializer,
+		ReadProfileUseCase.Authorize,
+		ReadProfileUseCase.Handle,
+	);
+	Update = TransactionalCall(
+		UpdateProfileUseCase.Serializer,
+		UpdateProfileUseCase.Authorize,
+		UpdateProfileUseCase.Handle,
+	);
+	Delete = TransactionalCall(
+		DeleteProfileUseCase.Serializer,
+		DeleteProfileUseCase.Authorize,
+		DeleteProfileUseCase.Handle,
+	);
 }
 
-export default ProfileService;
+export default new ProfileService();

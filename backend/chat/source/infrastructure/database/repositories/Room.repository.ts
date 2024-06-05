@@ -1,14 +1,19 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import IRoomRepository from "@source/domain/repositories/IRoom.repository";
-import {
-	RoomCreate,
-	RoomRead,
-	RoomUpdate,
-} from "@source/application/dtos/room";
 import RoomEntity from "@source/domain/entities/Room.entity";
 import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
 
-class RoomRepository implements IRoomRepository {
+type RoomCreate = Optional<
+	Omit<RoomEntity, "id" | "createdAt" | "updatedAt">,
+	"photoPath" | "description"
+>;
+
+type RoomRead = Pick<RoomEntity, "id">;
+
+type RoomUpdate = Partial<
+	Omit<RoomEntity, "id" | "type" | "createdAt" | "updatedAt">
+>;
+
+class RoomRepository {
 	public async Create(
 		connection: DatabaseClient,
 		room: RoomCreate,
