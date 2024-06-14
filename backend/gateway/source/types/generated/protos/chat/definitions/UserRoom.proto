@@ -3,8 +3,8 @@ syntax = "proto3";
 package UserRoomPackage;
 
 message CreateRequest {
-    required string userId = 1;
-    required string roomId = 2;
+    string userId = 1;
+    string roomId = 2;
 }
 
 message ReadRequest {
@@ -13,8 +13,8 @@ message ReadRequest {
 }
 
 message DeleteRequest {
-    required string userId = 1;
-    required string roomId = 2;
+    string userId = 1;
+    string roomId = 2;
 }
 
 message UserRoomObject {
@@ -26,7 +26,7 @@ message UserRoomObject {
 }
 
 service UserRoom {
-    rpc Create (CreateRequest) returns (UserRoomObject) {}
-    rpc Read (ReadRequest) returns (UserRoomObject) {}
-    rpc Delete (DeleteRequest) returns (UserRoomObject) {}
+    rpc Create (CreateRequest) returns (UserRoomObject);
+    rpc Read (ReadRequest) returns (UserRoomObject);
+    rpc Delete (DeleteRequest) returns (UserRoomObject);
 }

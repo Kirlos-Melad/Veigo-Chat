@@ -1,12 +1,12 @@
 // Original file: source/types/generated/protos/definitions/MemberRoom.proto
 
 
-export interface DeleteRequest {
-  'memberId'?: (string);
+export interface AddRequest {
   'roomId'?: (string);
+  'membersId'?: (string)[];
 }
 
-export interface DeleteRequest__Output {
-  'memberId'?: (string);
+export interface AddRequest__Output {
   'roomId'?: (string);
+  'membersId'?: (string)[];
 }

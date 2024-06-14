@@ -4,19 +4,19 @@ package RoomPackage;
 
 message CreateRequest {
     string photoPath = 1;
-    required string name = 2;
+    string name = 2;
     string description = 3;
 
-    required string type = 4;
-    required string privacy = 5;
+    string type = 4;
+    string privacy = 5;
 }
 
 message ReadRequest {
-    required string id = 1;
+    string id = 1;
 }
 
 message UpdateRequest {
-    required string id = 1;
+    string id = 1;
 
     string photoPath = 2;
     string name = 3;
@@ -26,7 +26,7 @@ message UpdateRequest {
 }
 
 message DeleteRequest {
-    required string id = 1;
+    string id = 1;
 }
 
 message RoomObject {
@@ -44,8 +44,8 @@ message RoomObject {
 }
 
 service Room {
-    rpc Create (CreateRequest) returns (RoomObject) {}
-    rpc Read (ReadRequest) returns (RoomObject) {}
-    rpc Update (UpdateRequest) returns (RoomObject) {}
-    rpc Delete (DeleteRequest) returns (RoomObject) {}
+    rpc Create (CreateRequest) returns (RoomObject);
+    rpc Read (ReadRequest) returns (RoomObject);
+    rpc Update (UpdateRequest) returns (RoomObject);
+    rpc Delete (DeleteRequest) returns (RoomObject);
 }

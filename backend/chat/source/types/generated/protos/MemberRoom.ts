@@ -8,12 +8,17 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 };
 
 export interface ProtoGrpcType {
-  MemberRoomPackage: {
-    CreateRequest: MessageTypeDefinition
-    DeleteRequest: MessageTypeDefinition
-    MemberRoom: SubtypeConstructor<typeof grpc.Client, _MemberRoomPackage_MemberRoomClient> & { service: _MemberRoomPackage_MemberRoomDefinition }
+  ChatObjectsPackage: {
     MemberRoomObject: MessageTypeDefinition
-    ReadRequest: MessageTypeDefinition
+    MessageObject: MessageTypeDefinition
+    ProfileObject: MessageTypeDefinition
+    RoomObject: MessageTypeDefinition
+  }
+  MemberRoomPackage: {
+    AddRequest: MessageTypeDefinition
+    LeaveRequest: MessageTypeDefinition
+    MemberRoom: SubtypeConstructor<typeof grpc.Client, _MemberRoomPackage_MemberRoomClient> & { service: _MemberRoomPackage_MemberRoomDefinition }
+    MemberRoomList: MessageTypeDefinition
   }
 }
 

@@ -3,25 +3,25 @@ syntax = "proto3";
 package ProfilePackage;
 
 message CreateRequest {
-    required string id = 1;
+    string id = 1;
     string photoPath = 2;
-    required string name = 3;
+    string name = 3;
     string about = 4;
 }
 
 message ReadRequest {
-    required string id = 1;
+    string id = 1;
 }
 
 message UpdateRequest {
-    required string id = 1;
+    string id = 1;
     string photoPath = 2;
     string name = 3;
     string about = 4;
 }
 
 message DeleteRequest {
-    required string id = 1;
+    string id = 1;
 }
 
 message ProfileObject {
@@ -36,8 +36,8 @@ message ProfileObject {
 }
 
 service Profile {
-    rpc Create (CreateRequest) returns (ProfileObject) {}
-    rpc Read (ReadRequest) returns (ProfileObject) {}
-    rpc Update (UpdateRequest) returns (ProfileObject) {}
-    rpc Delete (DeleteRequest) returns (ProfileObject) {}
+    rpc Create (CreateRequest) returns (ProfileObject);
+    rpc Read (ReadRequest) returns (ProfileObject);
+    rpc Update (UpdateRequest) returns (ProfileObject);
+    rpc Delete (DeleteRequest) returns (ProfileObject);
 }

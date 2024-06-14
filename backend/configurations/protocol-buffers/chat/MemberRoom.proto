@@ -2,31 +2,22 @@ syntax = "proto3";
 
 package MemberRoomPackage;
 
-message CreateRequest {
-    required string userId = 1;
-    required string roomId = 2;
+import "./ChatObjects.proto";
+
+message AddRequest {
+    string roomId = 1;
+    repeated string membersId = 2;
 }
 
-message ReadRequest {
-    string userId = 1;
-    string roomId = 2;
+message LeaveRequest {
+    string roomId = 1;
 }
 
-message DeleteRequest {
-    required string userId = 1;
-    required string roomId = 2;
-}
-
-message MemberRoomObject {
-    string userId = 1;
-    string roomId = 2;
-
-    string createdAt = 3;
-    string updatedAt = 4;
+message MemberRoomList {
+    repeated MemberRoomObject members = 1;
 }
 
 service MemberRoom {
-    rpc Create (CreateRequest) returns (MemberRoomObject) {}
-    rpc Read (ReadRequest) returns (MemberRoomObject) {}
-    rpc Delete (DeleteRequest) returns (MemberRoomObject) {}
+    rpc Add (AddRequest) returns (MemberRoomList);
+    rpc Leave (LeaveRequest) returns (MemberRoomObject);
 }

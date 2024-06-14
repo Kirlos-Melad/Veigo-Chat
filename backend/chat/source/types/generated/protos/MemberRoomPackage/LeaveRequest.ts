@@ -1,10 +1,10 @@
 // Original file: source/types/generated/protos/definitions/MemberRoom.proto
 
 
-export interface CreateRequest {
+export interface LeaveRequest {
   'roomId'?: (string);
 }
 
-export interface CreateRequest__Output {
+export interface LeaveRequest__Output {
   'roomId'?: (string);
 }

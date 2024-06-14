@@ -2,52 +2,40 @@
 
 import type * as grpc from '@grpc/grpc-js'
 import type { MethodDefinition } from '@grpc/proto-loader'
-import type { CreateRequest as _MemberRoomPackage_CreateRequest, CreateRequest__Output as _MemberRoomPackage_CreateRequest__Output } from '../MemberRoomPackage/CreateRequest';
-import type { DeleteRequest as _MemberRoomPackage_DeleteRequest, DeleteRequest__Output as _MemberRoomPackage_DeleteRequest__Output } from '../MemberRoomPackage/DeleteRequest';
-import type { MemberRoomObject as _MemberRoomPackage_MemberRoomObject, MemberRoomObject__Output as _MemberRoomPackage_MemberRoomObject__Output } from '../MemberRoomPackage/MemberRoomObject';
-import type { ReadRequest as _MemberRoomPackage_ReadRequest, ReadRequest__Output as _MemberRoomPackage_ReadRequest__Output } from '../MemberRoomPackage/ReadRequest';
+import type { AddRequest as _MemberRoomPackage_AddRequest, AddRequest__Output as _MemberRoomPackage_AddRequest__Output } from '../MemberRoomPackage/AddRequest';
+import type { LeaveRequest as _MemberRoomPackage_LeaveRequest, LeaveRequest__Output as _MemberRoomPackage_LeaveRequest__Output } from '../MemberRoomPackage/LeaveRequest';
+import type { MemberRoomList as _MemberRoomPackage_MemberRoomList, MemberRoomList__Output as _MemberRoomPackage_MemberRoomList__Output } from '../MemberRoomPackage/MemberRoomList';
+import type { MemberRoomObject as _ChatObjectsPackage_MemberRoomObject, MemberRoomObject__Output as _ChatObjectsPackage_MemberRoomObject__Output } from '../ChatObjectsPackage/MemberRoomObject';
 
 export interface MemberRoomClient extends grpc.Client {
-  Create(argument: _MemberRoomPackage_CreateRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Create(argument: _MemberRoomPackage_CreateRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Create(argument: _MemberRoomPackage_CreateRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Create(argument: _MemberRoomPackage_CreateRequest, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  create(argument: _MemberRoomPackage_CreateRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  create(argument: _MemberRoomPackage_CreateRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  create(argument: _MemberRoomPackage_CreateRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  create(argument: _MemberRoomPackage_CreateRequest, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  Add(argument: _MemberRoomPackage_AddRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomList__Output>): grpc.ClientUnaryCall;
+  Add(argument: _MemberRoomPackage_AddRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomList__Output>): grpc.ClientUnaryCall;
+  Add(argument: _MemberRoomPackage_AddRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomList__Output>): grpc.ClientUnaryCall;
+  Add(argument: _MemberRoomPackage_AddRequest, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomList__Output>): grpc.ClientUnaryCall;
+  add(argument: _MemberRoomPackage_AddRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomList__Output>): grpc.ClientUnaryCall;
+  add(argument: _MemberRoomPackage_AddRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomList__Output>): grpc.ClientUnaryCall;
+  add(argument: _MemberRoomPackage_AddRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomList__Output>): grpc.ClientUnaryCall;
+  add(argument: _MemberRoomPackage_AddRequest, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomList__Output>): grpc.ClientUnaryCall;
   
-  Delete(argument: _MemberRoomPackage_DeleteRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Delete(argument: _MemberRoomPackage_DeleteRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Delete(argument: _MemberRoomPackage_DeleteRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Delete(argument: _MemberRoomPackage_DeleteRequest, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  delete(argument: _MemberRoomPackage_DeleteRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  delete(argument: _MemberRoomPackage_DeleteRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  delete(argument: _MemberRoomPackage_DeleteRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  delete(argument: _MemberRoomPackage_DeleteRequest, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  
-  Read(argument: _MemberRoomPackage_ReadRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Read(argument: _MemberRoomPackage_ReadRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Read(argument: _MemberRoomPackage_ReadRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  Read(argument: _MemberRoomPackage_ReadRequest, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  read(argument: _MemberRoomPackage_ReadRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  read(argument: _MemberRoomPackage_ReadRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  read(argument: _MemberRoomPackage_ReadRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
-  read(argument: _MemberRoomPackage_ReadRequest, callback: grpc.requestCallback<_MemberRoomPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  Leave(argument: _MemberRoomPackage_LeaveRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_ChatObjectsPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  Leave(argument: _MemberRoomPackage_LeaveRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_ChatObjectsPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  Leave(argument: _MemberRoomPackage_LeaveRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_ChatObjectsPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  Leave(argument: _MemberRoomPackage_LeaveRequest, callback: grpc.requestCallback<_ChatObjectsPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  leave(argument: _MemberRoomPackage_LeaveRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_ChatObjectsPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  leave(argument: _MemberRoomPackage_LeaveRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_ChatObjectsPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  leave(argument: _MemberRoomPackage_LeaveRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_ChatObjectsPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
+  leave(argument: _MemberRoomPackage_LeaveRequest, callback: grpc.requestCallback<_ChatObjectsPackage_MemberRoomObject__Output>): grpc.ClientUnaryCall;
   
 }
 
 export interface MemberRoomHandlers extends grpc.UntypedServiceImplementation {
-  Create: grpc.handleUnaryCall<_MemberRoomPackage_CreateRequest__Output, _MemberRoomPackage_MemberRoomObject>;
+  Add: grpc.handleUnaryCall<_MemberRoomPackage_AddRequest__Output, _MemberRoomPackage_MemberRoomList>;
   
-  Delete: grpc.handleUnaryCall<_MemberRoomPackage_DeleteRequest__Output, _MemberRoomPackage_MemberRoomObject>;
-  
-  Read: grpc.handleUnaryCall<_MemberRoomPackage_ReadRequest__Output, _MemberRoomPackage_MemberRoomObject>;
+  Leave: grpc.handleUnaryCall<_MemberRoomPackage_LeaveRequest__Output, _ChatObjectsPackage_MemberRoomObject>;
   
 }
 
 export interface MemberRoomDefinition extends grpc.ServiceDefinition {
-  Create: MethodDefinition<_MemberRoomPackage_CreateRequest, _MemberRoomPackage_MemberRoomObject, _MemberRoomPackage_CreateRequest__Output, _MemberRoomPackage_MemberRoomObject__Output>
-  Delete: MethodDefinition<_MemberRoomPackage_DeleteRequest, _MemberRoomPackage_MemberRoomObject, _MemberRoomPackage_DeleteRequest__Output, _MemberRoomPackage_MemberRoomObject__Output>
-  Read: MethodDefinition<_MemberRoomPackage_ReadRequest, _MemberRoomPackage_MemberRoomObject, _MemberRoomPackage_ReadRequest__Output, _MemberRoomPackage_MemberRoomObject__Output>
+  Add: MethodDefinition<_MemberRoomPackage_AddRequest, _MemberRoomPackage_MemberRoomList, _MemberRoomPackage_AddRequest__Output, _MemberRoomPackage_MemberRoomList__Output>
+  Leave: MethodDefinition<_MemberRoomPackage_LeaveRequest, _ChatObjectsPackage_MemberRoomObject, _MemberRoomPackage_LeaveRequest__Output, _ChatObjectsPackage_MemberRoomObject__Output>
 }

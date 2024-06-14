@@ -2,9 +2,9 @@
 
 
 export interface ReadRequest {
-  'id'?: (string);
+  'roomId'?: (string);
 }
 
 export interface ReadRequest__Output {
-  'id'?: (string);
+  'roomId'?: (string);
 }
