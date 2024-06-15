@@ -8,9 +8,9 @@ import { Metadata, ServiceError } from "@grpc/grpc-js";
 
 import GQLField from "@root/source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
-import RoomGQLType from "../../types/Room.gql.type";
 import { GQLContext } from "../../GQLHandler";
 import { RoomInformation } from "@root/source/types/generated/protos/chat/RoomPackage/RoomInformation";
+import RoomInformationGQLType from "../../types/RoomInformation.gql.type";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	id: { type: new GraphQLNonNull(GraphQLString) },
@@ -24,7 +24,7 @@ class RoomReadGQLField extends GQLField<Args> {
 			type: "query",
 			name: "ReadRoom",
 			args: Args,
-			outputType: RoomGQLType,
+			outputType: RoomInformationGQLType,
 			isGuarded: true,
 		});
 	}
