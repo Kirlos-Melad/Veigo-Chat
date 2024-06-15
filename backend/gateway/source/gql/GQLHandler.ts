@@ -8,7 +8,7 @@ import { createHandler } from "graphql-http/lib/use/express";
 import path from "path";
 
 import DependencyLoader from "../utilities/DependencyLoader";
-import GQLField from "../types/GQLField";
+import GQLField from "./fields/GQLField";
 import Logger from "../utilities/Logger";
 import AbsolutePath from "../utilities/AbsolutePath";
 import { Metadata } from "@grpc/grpc-js";

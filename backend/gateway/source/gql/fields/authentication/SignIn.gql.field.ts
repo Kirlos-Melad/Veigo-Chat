@@ -6,7 +6,7 @@ import {
 } from "graphql";
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
-import GQLField from "@source/types/GQLField";
+import GQLField from "@root/source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import LoginResponseGQLType from "../../types/LoginResponse.gql.type";
 import { AuthenticationResponse } from "@root/source/types/generated/protos/authentication/AuthenticationPackage/AuthenticationResponse";

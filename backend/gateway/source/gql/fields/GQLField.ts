@@ -4,8 +4,8 @@ import {
 	GraphQLFieldResolver,
 	GraphQLOutputType,
 } from "graphql";
-import { GQLContext } from "../gql/GQLHandler";
-import Authorize from "../utilities/Authorize";
+import { GQLContext } from "../GQLHandler";
+import Authorize from "../../utilities/Authorize";
 import { Metadata } from "@grpc/grpc-js";
 
 type GQLFieldType = "query" | "mutation";
@@ -50,20 +50,20 @@ abstract class GQLField<T extends GraphQLFieldConfigArgumentMap> {
 	private Guard(resolver: GraphQLFieldResolver<any, GQLContext, T, unknown>) {
 		const guard = async (
 			source: any,
-			args: any,
+			args: T,
 			context: GQLContext,
 			info: any,
 		) => {
 			const token = await Authorize(context.authorizationHeader);
-			const metadata = new Metadata();
-			metadata.add("token", token);
+			context.metadata = new Metadata();
+			context.metadata.add("token", token);
 
 			return await resolver(source, args, context, info);
 		};
 		return guard as GraphQLFieldResolver<any, GQLContext, T, unknown>;
 	}
 
-	ToFieldConfig(): GraphQLFieldConfig<any, any, any> {
+	ToFieldConfig(): GraphQLFieldConfig<any, GQLContext, T> {
 		return {
 			type: this.mOutputType,
 			args: this.mArgs,
