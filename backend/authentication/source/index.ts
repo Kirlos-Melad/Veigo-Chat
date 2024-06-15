@@ -4,7 +4,6 @@ import ServerManager from "@source/infrastructure/grpc/ServerManager.ts";
 import Environments from "@source/configurations/Environments.js";
 import Logger from "./application/utilities/Logger.ts";
 import DatabaseManager from "./infrastructure/database/DatabaseManager.ts";
-import KafkaProducer from "./infrastructure/kafka/KafkaProducer.ts";
 import AuthenticationService from "./application/services/Authentication.service.ts";
 
 async function Migrate() {
@@ -22,13 +21,6 @@ async function Start() {
 	const databaseManager = DatabaseManager.CreateInstance(
 		Environments.DATABASE_CONNECTION,
 	);
-
-	Logger.information("Creating Kafka producer");
-	const kafkaProducer = KafkaProducer.CreateInstance(
-		Environments.KAFKA_CLIENT_ID,
-		Environments.KAFKA_BROKERS,
-	);
-	await kafkaProducer.Start();
 
 	Logger.information("Creating services");
 	const authService = new AuthenticationService();

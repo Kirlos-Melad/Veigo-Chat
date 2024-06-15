@@ -11,11 +11,6 @@ const environmentVariables = z.object({
 	JWT_ISSUER: z.string(),
 	AUTHORIZATION_CONNECTION: z.string(),
 	DATABASE_CONNECTION: z.string(),
-	KAFKA_CLIENT_ID: z.string(),
-	KAFKA_BROKERS: z
-		.string()
-		.transform((value) => value.split(",").map((v) => v.trim()))
-		.pipe(z.array(z.string())),
 });
 
 export default environmentVariables.parse(process.env);

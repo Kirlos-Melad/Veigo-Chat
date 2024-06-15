@@ -20,11 +20,6 @@ const environmentVariables = z.object({
 	SECRET_KEY: z.string(),
 	SERVICE_ADDRESS: z.string(),
 	DATABASE_CONNECTION: z.string(),
-	KAFKA_CLIENT_ID: z.string(),
-	KAFKA_BROKERS: z
-		.string()
-		.transform((value) => value.split(",").map((v) => v.trim()))
-		.pipe(z.array(z.string())),
 	JWT_CONFIGURATION: z
 		.string()
 		.transform((value) => JSON.parse(value))
