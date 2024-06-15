@@ -33,6 +33,7 @@ class MemberRoomRepository {
 		roomMembers: RoomMembers,
 	): Promise<MemberRoomEntity[]> {
 		const { roomId, membersId } = roomMembers;
+		if (!membersId.length) return [];
 
 		const roomIdx = membersId.length + 1;
 
