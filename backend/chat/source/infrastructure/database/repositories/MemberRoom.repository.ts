@@ -37,8 +37,8 @@ class MemberRoomRepository {
 		const roomIdx = membersId.length + 1;
 
 		const valuesString = membersId
-			.map((_, idx) => `(${roomIdx}, $${idx + 1}),`)
-			.join("\n");
+			.map((_, idx) => `(${roomIdx}, $${idx + 1})`)
+			.join(",\n");
 
 		const query = `
 			INSERT INTO user_rooms
