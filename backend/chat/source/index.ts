@@ -8,6 +8,7 @@ import DatabaseManager from "./infrastructure/database/DatabaseManager.ts";
 import RoomService from "./application/services/Room.service.ts";
 import MessageService from "./application/services/Message.service.ts";
 import MemberRoomService from "./application/services/MemberRoom.service.ts";
+import AuthorizationManager from "./application/utilities/AuthorizationManager.ts";
 
 async function Migrate() {
 	Logger.information("Creating database manager");
@@ -24,6 +25,9 @@ async function Start() {
 	const databaseManager = DatabaseManager.CreateInstance(
 		Environments.DATABASE_CONNECTION,
 	);
+
+	Logger.information("Creating Authorization Manager");
+	AuthorizationManager.CreateInstance(Environments.AUTHORIZATION_CONNECTION);
 
 	Logger.information("Creating services");
 
