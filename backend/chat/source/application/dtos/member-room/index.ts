@@ -1,19 +1,17 @@
-import MemberRoomCreateDto, {
-	CreateRequestSerialized,
-} from "./MemberRoom.create.dto";
-import MemberRoomReadDto, {
-	ReadRequestSerialized,
-} from "./MemberRoom.read.dto";
+import MemberRoomAddDto, { AddRequestSerialized } from "./MemberRoom.add.dto";
+import MemberRoomLeaveDto, {
+	LeaveRequestSerialized,
+} from "./MemberRoom.leave.dto";
 
 class MemberRoomDto {
-	public static Create(data: any) {
-		return new MemberRoomCreateDto(data);
+	public static Add(data: any) {
+		return new MemberRoomAddDto(data);
 	}
 
-	public static Read(data: any) {
-		return new MemberRoomReadDto(data);
+	public static Leave(data: any) {
+		return new MemberRoomLeaveDto(data);
 	}
 }
 
 export default MemberRoomDto;
-export type { CreateRequestSerialized, ReadRequestSerialized };
+export type { AddRequestSerialized, LeaveRequestSerialized };

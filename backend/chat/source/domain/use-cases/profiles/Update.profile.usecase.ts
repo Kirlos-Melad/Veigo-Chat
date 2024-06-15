@@ -9,12 +9,9 @@ const repository = new ProfileRepository();
 
 const Serializer = (data: UpdateRequest) => ProfileDto.Update(data);
 
-const Authorize = async (
-	requesterId: string,
-	data: UpdateRequestSerialized,
-) => {
-	return requesterId != data.id;
-};
+//? Only the profile owner can update it
+const Authorize = async (requesterId: string, data: UpdateRequestSerialized) =>
+	requesterId != data.id;
 
 const Handle = async (
 	connection: DatabaseClient,

@@ -68,19 +68,6 @@ class RoomRepository {
 
 		return (await connection.Execute<RoomEntity>(query, values)).rows[0];
 	}
-
-	public async Delete(
-		connection: DatabaseClient,
-		filter: RoomRead,
-	): Promise<RoomEntity> {
-		const query = `
-            DELETE FROM rooms
-            WHERE id = ${filter.id}
-            RETURNING *;
-        `;
-
-		return (await connection.Execute<RoomEntity>(query)).rows[0];
-	}
 }
 
 export default RoomRepository;

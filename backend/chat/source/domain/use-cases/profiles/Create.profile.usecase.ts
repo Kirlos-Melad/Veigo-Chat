@@ -9,12 +9,8 @@ const repository = new ProfileRepository();
 
 const Serializer = (data: CreateRequest) => ProfileDto.Create(data);
 
-const Authorize = async (
-	requesterId: string,
-	data: CreateRequestSerialized,
-) => {
-	return true;
-};
+//? Anyone can create a profile
+const Authorize = async () => true;
 
 const Handle = async (
 	connection: DatabaseClient,

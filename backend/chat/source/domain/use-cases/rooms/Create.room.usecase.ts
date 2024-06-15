@@ -2,31 +2,43 @@ import RoomDto, {
 	CreateRequestSerialized,
 } from "@root/source/application/dtos/room";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
+import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
 import RoomRepository from "@root/source/infrastructure/database/repositories/Room.repository";
 import { CreateRequest } from "@root/source/types/generated/protos/RoomPackage/CreateRequest";
+import MemberRoomEntity from "../../entities/MemberRoom.entity";
 
-const repository = new RoomRepository();
+const roomRepository = new RoomRepository();
+const memberRoomRepository = new MemberRoomRepository();
 
 const Serializer = (data: CreateRequest) => RoomDto.Create(data);
 
-const Authorize = async (
-	requesterId: string,
-	data: CreateRequestSerialized,
-) => {
-	return true;
-};
+//? Anyone can create a room
+const Authorize = async () => true;
 
 const Handle = async (
 	connection: DatabaseClient,
 	data: CreateRequestSerialized & { requesterId: string },
 ) => {
-	return await repository.Create(connection, {
-		photoPath: data.photoPath,
-		name: data.name,
-		description: data.description,
-		type: data.type,
-		privacy: data.privacy!,
-	});
+	const [room, members] = await Promise.all([
+		roomRepository.Create(connection, {
+			photoPath: data.photoPath,
+			name: data.name,
+			description: data.description,
+			type: data.type,
+			privacy: data.privacy!,
+		}),
+		data.members
+			? memberRoomRepository.BulkCreate(connection, {
+					roomId: data.name,
+					membersId: data.members,
+			  })
+			: ([] as MemberRoomEntity[]),
+	]);
+
+	return {
+		information: room,
+		members: members,
+	};
 };
 
 export default {

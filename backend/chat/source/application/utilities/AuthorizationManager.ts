@@ -31,31 +31,32 @@ class AuthorizationManager {
 		return AuthorizationManager.sInstance;
 	}
 
-	private async Ask(policy: string, question: any): Promise<boolean> {
-		try {
-			const response = await axios.post(
-				`${this.mConnection}/v1/data/${policy}`,
-				{
-					input: question,
-				},
-			);
-
-			return response.data.result && response.data.result.allow;
-		} catch (error) {
-			Logger.error(
-				`${this.mConnection}/v1/data/${policy}`,
-				question,
-				error,
-			);
-			return false;
-		}
-	}
-
 	public async GetUserId(metadata: Metadata): Promise<string> {
 		const token = (metadata.get("token")[0] as string).split(" ")[1];
 		const info = await JsonWebToken.Verify(token);
 
 		return info.subject!.accountId;
+	}
+
+	private async Ask(policy: string, input: any): Promise<boolean> {
+		try {
+			const response = await axios.post(
+				`${this.mConnection}/v1/data/${policy}`,
+				{ input },
+			);
+
+			return response.data.result && response.data.result.allow;
+		} catch (error) {
+			Logger.error(`${this.mConnection}/v1/data/${policy}`, input, error);
+			return false;
+		}
+	}
+
+	public async CanReadRoom(room: string, user: string): Promise<boolean> {
+		return await this.Ask("read_room", {
+			roomId: room,
+			userId: user,
+		});
 	}
 
 	public async CanEditRoom(room: string, user: string): Promise<boolean> {
@@ -69,6 +70,18 @@ class AuthorizationManager {
 		return await this.Ask("send_message", {
 			roomId: room,
 			userId: user,
+		});
+	}
+
+	public async CanEditMessage(
+		user: string,
+		room: string,
+		message: string,
+	): Promise<boolean> {
+		return await this.Ask("edit_message", {
+			userId: user,
+			roomId: room,
+			messageId: message,
 		});
 	}
 }

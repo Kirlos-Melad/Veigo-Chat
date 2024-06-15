@@ -1,25 +1,24 @@
 import MemberRoomDto, {
-	ReadRequestSerialized,
+	LeaveRequestSerialized,
 } from "@root/source/application/dtos/member-room";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
-import { DeleteRequest } from "@root/source/types/generated/protos/MemberRoomPackage/DeleteRequest";
+import { LeaveRequest } from "@root/source/types/generated/protos/MemberRoomPackage/LeaveRequest";
 
 const repository = new MemberRoomRepository();
 
-const Serializer = (data: DeleteRequest) => MemberRoomDto.Read(data);
+const Serializer = (data: LeaveRequest) => MemberRoomDto.Leave(data);
 
-const Authorize = async (requesterId: string, data: ReadRequestSerialized) => {
-	return true;
-};
+//? Any member can leave the room
+const Authorize = async () => true;
 
 const Handle = async (
 	connection: DatabaseClient,
-	data: ReadRequestSerialized & { requesterId: string },
+	data: LeaveRequestSerialized & { requesterId: string },
 ) => {
 	return await repository.Delete(connection, {
-		memberId: data.memberId,
 		roomId: data.roomId,
+		memberId: data.requesterId,
 	});
 };
 

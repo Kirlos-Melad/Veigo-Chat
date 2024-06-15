@@ -3,15 +3,16 @@ import MemberRoomEntity from "@root/source/domain/entities/MemberRoom.entity";
 import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
 
 type MemberRoomCreate = Pick<MemberRoomEntity, "memberId" | "roomId">;
-
+type RoomMembers = { roomId: string; membersId: string[] };
+type RoomMember = { roomId: string; memberId: string };
 type MemberRoomRead = Partial<Pick<MemberRoomEntity, "memberId" | "roomId">>;
 
 class MemberRoomRepository {
 	public async Create(
 		connection: DatabaseClient,
-		userRooms: MemberRoomCreate,
+		memberRoom: MemberRoomCreate,
 	): Promise<MemberRoomEntity> {
-		const { fields, values } = ConvertObjectToArrays(userRooms);
+		const { fields, values } = ConvertObjectToArrays(memberRoom);
 
 		const fieldsString = fields.join(", ");
 		const valuesString = values.map((_, idx) => `$${idx + 1}`).join(", ");
@@ -27,22 +28,55 @@ class MemberRoomRepository {
 			.rows[0];
 	}
 
+	public async BulkCreate(
+		connection: DatabaseClient,
+		roomMembers: RoomMembers,
+	): Promise<MemberRoomEntity[]> {
+		const { roomId, membersId } = roomMembers;
+
+		const roomIdx = membersId.length + 1;
+
+		const valuesString = membersId
+			.map((_, idx) => `(${roomIdx}, $${idx + 1}),`)
+			.join("\n");
+
+		const query = `
+			INSERT INTO user_rooms
+			("memberId", "roomId")
+			VALUES
+			${valuesString}
+			RETURNING *;
+		`;
+
+		return (
+			await connection.Execute<MemberRoomEntity>(query, [
+				...membersId,
+				roomId,
+			])
+		).rows;
+	}
+
 	public async Read(
 		connection: DatabaseClient,
 		filter: MemberRoomRead,
-	): Promise<MemberRoomEntity> {
+	): Promise<MemberRoomEntity[]> {
+		if (!filter.memberId && !filter.roomId) return [];
+
 		const query = `
             SELECT *
             FROM user_rooms
-            WHERE "memberId" = ${filter.memberId};
+            WHERE
+			${filter.memberId ? `"memberId" = ${filter.memberId}` : ""}
+			${filter.roomId ? `"roomId" = ${filter.roomId}` : ""}
+			;
         `;
 
-		return (await connection.Execute<MemberRoomEntity>(query)).rows[0];
+		return (await connection.Execute<MemberRoomEntity>(query)).rows;
 	}
 
 	public async Delete(
 		connection: DatabaseClient,
-		filter: MemberRoomRead,
+		filter: RoomMember,
 	): Promise<MemberRoomEntity> {
 		const query = `
 			DELETE FROM user_rooms

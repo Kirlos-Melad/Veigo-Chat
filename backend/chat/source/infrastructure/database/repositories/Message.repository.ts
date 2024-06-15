@@ -4,6 +4,7 @@ import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectTo
 
 type MessageCreate = Pick<MessageEntity, "roomId" | "senderId" | "content">;
 
+type MessagesRead = Pick<MessageEntity, "roomId">;
 type MessageRead = Pick<MessageEntity, "id">;
 
 type MessageUpdate = Partial<Pick<MessageEntity, "content">>;
@@ -39,6 +40,19 @@ class MessageRepository {
         `;
 
 		return (await connection.Execute<MessageEntity>(query)).rows[0];
+	}
+
+	public async ReadBulk(
+		connection: DatabaseClient,
+		filter: MessagesRead,
+	): Promise<MessageEntity[]> {
+		const query = `
+            SELECT *
+            FROM messages
+            WHERE "roomId" = ${filter.roomId};
+        `;
+
+		return (await connection.Execute<MessageEntity>(query)).rows;
 	}
 
 	public async Update(

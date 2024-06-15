@@ -9,10 +9,9 @@ const repository = new ProfileRepository();
 
 const Serializer = (data: ReadRequest) => ProfileDto.Read(data);
 
-const Authorize = async (requesterId: string, data: ReadRequestSerialized) => {
-	// TODO: make profile private?
-	return true;
-};
+// TODO: make profile private?
+//? Anyone can read any profile
+const Authorize = async () => true;
 
 const Handle = async (
 	connection: DatabaseClient,

@@ -1,26 +1,20 @@
 import { MemberRoomHandlers } from "@source/types/generated/protos/MemberRoomPackage/MemberRoom";
 import TransactionalCall from "../utilities/TransactionalCall";
-import ReadMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Read.memberroom.usecase";
-import DeleteMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Delete.memberroom.usecase";
-import CreateMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Create.memberroom.usecase";
+import AddMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Add.memberroom.usecase";
+import LeaveMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Leave.memberroom.usecase";
 
 class MemberRoomService implements MemberRoomHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;
 
-	Create = TransactionalCall(
-		CreateMemberRoomUseCase.Serializer,
-		CreateMemberRoomUseCase.Authorize,
-		CreateMemberRoomUseCase.Handle,
+	Add = TransactionalCall(
+		AddMemberRoomUseCase.Serializer,
+		AddMemberRoomUseCase.Authorize,
+		AddMemberRoomUseCase.Handle,
 	);
-	Read = TransactionalCall(
-		ReadMemberRoomUseCase.Serializer,
-		ReadMemberRoomUseCase.Authorize,
-		ReadMemberRoomUseCase.Handle,
-	);
-	Delete = TransactionalCall(
-		DeleteMemberRoomUseCase.Serializer,
-		DeleteMemberRoomUseCase.Authorize,
-		DeleteMemberRoomUseCase.Handle,
+	Leave = TransactionalCall(
+		LeaveMemberRoomUseCase.Serializer,
+		LeaveMemberRoomUseCase.Authorize,
+		LeaveMemberRoomUseCase.Handle,
 	);
 }
 

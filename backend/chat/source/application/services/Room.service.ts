@@ -3,7 +3,6 @@ import TransactionalCall from "../utilities/TransactionalCall";
 import CreateRoomUseCase from "@root/source/domain/use-cases/rooms/Create.room.usecase";
 import ReadRoomUseCase from "@root/source/domain/use-cases/rooms/Read.room.usecase";
 import UpdateRoomUseCase from "@root/source/domain/use-cases/rooms/Update.room.usecase";
-import DeleteRoomUseCase from "@root/source/domain/use-cases/rooms/Delete.room.usecase";
 
 class RoomService implements RoomHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;
@@ -24,12 +23,6 @@ class RoomService implements RoomHandlers {
 		UpdateRoomUseCase.Serializer,
 		UpdateRoomUseCase.Authorize,
 		UpdateRoomUseCase.Handle,
-	);
-
-	Delete = TransactionalCall(
-		DeleteRoomUseCase.Serializer,
-		DeleteRoomUseCase.Authorize,
-		DeleteRoomUseCase.Handle,
 	);
 }
 

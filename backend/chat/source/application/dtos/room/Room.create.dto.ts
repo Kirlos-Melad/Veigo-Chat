@@ -7,7 +7,7 @@ import RoomPrivacy from "@source/domain/value-objects/RoomPrivacy";
 type CreateRequestSerialized = Optional<
 	Omit<RoomEntity, "id" | "createdAt" | "updatedAt">,
 	"photoPath" | "description" | "privacy"
->;
+> & { members?: string[] };
 
 class RoomCreateDto extends Dto<CreateRequestSerialized> {
 	constructor(data: any) {
@@ -20,6 +20,7 @@ class RoomCreateDto extends Dto<CreateRequestSerialized> {
 					description: z.string().optional(),
 					type: RoomType.schema,
 					privacy: RoomPrivacy.schema.optional().default("private"),
+					members: z.array(z.string().uuid()).optional().default([]),
 				})
 				.refine(
 					(data) => {

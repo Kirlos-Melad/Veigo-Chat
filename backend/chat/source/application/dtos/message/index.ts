@@ -5,6 +5,9 @@ import MessageReadDto, { ReadRequestSerialized } from "./Message.read.dto";
 import MessageUpdateDto, {
 	UpdateRequestSerialized,
 } from "./Message.update.dto";
+import MessageDeleteDto, {
+	DeleteRequestSerialized,
+} from "./Message.delete.dto";
 
 class MessageDto {
 	public static Create(data: any) {
@@ -18,6 +21,10 @@ class MessageDto {
 	public static Update(data: any) {
 		return new MessageUpdateDto(data);
 	}
+
+	public static Delete(data: any) {
+		return new MessageDeleteDto(data);
+	}
 }
 
 export default MessageDto;
@@ -25,4 +32,5 @@ export type {
 	CreateRequestSerialized,
 	ReadRequestSerialized,
 	UpdateRequestSerialized,
+	DeleteRequestSerialized,
 };
