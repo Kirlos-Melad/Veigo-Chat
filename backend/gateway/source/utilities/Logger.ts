@@ -117,7 +117,7 @@ class Logger {
 	public async message(message: any) {
 		this.mLogger.log("MESSAGE", "", message);
 
-		return await new Promise<string>((resolve) =>
+		return await new Promise((resolve) =>
 			this.mReadline.question("", resolve),
 		);
 	}
