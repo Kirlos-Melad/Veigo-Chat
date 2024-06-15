@@ -4,7 +4,7 @@ import {
 	GraphQLNonNull,
 	GraphQLString,
 } from "graphql";
-import { ServiceError } from "@grpc/grpc-js";
+import { Metadata, ServiceError } from "@grpc/grpc-js";
 
 import GQLField from "@source/types/GQLField";
 import { DeleteRequest } from "@source/types/generated/protos/chat/MessagePackage/DeleteRequest";
@@ -31,7 +31,7 @@ class MessageDeleteGQLField extends GQLField<Args> {
 	}
 
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
-		async function (source: any, args: Args) {
+		async (source: any, args: Args, context: GQLContext) => {
 			try {
 				const result = await new Promise<DeleteRequest>(
 					(resolve, reject) =>
@@ -40,6 +40,9 @@ class MessageDeleteGQLField extends GQLField<Args> {
 							.Get("Message")
 							.Delete(
 								args,
+								this.mIsGuarded
+									? context.metadata!
+									: new Metadata(),
 								(
 									error: ServiceError | null,
 									response: MessageObject | undefined,

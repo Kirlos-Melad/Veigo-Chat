@@ -4,7 +4,7 @@ import {
 	GraphQLNonNull,
 	GraphQLString,
 } from "graphql";
-import { ServiceError } from "@grpc/grpc-js";
+import { Metadata, ServiceError } from "@grpc/grpc-js";
 
 import GQLField from "@source/types/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
@@ -30,7 +30,7 @@ class ValidateAccessTokenGQLField extends GQLField<Args> {
 	}
 
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
-		async function (source: any, args: Args) {
+		async (source: any, args: Args, context: GQLContext) => {
 			try {
 				const result = await new Promise<EmptyObject>(
 					(resolve, reject) =>
@@ -39,6 +39,9 @@ class ValidateAccessTokenGQLField extends GQLField<Args> {
 							.Get("Authentication")
 							.ValidateAccessToken(
 								args,
+								this.mIsGuarded
+									? context.metadata!
+									: new Metadata(),
 								(error: ServiceError | null) =>
 									error
 										? reject(error)

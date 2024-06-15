@@ -4,7 +4,7 @@ import {
 	GraphQLNonNull,
 	GraphQLString,
 } from "graphql";
-import { ServiceError } from "@grpc/grpc-js";
+import { Metadata, ServiceError } from "@grpc/grpc-js";
 
 import GQLField from "@source/types/GQLField";
 import { ReadRequest } from "@source/types/generated/protos/chat/ProfilePackage/ReadRequest";
@@ -31,7 +31,7 @@ class ProfileReadGQLField extends GQLField<Args> {
 	}
 
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
-		async function (source: any, args: Args) {
+		async (source: any, args: Args, context: GQLContext) => {
 			try {
 				const result = await new Promise<ReadRequest>(
 					(resolve, reject) =>
@@ -40,6 +40,9 @@ class ProfileReadGQLField extends GQLField<Args> {
 							.Get("Profile")
 							.Read(
 								args,
+								this.mIsGuarded
+									? context.metadata!
+									: new Metadata(),
 								(
 									error: ServiceError | null,
 									response: ProfileObject | undefined,

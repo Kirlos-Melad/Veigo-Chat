@@ -4,7 +4,7 @@ import {
 	GraphQLNonNull,
 	GraphQLString,
 } from "graphql";
-import { ServiceError } from "@grpc/grpc-js";
+import { Metadata, ServiceError } from "@grpc/grpc-js";
 
 import GQLField from "@source/types/GQLField";
 import { UpdateRequest } from "@source/types/generated/protos/chat/RoomPackage/UpdateRequest";
@@ -35,7 +35,7 @@ class RoomUpdateGQLField extends GQLField<Args> {
 	}
 
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
-		async function (source: any, args: Args) {
+		async (source: any, args: Args, context: GQLContext) => {
 			try {
 				const result = await new Promise<UpdateRequest>(
 					(resolve, reject) =>
@@ -44,6 +44,9 @@ class RoomUpdateGQLField extends GQLField<Args> {
 							.Get("Room")
 							.Update(
 								args,
+								this.mIsGuarded
+									? context.metadata!
+									: new Metadata(),
 								(
 									error: ServiceError | null,
 									response: RoomObject | undefined,

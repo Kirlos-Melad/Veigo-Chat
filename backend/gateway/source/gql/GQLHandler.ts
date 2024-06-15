@@ -11,6 +11,7 @@ import DependencyLoader from "../utilities/DependencyLoader";
 import GQLField from "../types/GQLField";
 import Logger from "../utilities/Logger";
 import AbsolutePath from "../utilities/AbsolutePath";
+import { Metadata } from "@grpc/grpc-js";
 
 const queryFields: ThunkObjMap<GraphQLFieldConfig<any, any, any>> = {};
 const mutationFields: ThunkObjMap<GraphQLFieldConfig<any, any, any>> = {};
@@ -31,7 +32,7 @@ for (const { default: field } of loadedFields) {
 	}
 }
 
-type GQLContext = { authorizationHeader?: string; token?: string };
+type GQLContext = { authorizationHeader?: string; metadata?: Metadata };
 
 const GQLHandler = createHandler({
 	context(request, params) {
