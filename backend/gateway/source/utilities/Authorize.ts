@@ -9,7 +9,7 @@ async function Authorize(token?: string | null): Promise<string> {
 	}
 
 	const arr = token.split(" ");
-	if (arr.length !== 2 || arr[0] !== "SuperDoperUser") {
+	if (arr.length !== 2 || arr[0] !== "SuperDuperUser") {
 		throw new Error("Invalid authorization format");
 	}
 
