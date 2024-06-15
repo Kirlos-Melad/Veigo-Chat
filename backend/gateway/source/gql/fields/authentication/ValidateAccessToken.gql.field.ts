@@ -41,10 +41,7 @@ class ValidateAccessTokenGQLField extends GQLField<Args> {
 							this.mIsGuarded
 								? context.metadata!
 								: new Metadata(),
-							(
-								error: ServiceError | null,
-								_: EmptyObject | undefined,
-							) =>
+							(error: ServiceError | null) =>
 								error
 									? reject(error)
 									: resolve({ success: true }),

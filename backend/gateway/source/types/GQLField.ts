@@ -58,7 +58,7 @@ abstract class GQLField<T extends GraphQLFieldConfigArgumentMap> {
 			const metadata = new Metadata();
 			metadata.add("token", token);
 
-			await resolver(source, args, context, info);
+			return await resolver(source, args, context, info);
 		};
 		return guard as GraphQLFieldResolver<any, GQLContext, T, unknown>;
 	}

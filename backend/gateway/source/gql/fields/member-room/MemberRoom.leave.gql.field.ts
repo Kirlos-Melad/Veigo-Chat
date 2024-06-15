@@ -35,8 +35,8 @@ class UserRoomDeleteGQLField extends GQLField<Args> {
 				const result = await new Promise((resolve, reject) =>
 					GRPCServiceManagerRegistry.instance
 						.Get("Chat")
-						.Get("UserRoom")
-						.Delete(
+						.Get("MemberRoom")
+						.Leave(
 							args,
 							this.mIsGuarded
 								? context.metadata!

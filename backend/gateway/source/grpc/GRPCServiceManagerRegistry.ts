@@ -2,9 +2,9 @@ import GRPCServiceManager from "./GRPCServiceManager.ts";
 import Logger from "../utilities/Logger.ts";
 import { ProfileClient } from "../types/generated/protos/chat/ProfilePackage/Profile.ts";
 import { RoomClient } from "../types/generated/protos/chat/RoomPackage/Room.ts";
-import { UserRoomClient } from "../types/generated/protos/chat/UserRoomPackage/UserRoom.ts";
 import { MessageClient } from "../types/generated/protos/chat/MessagePackage/Message.ts";
 import { AuthenticationClient } from "../types/generated/protos/authentication/AuthenticationPackage/Authentication.ts";
+import { MemberRoomClient } from "../types/generated/protos/chat/MemberRoomPackage/MemberRoom.ts";
 
 type AuthenticationService = GRPCServiceManager<{
 	Authentication: AuthenticationClient;
@@ -13,7 +13,7 @@ type AuthenticationService = GRPCServiceManager<{
 type ChatService = GRPCServiceManager<{
 	Profile: ProfileClient;
 	Room: RoomClient;
-	UserRoom: UserRoomClient;
+	MemberRoom: MemberRoomClient;
 	Message: MessageClient;
 }>;
 

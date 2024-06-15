@@ -37,8 +37,8 @@ class MemberRoomAddGQLField extends GQLField<Args> {
 				const result = await new Promise((resolve, reject) =>
 					GRPCServiceManagerRegistry.instance
 						.Get("Chat")
-						.Get("UserRoom")
-						.Create(
+						.Get("MemberRoom")
+						.Add(
 							args,
 							this.mIsGuarded
 								? context.metadata!
