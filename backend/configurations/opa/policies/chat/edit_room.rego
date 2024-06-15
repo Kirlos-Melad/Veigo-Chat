@@ -1,8 +1,8 @@
-package send_message
+package edit_room
 
-import data.authz
+import data.authorizer
 
-default allow = false
+default allow := false
 
 allow {
     question := {
@@ -12,6 +12,7 @@ allow {
             "user": input.userId
         }
     }
-    result := authz.Ask(question)
+    result := authorizer.Ask(question)
+    # Allow the user to edit the room if they are a member
     result.member
 }

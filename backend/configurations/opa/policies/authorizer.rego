@@ -1,9 +1,9 @@
-package authz
+package authorizer
 
-import future.keywords.if
+import rego.v1
 
 # Define the default response structure
-default is = {
+default is := {
     "owner": false,
     "member": false,
     "configured": false
@@ -11,7 +11,7 @@ default is = {
 
 is := Ask(input)
 
-Ask(question) = output if {
+Ask(question) := output if {
     # Make a single HTTP request to the server with the input data
     response := http.send({
         "method": "post",
