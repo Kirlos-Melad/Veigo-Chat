@@ -32,15 +32,17 @@ class AuthorizationManager {
 	}
 
 	public async GetUserId(metadata: Metadata): Promise<string> {
+		let token: string | null;
 		try {
-			const token = (metadata.get("token")[0] as string).split(" ")[1];
-			const info = await JsonWebToken.Verify(token);
-
-			return info.subject!.accountId;
+			token = (metadata.get("token")[0] as string).split(" ")[1];
 		} catch (error) {
 			Logger.error(error);
 			throw new Error("Unauthorized action");
 		}
+
+		const info = await JsonWebToken.Verify(token);
+
+		return info.subject!.accountId;
 	}
 
 	private async Ask(policy: string, input: any): Promise<boolean> {
