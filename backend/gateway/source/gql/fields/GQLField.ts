@@ -56,7 +56,7 @@ abstract class GQLField<T extends GraphQLFieldConfigArgumentMap> {
 		) => {
 			const token = await Authorize(context.authorizationHeader);
 			context.metadata = new Metadata();
-			context.metadata.add("token", token);
+			context.metadata.set("token", token);
 
 			return await resolver(source, args, context, info);
 		};

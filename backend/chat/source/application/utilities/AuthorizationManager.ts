@@ -34,8 +34,8 @@ class AuthorizationManager {
 	public async GetUserId(metadata: Metadata): Promise<string> {
 		let token: string | null;
 		try {
-			token = (metadata.get("token")[0] as string).split(" ")[1];
-		} catch (error) {
+			token = metadata.get("token")[0].toString();
+	} catch (error) {
 			Logger.error(error);
 			throw new Error("Unauthorized action");
 		}
