@@ -14,13 +14,15 @@ message ReadRequest {
 }
 
 message UpdateRequest {
-    string id = 1;
+    string roomId = 1;
+    string messageId = 2;
 
-    string content = 2;
+    string content = 3;
 }
 
 message DeleteRequest {
-    string id = 1;
+    string roomId = 1;
+    string messageId = 2;
 }
 
 message MessageList {
