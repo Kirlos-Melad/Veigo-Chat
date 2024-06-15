@@ -9,9 +9,9 @@ import { Metadata, ServiceError } from "@grpc/grpc-js";
 import GQLField from "@source/types/GQLField";
 import { UpdateRequest } from "@source/types/generated/protos/chat/RoomPackage/UpdateRequest";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
-import { RoomObject } from "@source/types/generated/protos/chat/RoomPackage/RoomObject";
 import RoomGQLType, { RoomPrivacyGQLType } from "../../types/Room.gql.type";
 import { GQLContext } from "../../GQLHandler";
+import { RoomObject } from "@root/source/types/generated/protos/chat/ChatObjectsPackage/RoomObject";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	id: { type: new GraphQLNonNull(GraphQLString) },
@@ -37,22 +37,20 @@ class RoomUpdateGQLField extends GQLField<Args> {
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
 		async (source: any, args: Args, context: GQLContext) => {
 			try {
-				const result = await new Promise<UpdateRequest>(
-					(resolve, reject) =>
-						GRPCServiceManagerRegistry.instance
-							.Get("Chat")
-							.Get("Room")
-							.Update(
-								args,
-								this.mIsGuarded
-									? context.metadata!
-									: new Metadata(),
-								(
-									error: ServiceError | null,
-									response: RoomObject | undefined,
-								) =>
-									error ? reject(error) : resolve(response!),
-							),
+				const result = await new Promise((resolve, reject) =>
+					GRPCServiceManagerRegistry.instance
+						.Get("Chat")
+						.Get("Room")
+						.Update(
+							args,
+							this.mIsGuarded
+								? context.metadata!
+								: new Metadata(),
+							(
+								error: ServiceError | null,
+								response: RoomObject | undefined,
+							) => (error ? reject(error) : resolve(response!)),
+						),
 				);
 
 				return result;

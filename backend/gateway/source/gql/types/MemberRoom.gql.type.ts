@@ -1,13 +1,13 @@
 import { GraphQLObjectType, GraphQLString } from "graphql";
 
-const UserRoomGQLType = new GraphQLObjectType({
-	name: "UserRoom",
+const MemberRoomGQLType = new GraphQLObjectType({
+	name: "MemberRoom",
 	fields: {
-		userId: { type: GraphQLString },
+		memberId: { type: GraphQLString },
 		roomId: { type: GraphQLString },
 		createdAt: { type: GraphQLString },
 		updatedAt: { type: GraphQLString },
 	},
 });
 
-export default UserRoomGQLType;
+export default MemberRoomGQLType;

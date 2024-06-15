@@ -7,14 +7,12 @@ import {
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
 import GQLField from "@source/types/GQLField";
-import { DeleteRequest } from "@source/types/generated/protos/chat/UserRoomPackage/DeleteRequest";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
-import { UserRoomObject } from "@source/types/generated/protos/chat/UserRoomPackage/UserRoomObject";
-import UserRoomGQLType from "../../types/UserRoom.gql.type";
+import MemberRoomGQLType from "../../types/MemberRoom.gql.type";
 import { GQLContext } from "../../GQLHandler";
+import { MemberRoomObject } from "@root/source/types/generated/protos/chat/ChatObjectsPackage/MemberRoomObject";
 
 const Args: GraphQLFieldConfigArgumentMap = {
-	userId: { type: new GraphQLNonNull(GraphQLString) },
 	roomId: { type: new GraphQLNonNull(GraphQLString) },
 };
 
@@ -26,7 +24,7 @@ class UserRoomDeleteGQLField extends GQLField<Args> {
 			type: "mutation",
 			name: "DeleteUserRoom",
 			args: Args,
-			outputType: UserRoomGQLType,
+			outputType: MemberRoomGQLType,
 			isGuarded: true,
 		});
 	}
@@ -34,22 +32,20 @@ class UserRoomDeleteGQLField extends GQLField<Args> {
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
 		async (source: any, args: Args, context: GQLContext) => {
 			try {
-				const result = await new Promise<DeleteRequest>(
-					(resolve, reject) =>
-						GRPCServiceManagerRegistry.instance
-							.Get("Chat")
-							.Get("UserRoom")
-							.Delete(
-								args,
-								this.mIsGuarded
-									? context.metadata!
-									: new Metadata(),
-								(
-									error: ServiceError | null,
-									response: UserRoomObject | undefined,
-								) =>
-									error ? reject(error) : resolve(response!),
-							),
+				const result = await new Promise((resolve, reject) =>
+					GRPCServiceManagerRegistry.instance
+						.Get("Chat")
+						.Get("UserRoom")
+						.Delete(
+							args,
+							this.mIsGuarded
+								? context.metadata!
+								: new Metadata(),
+							(
+								error: ServiceError | null,
+								response: MemberRoomObject | undefined,
+							) => (error ? reject(error) : resolve(response!)),
+						),
 				);
 
 				return result;

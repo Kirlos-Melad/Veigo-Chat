@@ -1,4 +1,4 @@
-// Original file: source/types/generated/protos/chat/definitions/Room.proto
+// Original file: source/types/generated/protos/chat/definitions/ChatObjects.proto
 
 
 export interface RoomObject {

@@ -1,7 +1,6 @@
 import { ServiceError } from "@grpc/grpc-js";
 
 import GRPCServiceManagerRegistry from "../grpc/GRPCServiceManagerRegistry";
-import { EmptyObject } from "../types/generated/protos/authentication/AuthenticationPackage/EmptyObject";
 
 async function Authorize(token?: string | null): Promise<string> {
 	if (!token) {
@@ -13,13 +12,13 @@ async function Authorize(token?: string | null): Promise<string> {
 		throw new Error("Invalid authorization format");
 	}
 
-	await new Promise<EmptyObject>((resolve, reject) =>
+	await new Promise((resolve, reject) =>
 		GRPCServiceManagerRegistry.instance
 			.Get("Auth")
 			.Get("Authentication")
 			.ValidateAccessToken(
 				{ token: arr[1] },
-				(error: ServiceError | null, _) =>
+				(error: ServiceError | null) =>
 					error ? reject(error) : resolve({ success: true }),
 			),
 	);

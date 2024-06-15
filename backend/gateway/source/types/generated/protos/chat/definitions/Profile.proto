@@ -3,7 +3,6 @@ syntax = "proto3";
 package ProfilePackage;
 
 message CreateRequest {
-    string id = 1;
     string photoPath = 2;
     string name = 3;
     string about = 4;

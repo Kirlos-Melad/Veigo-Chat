@@ -2,11 +2,13 @@
 
 
 export interface UpdateRequest {
-  'id'?: (string);
+  'roomId'?: (string);
+  'messageId'?: (string);
   'content'?: (string);
 }
 
 export interface UpdateRequest__Output {
-  'id'?: (string);
+  'roomId'?: (string);
+  'messageId'?: (string);
   'content'?: (string);
 }

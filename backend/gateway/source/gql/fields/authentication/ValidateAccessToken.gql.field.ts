@@ -9,8 +9,8 @@ import { Metadata, ServiceError } from "@grpc/grpc-js";
 import GQLField from "@source/types/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import SuccessGQLType from "../../types/Success.gql.type";
-import { EmptyObject } from "@root/source/types/generated/protos/authentication/AuthenticationPackage/EmptyObject";
 import { GQLContext } from "../../GQLHandler";
+import { EmptyObject } from "@root/source/types/generated/protos/authentication/AuthenticationPackage/EmptyObject";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	token: { type: new GraphQLNonNull(GraphQLString) },
@@ -32,21 +32,23 @@ class ValidateAccessTokenGQLField extends GQLField<Args> {
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
 		async (source: any, args: Args, context: GQLContext) => {
 			try {
-				const result = await new Promise<EmptyObject>(
-					(resolve, reject) =>
-						GRPCServiceManagerRegistry.instance
-							.Get("Auth")
-							.Get("Authentication")
-							.ValidateAccessToken(
-								args,
-								this.mIsGuarded
-									? context.metadata!
-									: new Metadata(),
-								(error: ServiceError | null) =>
-									error
-										? reject(error)
-										: resolve({ success: true }),
-							),
+				const result = await new Promise((resolve, reject) =>
+					GRPCServiceManagerRegistry.instance
+						.Get("Auth")
+						.Get("Authentication")
+						.ValidateAccessToken(
+							args,
+							this.mIsGuarded
+								? context.metadata!
+								: new Metadata(),
+							(
+								error: ServiceError | null,
+								_: EmptyObject | undefined,
+							) =>
+								error
+									? reject(error)
+									: resolve({ success: true }),
+						),
 				);
 
 				return result;

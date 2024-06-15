@@ -7,6 +7,7 @@ export interface CreateRequest {
   'description'?: (string);
   'type'?: (string);
   'privacy'?: (string);
+  'members'?: (string)[];
 }
 
 export interface CreateRequest__Output {
@@ -15,4 +16,5 @@ export interface CreateRequest__Output {
   'description'?: (string);
   'type'?: (string);
   'privacy'?: (string);
+  'members'?: (string)[];
 }

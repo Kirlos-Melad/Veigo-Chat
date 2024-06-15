@@ -1,6 +1,7 @@
 import {
 	GraphQLFieldConfigArgumentMap,
 	GraphQLFieldResolver,
+	GraphQLList,
 	GraphQLNonNull,
 	GraphQLString,
 } from "graphql";
@@ -9,23 +10,24 @@ import { Metadata, ServiceError } from "@grpc/grpc-js";
 import GQLField from "@source/types/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { GQLContext } from "../../GQLHandler";
-import TokenGQLType from "../../types/Token.gql.type";
-import { TokenObject } from "@root/source/types/generated/protos/authentication/AuthenticationPackage/TokenObject";
+import { MemberRoomList } from "@root/source/types/generated/protos/chat/MemberRoomPackage/MemberRoomList";
+import MemberRoomGQLType from "../../types/MemberRoom.gql.type";
 
 const Args: GraphQLFieldConfigArgumentMap = {
-	token: { type: new GraphQLNonNull(GraphQLString) },
+	roomId: { type: new GraphQLNonNull(GraphQLString) },
+	membersId: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
 };
 
 type Args = typeof Args;
 
-class SignUpGQLField extends GQLField<Args> {
+class MemberRoomAddGQLField extends GQLField<Args> {
 	constructor() {
 		super({
 			type: "mutation",
-			name: "RefreshToken",
+			name: "AddMembersToRoom",
 			args: Args,
-			outputType: TokenGQLType,
-			isGuarded: false,
+			outputType: MemberRoomGQLType,
+			isGuarded: true,
 		});
 	}
 
@@ -34,16 +36,16 @@ class SignUpGQLField extends GQLField<Args> {
 			try {
 				const result = await new Promise((resolve, reject) =>
 					GRPCServiceManagerRegistry.instance
-						.Get("Auth")
-						.Get("Authentication")
-						.RefreshToken(
+						.Get("Chat")
+						.Get("UserRoom")
+						.Create(
 							args,
 							this.mIsGuarded
 								? context.metadata!
 								: new Metadata(),
 							(
 								error: ServiceError | null,
-								response: TokenObject | undefined,
+								response: MemberRoomList | undefined,
 							) => (error ? reject(error) : resolve(response!)),
 						),
 				);
@@ -55,4 +57,4 @@ class SignUpGQLField extends GQLField<Args> {
 		};
 }
 
-export default new SignUpGQLField();
+export default new MemberRoomAddGQLField();

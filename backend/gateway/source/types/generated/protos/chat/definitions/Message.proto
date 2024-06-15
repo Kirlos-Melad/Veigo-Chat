@@ -2,40 +2,36 @@ syntax = "proto3";
 
 package MessagePackage;
 
+import "./ChatObjects.proto";
+
 message CreateRequest {
     string roomId = 1;
-    string senderId = 2;
-    string content = 3;
-}
-
-message ReadRequest {
-    string id = 1;
-}
-
-message UpdateRequest {
-    string id = 1;
-
     string content = 2;
 }
 
-message DeleteRequest {
-    string id = 1;
+message ReadRequest {
+    string roomId = 1;
 }
 
-message MessageObject {
-    string id = 1;
+message UpdateRequest {
+    string roomId = 1;
+    string messageId = 2;
 
-    string roomId = 2;
-    string senderId = 3;
-    string content = 4;
+    string content = 3;
+}
 
-    string createdAt = 5;
-    string updatedAt = 6;
+message DeleteRequest {
+    string roomId = 1;
+    string messageId = 2;
+}
+
+message MessageList {
+    repeated MessageObject messages = 1;
 }
 
 service Message {
     rpc Create (CreateRequest) returns (MessageObject);
-    rpc Read (ReadRequest) returns (MessageObject);
+    rpc Read (ReadRequest) returns (MessageList);
     rpc Update (UpdateRequest) returns (MessageObject);
     rpc Delete (DeleteRequest) returns (MessageObject);
 }
