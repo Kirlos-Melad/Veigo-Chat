@@ -44,7 +44,7 @@ async function ValidateAccessTokenUseCase(
 		}
 
 		// Success
-		return { error: null, result: {} };
+		return { error: null, result: null };
 	} catch (error) {
 		return { error, result: null };
 	}
