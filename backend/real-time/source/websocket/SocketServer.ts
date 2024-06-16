@@ -137,27 +137,32 @@ class SocketServer extends EventEmitter<{}> {
 
 		this.mConnection = new websocket.server(configs);
 		this.mConnection.on("request", async (request) => {
-			if (request.origin !== Environments.ACCEPTED_ORIGIN) {
-				return request.reject(401, "Unauthorized origin");
+			try {
+				if (request.origin !== Environments.ACCEPTED_ORIGIN) {
+					throw new Error("Invalid origin");
+				}
+
+				const token: string = (
+					request.resourceURL.query["token"] as string
+				).split(" ")[1];
+
+				const { subject: data } = await JsonWebToken.Verify(token);
+				const connection = request.accept(null, request.origin);
+
+				const client = new SocketClient(data!.clientId, connection);
+				await client.LoadEvents();
+
+				if (!this.mUsers[data!.accountId]) {
+					this.mUsers[data!.accountId] = [client];
+				} else {
+					this.mUsers[data!.accountId].push(client);
+				}
+
+				this.mClients[client.id] = data!.accountId;
+			} catch (error) {
+				Logger.error(error);
+				return request.reject(401, "Unauthorized");
 			}
-
-			const token: string = (
-				request.resourceURL.query["token"] as string
-			).split(" ")[1];
-
-			const { subject: data } = await JsonWebToken.Verify(token);
-			const connection = request.accept(null, request.origin);
-
-			const client = new SocketClient(data!.clientId, connection);
-			await client.LoadEvents();
-
-			if (!this.mUsers[data!.accountId]) {
-				this.mUsers[data!.accountId] = [client];
-			} else {
-				this.mUsers[data!.accountId].push(client);
-			}
-
-			this.mClients[client.id] = data!.accountId;
 		});
 	}
 
