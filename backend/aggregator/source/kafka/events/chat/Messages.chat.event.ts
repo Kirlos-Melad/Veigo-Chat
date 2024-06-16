@@ -39,13 +39,17 @@ class MessagesChatEvent extends KafkaEvent<
 			owner: data.senderId,
 		});
 
-		const messageMembership = new MembershipModel({
-			type: "room-messages",
-			resource: data.roomId,
-			member: { $addToSet: data.id },
-		});
-
-		await Promise.all([messageOwnership.save(), messageMembership.save()]);
+		await Promise.all([
+			messageOwnership.save(),
+			MembershipModel.findOneAndUpdate(
+				{
+					type: "room-messages",
+					resource: data.roomId,
+				},
+				{ $addToSet: { members: data.id } },
+				{ upsert: true },
+			),
+		]);
 	}
 
 	private async HandleDelete(data: MessageEntity): Promise<void> {

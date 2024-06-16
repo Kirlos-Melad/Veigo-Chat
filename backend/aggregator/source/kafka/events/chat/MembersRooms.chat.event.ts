@@ -29,13 +29,14 @@ class MembersRoomsChatEvent extends KafkaEvent<
 
 	private async HandleCreate(data: MemberRoomEntity): Promise<void> {
 		Logger.information(`[CHAT_DB_PUBLIC_MEMBERS_ROOMS] CREATED=>`, data);
-		const userMembership = new MembershipModel({
-			type: "room-members",
-			resource: data.roomId,
-			member: { $addToSet: data.memberId },
-		});
-
-		await userMembership.save();
+		await MembershipModel.findOneAndUpdate(
+			{
+				type: "room-members",
+				resource: data.roomId,
+			},
+			{ $addToSet: { members: data.memberId } },
+			{ upsert: true },
+		);
 	}
 
 	private async HandleDelete(data: MemberRoomEntity): Promise<void> {
