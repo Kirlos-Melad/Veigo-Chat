@@ -10,6 +10,12 @@ import MemberRoomEntity from "../../entities/MemberRoom.entity";
 const roomRepository = new RoomRepository();
 const memberRoomRepository = new MemberRoomRepository();
 
+function AddRoomCreatorAsMember(creator: string, members?: string[]) {
+	if (!members) return [creator];
+	if (!members.includes(creator)) members.push(creator);
+	return members;
+}
+
 const Serializer = (data: CreateRequest) => RoomDto.Create(data);
 
 //? Anyone can create a room
@@ -27,12 +33,10 @@ const Handle = async (
 			type: data.type,
 			privacy: data.privacy!,
 		}),
-		data.members
-			? memberRoomRepository.BulkCreate(connection, {
-					roomId: data.name,
-					membersId: data.members,
-			  })
-			: ([] as MemberRoomEntity[]),
+		memberRoomRepository.BulkCreate(connection, {
+			roomId: data.name,
+			membersId: AddRoomCreatorAsMember(data.requesterId, data.members),
+		}),
 	]);
 
 	return {
