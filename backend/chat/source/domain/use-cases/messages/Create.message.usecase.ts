@@ -12,8 +12,8 @@ const Serializer = (data: CreateRequest) => MessageDto.Create(data);
 
 const Authorize = async (requesterId: string, data: CreateRequestSerialized) =>
 	await AuthorizationManager.instance.CanSendMessage(
-		requesterId,
 		data.roomId,
+		requesterId,
 	);
 
 const Handle = async (
