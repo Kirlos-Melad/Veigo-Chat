@@ -31,9 +31,9 @@ class MemberRoomRepository {
 	public async BulkCreate(
 		connection: DatabaseClient,
 		roomMembers: RoomMembers,
-	): Promise<MemberRoomEntity[]> {
+	): Promise<boolean> {
 		const { roomId, membersId } = roomMembers;
-		if (!membersId.length) return [];
+		if (!membersId.length) return true;
 
 		const roomIdx = membersId.length + 1;
 
@@ -50,11 +50,13 @@ class MemberRoomRepository {
 		`;
 
 		return (
-			await connection.Execute<MemberRoomEntity>(query, [
-				...membersId,
-				roomId,
-			])
-		).rows;
+			(
+				await connection.Execute<MemberRoomEntity>(query, [
+					...membersId,
+					roomId,
+				])
+			).rowCount == membersId.length
+		);
 	}
 
 	public async Read(

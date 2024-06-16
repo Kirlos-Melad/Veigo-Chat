@@ -5,10 +5,11 @@ import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseMan
 import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
 import RoomRepository from "@root/source/infrastructure/database/repositories/Room.repository";
 import { CreateRequest } from "@root/source/types/generated/protos/RoomPackage/CreateRequest";
-import MemberRoomEntity from "../../entities/MemberRoom.entity";
+import ProfileRepository from "@root/source/infrastructure/database/repositories/Profile.repository";
 
 const roomRepository = new RoomRepository();
 const memberRoomRepository = new MemberRoomRepository();
+const profilesRepository = new ProfileRepository();
 
 function AddRoomCreatorAsMember(creator: string, members?: string[]) {
 	if (!members) return [creator];
@@ -32,14 +33,20 @@ const Handle = async (
 		type: data.type,
 		privacy: data.privacy!,
 	});
-	const members = await memberRoomRepository.BulkCreate(connection, {
+
+	const members = AddRoomCreatorAsMember(data.requesterId, data.members);
+
+	const success = await memberRoomRepository.BulkCreate(connection, {
 		roomId: room.id,
-		membersId: AddRoomCreatorAsMember(data.requesterId, data.members),
+		membersId: members,
 	});
+
+	if (!success)
+		throw new Error("Something happened while adding members to the room");
 
 	return {
 		information: room,
-		members: members,
+		members: await profilesRepository.BulkRead(connection, members),
 	};
 };
 

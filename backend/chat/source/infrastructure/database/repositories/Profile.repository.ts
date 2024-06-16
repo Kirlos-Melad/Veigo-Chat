@@ -8,6 +8,7 @@ type ProfileCreate = Optional<
 >;
 
 type ProfileRead = Pick<ProfileEntity, "id">;
+type ProfilesRead = ProfileEntity["id"][];
 
 type ProfileUpdate = Partial<
 	Pick<ProfileEntity, "photoPath" | "name" | "about">
@@ -43,6 +44,19 @@ class ProfileRepository {
         `;
 
 		return (await connection.Execute<ProfileEntity>(query)).rows[0];
+	}
+
+	public async BulkRead(
+		connection: DatabaseClient,
+		filter: ProfilesRead,
+	): Promise<ProfileEntity[]> {
+		const query = `
+			SELECT *
+			FROM profiles
+			WHERE id = ANY($1);
+		`;
+
+		return (await connection.Execute<ProfileEntity>(query, [filter])).rows;
 	}
 
 	public async Update(

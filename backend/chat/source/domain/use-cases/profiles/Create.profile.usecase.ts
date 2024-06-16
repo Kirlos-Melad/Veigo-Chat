@@ -9,7 +9,7 @@ const repository = new ProfileRepository();
 
 const Serializer = (data: CreateRequest) => ProfileDto.Create(data);
 
-//? Anyone can create a profile
+//? Anyone can create a profile to himself
 const Authorize = async () => true;
 
 const Handle = async (
