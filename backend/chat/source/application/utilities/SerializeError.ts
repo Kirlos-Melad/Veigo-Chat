@@ -3,10 +3,13 @@ import pg from "pg";
 
 const ERROR_NAME = {
 	INTERNAL_SERVER_ERROR: "Internal Server Error",
+	DATA_INTEGRITY_ERROR: "Data Integrity Error",
 };
 
 const DB_ERROR_CODE = {
 	SYNTAX_ERROR: "42601",
+	FOREIGN_KEY_VIOLATION: "23503",
+	DATA_ALREADY_EXISTS: "23505",
 };
 
 class ErrorSerializer {
@@ -24,6 +27,17 @@ class ErrorSerializer {
 			return {
 				name: ERROR_NAME.INTERNAL_SERVER_ERROR,
 				message: "An internal error occurred. Please try again later.",
+			};
+		} else if (error.code === DB_ERROR_CODE.FOREIGN_KEY_VIOLATION) {
+			return {
+				name: ERROR_NAME.DATA_INTEGRITY_ERROR,
+				message:
+					"A data integrity error occurred. Please make sure the data is correct and try again.",
+			};
+		} else if(error.code === DB_ERROR_CODE.DATA_ALREADY_EXISTS) {
+			return {
+				name: ERROR_NAME.DATA_INTEGRITY_ERROR,
+				message: "The data you are trying to add already exists.",
 			};
 		}
 		// TODO: Implement serialization for DatabaseError
