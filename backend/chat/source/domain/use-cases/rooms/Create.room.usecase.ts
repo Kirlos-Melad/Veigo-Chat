@@ -25,19 +25,17 @@ const Handle = async (
 	connection: DatabaseClient,
 	data: CreateRequestSerialized & { requesterId: string },
 ) => {
-	const [room, members] = await Promise.all([
-		roomRepository.Create(connection, {
-			photoPath: data.photoPath,
-			name: data.name,
-			description: data.description,
-			type: data.type,
-			privacy: data.privacy!,
-		}),
-		memberRoomRepository.BulkCreate(connection, {
-			roomId: data.name,
-			membersId: AddRoomCreatorAsMember(data.requesterId, data.members),
-		}),
-	]);
+	const room = await roomRepository.Create(connection, {
+		photoPath: data.photoPath,
+		name: data.name,
+		description: data.description,
+		type: data.type,
+		privacy: data.privacy!,
+	});
+	const members = await memberRoomRepository.BulkCreate(connection, {
+		roomId: room.id,
+		membersId: AddRoomCreatorAsMember(data.requesterId, data.members),
+	});
 
 	return {
 		information: room,
