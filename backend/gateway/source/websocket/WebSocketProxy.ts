@@ -36,11 +36,17 @@ const WebSocketProxy = createProxyMiddleware({
 					responseHeaders.join("\r\n") +
 					"\r\n\r\n" +
 					stringifiedError;
-				socket.write(response, (err) => {
-					if (err) Logger.warning("Writing socket error failed", err);
-					socket.destroy();
+				return await new Promise((resolve, reject) => {
+					socket.write(response, (err) => {
+						if (err) {
+							Logger.warning("Writing socket error failed", err);
+						}
+
+						// Destroy the socket & resolve the promise to prevent the proxy from forwarding the request
+						socket.destroy();
+						resolve();
+					});
 				});
-				return;
 			}
 		},
 	},
