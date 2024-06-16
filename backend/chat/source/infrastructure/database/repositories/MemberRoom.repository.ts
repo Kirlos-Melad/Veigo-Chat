@@ -18,7 +18,7 @@ class MemberRoomRepository {
 		const valuesString = values.map((_, idx) => `$${idx + 1}`).join(", ");
 
 		const query = `
-            INSERT INTO user_rooms
+            INSERT INTO members_rooms
             (${fieldsString})
             VALUES(${valuesString})
             RETURNING *;
@@ -42,7 +42,7 @@ class MemberRoomRepository {
 			.join(",\n");
 
 		const query = `
-			INSERT INTO user_rooms
+			INSERT INTO members_rooms
 			("memberId", "roomId")
 			VALUES
 			${valuesString}
@@ -65,7 +65,7 @@ class MemberRoomRepository {
 
 		const query = `
             SELECT *
-            FROM user_rooms
+            FROM members_rooms
             WHERE
 			${filter.memberId ? `"memberId" = ${filter.memberId}` : ""}
 			${filter.roomId ? `"roomId" = ${filter.roomId}` : ""}
@@ -80,7 +80,7 @@ class MemberRoomRepository {
 		filter: RoomMember,
 	): Promise<MemberRoomEntity> {
 		const query = `
-			DELETE FROM user_rooms
+			DELETE FROM members_rooms
 			WHERE "memberId" = ${filter.memberId}
 			RETURNING *;
 		`;
