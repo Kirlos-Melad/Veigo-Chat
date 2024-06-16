@@ -10,17 +10,17 @@ allow {
             "type": "room-members",
             "resource": input.roomId,
             "user": input.userId
-        }
+        },
         "ownership": {
             "type": "message",
             "resource": input.messageId,
             "user": input.userId
         }
     }
-    result := authorizer.Ask(question)
+    is := authorizer.Ask(question)
 
     # Allow the user to edit the message if they are a member of the room
-    answer.member == true
+    is.member == true
     # Allow the user to edit the message if the room is configured to allow read by anyone
-    answer.configured == true
+    is.configured == true
 }

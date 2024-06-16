@@ -18,11 +18,11 @@ allow {
 			"value": "public"
 		}
     }
-    result := authorizer.Ask(question)
-	IsAllowed(result)
+    answer := authorizer.Ask(question)
+	IsAllowed(answer)
 }
 
 # Allow the user to read the room if they are a member of the room
-IsAllowed(answer) { answer.member }
+IsAllowed(is) { is.member }
 # Allow the user to read the room if the room is configured to allow read by anyone
-IsAllowed(answer) { answer.configured }
+IsAllowed(is) { is.configured }

@@ -12,6 +12,6 @@ allow {
             "user": input.userId
         }
     }
-    result := authorizer.Ask(question)
-    result.member
+    is := authorizer.Ask(question)
+    is.member
 }

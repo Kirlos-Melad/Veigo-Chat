@@ -12,7 +12,7 @@ allow {
             "user": input.userId
         }
     }
-    result := authorizer.Ask(question)
+    is := authorizer.Ask(question)
     # Allow the user to send a message if they are a member of the room
-    result.member
+    is.member
 }

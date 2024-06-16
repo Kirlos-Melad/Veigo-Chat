@@ -12,7 +12,7 @@ allow {
             "user": input.userId
         }
     }
-    result := authorizer.Ask(question)
+    is := authorizer.Ask(question)
     # Allow the user to edit the room if they are a member
-    result.member
+    is.member
 }
