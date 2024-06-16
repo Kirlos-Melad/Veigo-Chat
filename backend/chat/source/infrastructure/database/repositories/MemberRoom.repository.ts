@@ -38,7 +38,7 @@ class MemberRoomRepository {
 		const roomIdx = membersId.length + 1;
 
 		const valuesString = membersId
-			.map((_, idx) => `($${roomIdx}, $${idx + 1})`)
+			.map((_, idx) => `($${idx + 1}), $${roomIdx}`)
 			.join(",\n");
 
 		const query = `
