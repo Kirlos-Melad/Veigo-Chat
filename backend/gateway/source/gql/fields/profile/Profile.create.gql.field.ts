@@ -13,7 +13,6 @@ import ProfileGQLType from "../../types/Profile.gql.type";
 import { GQLContext } from "../../GQLHandler";
 
 const Args: GraphQLFieldConfigArgumentMap = {
-	id: { type: new GraphQLNonNull(GraphQLString) },
 	photoPath: { type: GraphQLString },
 	name: { type: new GraphQLNonNull(GraphQLString) },
 	about: { type: GraphQLString },
