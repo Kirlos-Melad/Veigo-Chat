@@ -87,7 +87,7 @@ class DeviceRepository implements IDeviceRepository {
 			.join(", ");
 
 		const setClause = updateArrays.fields
-			.map((key) => `"${key}" = EXCLUDED.${key}`)
+			.map((key) => `${key} = EXCLUDED.${key}`)
 			.join(", ");
 
 		const query = `
