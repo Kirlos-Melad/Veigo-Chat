@@ -1,9 +1,15 @@
 import { ZodError } from "zod";
 import pg from "pg";
+import Logger from "./Logger";
 
-const ERROR_NAME = {
-	INTERNAL_SERVER_ERROR: "Internal Server Error",
-	DATA_INTEGRITY_ERROR: "Data Integrity Error",
+const ERROR = {
+	INTERNAL_SERVER_ERROR: {
+		name: "Internal Server Error",
+		message: "An internal error occurred. Please try again later.",
+	},
+	DATA_INTEGRITY_ERROR: {
+		name: "Data Integrity Error",
+	},
 };
 
 const DB_ERROR_CODE = {
@@ -24,19 +30,16 @@ class ErrorSerializer {
 		const error = this.mError as pg.DatabaseError;
 
 		if (error.code === DB_ERROR_CODE.SYNTAX_ERROR) {
-			return {
-				name: ERROR_NAME.INTERNAL_SERVER_ERROR,
-				message: "An internal error occurred. Please try again later.",
-			};
+			return ERROR.INTERNAL_SERVER_ERROR;
 		} else if (error.code === DB_ERROR_CODE.FOREIGN_KEY_VIOLATION) {
 			return {
-				name: ERROR_NAME.DATA_INTEGRITY_ERROR,
+				name: ERROR.DATA_INTEGRITY_ERROR.name,
 				message:
 					"A data integrity error occurred. Please make sure the data is correct and try again.",
 			};
-		} else if(error.code === DB_ERROR_CODE.DATA_ALREADY_EXISTS) {
+		} else if (error.code === DB_ERROR_CODE.DATA_ALREADY_EXISTS) {
 			return {
-				name: ERROR_NAME.DATA_INTEGRITY_ERROR,
+				name: ERROR.DATA_INTEGRITY_ERROR.name,
 				message: "The data you are trying to add already exists.",
 			};
 		}
@@ -66,7 +69,8 @@ class ErrorSerializer {
 		} else if (this.mError instanceof Error) {
 			this.mSerializedError = this.ErrorInstanceSerializer();
 		} else {
-			throw new Error("Unable to serialize error");
+			Logger.error("Unable to serialize error", this.mError);
+			this.mSerializedError = ERROR.INTERNAL_SERVER_ERROR;
 		}
 	}
 
