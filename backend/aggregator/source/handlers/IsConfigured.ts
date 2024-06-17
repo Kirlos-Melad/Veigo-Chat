@@ -11,6 +11,8 @@ async function IsConfigured(
 	setting: typeof ConfigurationSchema._output,
 ): Promise<boolean> {
 	try {
+		if (setting.paths.length !== setting.values.length) return false;
+
 		const result = await ConfigurationModel.findOne({
 			type: setting.type,
 			resource: setting.resource,
@@ -22,10 +24,10 @@ async function IsConfigured(
 			return false;
 		}
 
-		return DeepEqual(
-			setting.value,
-			GetNestedValue(result.settings, setting.path),
-		);
+		return setting.paths.every((path, index) =>{
+			const value = GetNestedValue(result.settings, path);
+			return DeepEqual(value, setting.values[index]);
+		})
 	} catch (error) {
 		Logger.error(`[IsConfigured] Error: `, error);
 		return false;

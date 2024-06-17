@@ -19,8 +19,8 @@ const MemberSchema = z.object({
 const ConfigurationSchema = z.object({
 	type: z.enum(ConfigurationsTypes),
 	resource: z.string(),
-	path: z.string(),
-	value: z.any(),
+	paths: z.array(z.string()),
+	values: z.array(z.any()),
 });
 
 // Define the main schema for the request body
