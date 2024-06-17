@@ -35,14 +35,22 @@ class AuthorizationManager {
 		let token: string | null;
 		try {
 			token = metadata.get("token")[0].toString();
-	} catch (error) {
+		} catch (error) {
 			Logger.error(error);
 			throw new Error("Unauthorized action");
 		}
 
-		const info = await JsonWebToken.Verify(token);
+		const { subject } = await JsonWebToken.Verify(token);
 
-		return info.subject!.accountId;
+		const isTokenValid = await this.IsTokenValid(
+			JsonWebToken.NormalizeSubject(subject!),
+		);
+
+		if (!isTokenValid) {
+			throw new Error("Unauthorized action");
+		}
+
+		return subject!.accountId;
 	}
 
 	private async Ask(policy: string, input: any): Promise<boolean> {
@@ -57,6 +65,10 @@ class AuthorizationManager {
 			Logger.error(`${this.mConnection}/v1/data/${policy}`, input, error);
 			return false;
 		}
+	}
+
+	private async IsTokenValid(subject: string): Promise<boolean> {
+		return await this.Ask("use_token", { subject: subject });
 	}
 
 	public async CanReadRoom(room: string, user: string): Promise<boolean> {

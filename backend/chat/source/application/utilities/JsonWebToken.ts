@@ -15,6 +15,10 @@ class JsonWebToken {
 		return { accountId: arr[0], clientId: arr[1] };
 	}
 
+	public NormalizeSubject(subject: Subject): string {
+		return `${subject.accountId}:${subject.clientId}`;
+	}
+
 	public async Verify(jwt: string) {
 		const secretKeyObject = crypto.createSecretKey(
 			new TextEncoder().encode(Environments.JWT_SECRET_KEY),
