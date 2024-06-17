@@ -29,22 +29,16 @@ class AuthorizationManager {
 		return AuthorizationManager.sInstance;
 	}
 
-	private async Ask(policy: string, question: any): Promise<boolean> {
+	private async Ask(policy: string, input: any): Promise<boolean> {
 		try {
 			const response = await axios.post(
 				`${this.mConnection}/v1/data/${policy}`,
-				{
-					input: question,
-				},
+				{ input },
 			);
 
 			return response.data.result && response.data.result.allow;
 		} catch (error) {
-			Logger.error(
-				`${this.mConnection}/v1/data/${policy}`,
-				question,
-				error,
-			);
+			Logger.error(`${this.mConnection}/v1/data/${policy}`, input, error);
 			return false;
 		}
 	}

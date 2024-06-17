@@ -5,6 +5,7 @@ import ServerManager, {
 	SocketClientEvents,
 } from "../SocketServer";
 import AuthorizationManager from "@root/source/utilities/AuthorizationManager";
+import SocketServer from "../SocketServer";
 
 class ChatMessageEvent extends Event<SocketClientEvents, "JOIN_ROOM"> {
 	public constructor() {
@@ -15,9 +16,10 @@ class ChatMessageEvent extends Event<SocketClientEvents, "JOIN_ROOM"> {
 		connection: SocketClient,
 		data: { name: string },
 	) => {
+		const userId = SocketServer.instance.GetUser(connection.id);
 		if (
 			!(await AuthorizationManager.instance.CanJoinRoom(
-				connection.id,
+				userId,
 				data.name,
 			))
 		)
@@ -25,7 +27,9 @@ class ChatMessageEvent extends Event<SocketClientEvents, "JOIN_ROOM"> {
 				reason: `Unauthorized to join ${data.name}`,
 			});
 		ServerManager.instance.JoinRoom(connection, data.name);
-		Logger.information(`[${connection.id}]=> Joined ${data.name}`);
+		Logger.information(
+			`[${userId}:${connection.id}]=> Joined ${data.name}`,
+		);
 	};
 }
 

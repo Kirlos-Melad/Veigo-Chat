@@ -177,6 +177,10 @@ class SocketServer extends EventEmitter<{}> {
 		return SocketServer.sInstance;
 	}
 
+	public GetUser(clientId: string) {
+		return this.mClients[clientId];
+	}
+
 	public JoinRoom(connection: SocketClient, roomName: string) {
 		if (!this.mRooms[roomName]) {
 			this.mRooms[roomName] = [connection.id];
