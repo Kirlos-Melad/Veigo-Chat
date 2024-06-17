@@ -14,8 +14,8 @@ allow {
 		"configuration": {
 			"type": "room",
 			"resource": input.roomId,
-			"path": "privacy",
-			"value": "public"
+			"path": ["privacy"],
+			"value": ["public"]
 		}
     }
     answer := authorizer.Ask(question)
