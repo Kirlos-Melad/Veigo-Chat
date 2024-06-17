@@ -1,7 +1,6 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
 
 import Environments from "../configurations/Environments";
-import Logger from "../utilities/Logger";
 import Authorize from "../utilities/Authorize";
 import ErrorSerializer from "../utilities/SerializeError";
 
