@@ -26,27 +26,7 @@ const WebSocketProxy = createProxyMiddleware({
 					errorSerializer.serializedError,
 				);
 
-				const responseHeaders = [
-					"HTTP/1.1 401 Unauthorized",
-					"Content-Type: application/json",
-					"Content-Length: " + Buffer.byteLength(stringifiedError),
-					"Connection: close",
-				];
-				const response =
-					responseHeaders.join("\r\n") +
-					"\r\n\r\n" +
-					stringifiedError;
-				return await new Promise((resolve, reject) => {
-					socket.write(response, (err) => {
-						if (err) {
-							Logger.warning("Writing socket error failed", err);
-						}
-
-						// Destroy the socket & resolve the promise to prevent the proxy from forwarding the request
-						socket.destroy();
-						resolve();
-					});
-				});
+				return proxyRequest.destroy(new Error(stringifiedError));
 			}
 		},
 	},
