@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import Logger from "./Logger";
+import JsonWebToken, { Subject } from "./JsonWebToken";
 
 class AuthorizationManager {
 	private static sInstance: AuthorizationManager;
@@ -29,6 +30,22 @@ class AuthorizationManager {
 		return AuthorizationManager.sInstance;
 	}
 
+	public async GetUserId(auth: string): Promise<Subject> {
+		const token: string = auth.split(" ")[1];
+
+		const { subject } = await JsonWebToken.Verify(token);
+
+		const isTokenValid = await this.IsTokenValid(
+			JsonWebToken.NormalizeSubject(subject!),
+		);
+
+		if (!isTokenValid) {
+			throw new Error("Unauthorized action");
+		}
+
+		return subject!;
+	}
+
 	private async Ask(policy: string, input: any): Promise<boolean> {
 		try {
 			const response = await axios.post(
@@ -41,6 +58,10 @@ class AuthorizationManager {
 			Logger.error(`${this.mConnection}/v1/data/${policy}`, input, error);
 			return false;
 		}
+	}
+
+	private async IsTokenValid(subject: string): Promise<boolean> {
+		return await this.Ask("use_token", { subject: subject });
 	}
 
 	public async CanJoinRoom(user: string, room: string): Promise<boolean> {

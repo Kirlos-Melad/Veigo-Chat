@@ -12,7 +12,9 @@ class ChatMessageEvent extends Event<SocketClientEvents, "LEAVE_ROOM"> {
 
 	public listener = (connection: SocketClient, data: { name: string }) => {
 		ServerManager.instance.LeaveRoom(connection, data.name);
-		Logger.information(`[${connection.id}]=> Left ${data.name}`);
+		Logger.information(
+			`[${connection.userId}${connection.id}]=> Left ${data.name}`,
+		);
 	};
 }
 

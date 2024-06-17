@@ -16,10 +16,9 @@ class ChatMessageEvent extends Event<SocketClientEvents, "JOIN_ROOM"> {
 		connection: SocketClient,
 		data: { name: string },
 	) => {
-		const userId = SocketServer.instance.GetUser(connection.id);
 		if (
 			!(await AuthorizationManager.instance.CanJoinRoom(
-				userId,
+				connection.userId,
 				data.name,
 			))
 		)
@@ -28,7 +27,7 @@ class ChatMessageEvent extends Event<SocketClientEvents, "JOIN_ROOM"> {
 			});
 		ServerManager.instance.JoinRoom(connection, data.name);
 		Logger.information(
-			`[${userId}:${connection.id}]=> Joined ${data.name}`,
+			`[${connection.userId}:${connection.id}]=> Joined ${data.name}`,
 		);
 	};
 }

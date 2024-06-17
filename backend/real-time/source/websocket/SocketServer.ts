@@ -7,6 +7,7 @@ import Logger from "@source/utilities/Logger";
 import EventEmitter from "../types/EventEmitter";
 import JsonWebToken from "../utilities/JsonWebToken";
 import Environments from "../configurations/Environments";
+import AuthorizationManager from "../utilities/AuthorizationManager";
 
 type ClientToServer = {
 	JOIN_ROOM: [connection: SocketClient, { name: string }];
@@ -63,11 +64,17 @@ const ParseMessage = (message: string, schema: z.ZodObject<any>) => {
 class SocketClient extends EventEmitter<SocketClientEvents> {
 	private mConnection: websocket.connection;
 	private mId: string;
+	private mUserId: string;
 
-	public constructor(id: string, connection: websocket.connection) {
+	public constructor(
+		id: string,
+		userId: string,
+		connection: websocket.connection,
+	) {
 		super(path.join(AbsolutePath(import.meta.url), "client-events"));
 
 		this.mId = id;
+		this.mUserId = userId;
 
 		this.mConnection = connection;
 		this.mConnection.on("close", () =>
@@ -105,6 +112,10 @@ class SocketClient extends EventEmitter<SocketClientEvents> {
 		return this.mId;
 	}
 
+	public get userId() {
+		return this.mUserId;
+	}
+
 	public get isConnected() {
 		return this.mConnection.connected;
 	}
@@ -124,14 +135,12 @@ class SocketServer extends EventEmitter<{}> {
 	private static sInstance: SocketServer;
 
 	private mConnection: websocket.server;
-	private mUsers: Record<string, SocketClient[]>; // user, conn[]
-	private mClients: Record<string, string>; // conn, user
-	private mRooms: Record<string, string[]>; // room, conn[]
+	private mClients: Record<string, SocketClient>; // connId, conn
+	private mRooms: Record<string, string[]>; // roomId, connId[]
 
 	private constructor(configs: websocket.IServerConfig) {
 		super(path.join(AbsolutePath(import.meta.url), "server-events"));
 
-		this.mUsers = {};
 		this.mClients = {};
 		this.mRooms = {};
 
@@ -142,23 +151,19 @@ class SocketServer extends EventEmitter<{}> {
 					throw new Error("Invalid origin");
 				}
 
-				const token: string = (
-					request.resourceURL.query["token"] as string
-				).split(" ")[1];
-
-				const { subject: data } = await JsonWebToken.Verify(token);
+				const data = await AuthorizationManager.instance.GetUserId(
+					request.resourceURL.query["token"] as string,
+				);
 				const connection = request.accept(null, request.origin);
 
-				const client = new SocketClient(data!.clientId, connection);
+				const client = new SocketClient(
+					data.clientId,
+					data.accountId,
+					connection,
+				);
 				await client.LoadEvents();
 
-				if (!this.mUsers[data!.accountId]) {
-					this.mUsers[data!.accountId] = [client];
-				} else {
-					this.mUsers[data!.accountId].push(client);
-				}
-
-				this.mClients[client.id] = data!.accountId;
+				this.mClients[client.id] = client;
 			} catch (error) {
 				Logger.error(error);
 				return request.reject(401, "Unauthorized");
@@ -175,10 +180,6 @@ class SocketServer extends EventEmitter<{}> {
 
 	public static get instance() {
 		return SocketServer.sInstance;
-	}
-
-	public GetUser(clientId: string) {
-		return this.mClients[clientId];
 	}
 
 	public JoinRoom(connection: SocketClient, roomName: string) {
@@ -203,9 +204,7 @@ class SocketServer extends EventEmitter<{}> {
 		const clientsId = this.mRooms[room];
 
 		for (const cid of clientsId) {
-			this.mUsers[this.mClients[cid]].forEach((client) =>
-				client.Send("MESSAGE", ...payload),
-			);
+			this.mClients[cid].Send("MESSAGE", ...payload);
 		}
 	}
 }
