@@ -200,10 +200,10 @@ class SocketServer extends EventEmitter<{}> {
 	public Send(room: string, ...payload: ServerToClient["MESSAGE"]) {
 		if (!this.mRooms[room]) return;
 
-		const users = this.mRooms[room];
+		const clientsId = this.mRooms[room];
 
-		for (const user in users) {
-			this.mUsers[user].forEach((client) =>
+		for (const cid of clientsId) {
+			this.mUsers[this.mClients[cid]].forEach((client) =>
 				client.Send("MESSAGE", ...payload),
 			);
 		}
