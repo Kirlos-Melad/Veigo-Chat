@@ -202,7 +202,7 @@ class SocketServer extends EventEmitter<{}> {
 
 		const users = this.mRooms[room];
 
-		for (const user of users) {
+		for (const user in users) {
 			this.mUsers[user].forEach((client) =>
 				client.Send("MESSAGE", ...payload),
 			);
