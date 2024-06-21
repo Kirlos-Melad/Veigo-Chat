@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { Dto } from "../../types/Dto";
+import { Dto } from "./Dto";
 
-type RefreshToken = { token: string };
+type RefreshTokenSerialized = { token: string };
 
-class RefreshTokenDto extends Dto<RefreshToken> {
+class RefreshTokenDto extends Dto<RefreshTokenSerialized> {
 	constructor(data: any) {
 		super(
 			data,
@@ -15,4 +15,4 @@ class RefreshTokenDto extends Dto<RefreshToken> {
 }
 
 export default RefreshTokenDto;
-export type { RefreshToken };
+export type { RefreshTokenSerialized };

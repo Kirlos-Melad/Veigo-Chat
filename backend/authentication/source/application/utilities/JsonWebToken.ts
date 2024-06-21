@@ -29,6 +29,10 @@ class JsonWebToken {
 		return { accountId: arr[0], clientId: arr[1] };
 	}
 
+	public NormalizeSubject(subject: Subject): string {
+		return this.StringifySubject(subject);
+	}
+
 	private async Generate(payload: Payload) {
 		const { algorithm, encryption, issuer, duration } =
 			Environments.JWT_CONFIGURATION;
@@ -88,7 +92,7 @@ class JsonWebToken {
 		return {
 			id: payload.jti,
 			subject: this.ParseSubject(payload.sub),
-		}
+		};
 	}
 
 	public async VerifyAccessToken(jwt: string) {

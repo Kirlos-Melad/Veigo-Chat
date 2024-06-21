@@ -1,16 +1,16 @@
 import ChangePasswordDto, { ChangePassword } from "./ChangePassword.dto";
 import DeleteAccountDto, { DeleteAccount } from "./DeleteAccount.dto";
 import ForgetPasswordDto, { ForgetPassword } from "./ForgetPassword.dto";
-import RefreshTokenDto, { RefreshToken } from "./RefreshToken.dto";
+import RefreshTokenDto, { RefreshTokenSerialized } from "./RefreshToken.dto";
 import ResetPasswordDto, { ResetPassword } from "./ResetPassword.dto";
 import SendEmailVerificationDto, {
 	SendEmailVerification,
 } from "./SendEmailVerification.dto";
-import SignInDto, { SignIn } from "./SignIn.dto";
+import SignInDto, { SignInSerialized } from "./SignIn.dto";
 import SignOutDto, { SignOut } from "./SignOut.dto";
-import SignUpDto, { SignUp } from "./SignUp.dto";
+import SignUpDto, { SignUpSerialized } from "./SignUp.dto";
 import ValidateAccessTokenDto, {
-	ValidateAccessToken,
+	ValidateAccessTokenSerialized,
 } from "./ValidateAccessToken.dto";
 import ValidateOTPDto, { ValidateOTP } from "./ValidateOTP.dto";
 import VerifyEmailDto, { VerifyEmail } from "./VerifyEmail.dto";
@@ -67,16 +67,16 @@ class AuthenticationDto {
 
 export default AuthenticationDto;
 export type {
-	SignUp,
-	SignIn,
+	SignUpSerialized,
+	SignInSerialized,
 	ChangePassword,
 	ForgetPassword,
 	ResetPassword,
 	SendEmailVerification,
 	VerifyEmail,
-	ValidateAccessToken,
+	ValidateAccessTokenSerialized,
 	ValidateOTP,
-	RefreshToken,
+	RefreshTokenSerialized,
 	SignOut,
 	DeleteAccount,
 };

@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { Dto } from "../../types/Dto";
+import { Dto } from "./Dto";
 import AccountEntity from "@root/source/domain/entities/Account.entity";
 import DeviceEntity from "@root/source/domain/entities/Device.entity";
 import PasswordHandler from "../utilities/PasswordHandler";
 
-type SignIn = Pick<AccountEntity, "email" | "password"> &
+type SignInSerialized = Pick<AccountEntity, "email" | "password"> &
 	Pick<DeviceEntity, "clientId">;
 
-class SignInDto extends Dto<SignIn> {
+class SignInDto extends Dto<SignInSerialized> {
 	constructor(data: any) {
 		super(
 			data,
@@ -21,4 +21,4 @@ class SignInDto extends Dto<SignIn> {
 }
 
 export default SignInDto;
-export type { SignIn };
+export type { SignInSerialized };

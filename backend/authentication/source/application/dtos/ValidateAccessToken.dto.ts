@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { Dto } from "../../types/Dto";
+import { Dto } from "./Dto";
 
-type ValidateAccessToken = { token: string };
+type ValidateAccessTokenSerialized = { token: string };
 
-class ValidateAccessTokenDto extends Dto<ValidateAccessToken> {
+class ValidateAccessTokenDto extends Dto<ValidateAccessTokenSerialized> {
 	constructor(data: any) {
 		super(
 			data,
@@ -15,4 +15,4 @@ class ValidateAccessTokenDto extends Dto<ValidateAccessToken> {
 }
 
 export default ValidateAccessTokenDto;
-export type { ValidateAccessToken };
+export type { ValidateAccessTokenSerialized };

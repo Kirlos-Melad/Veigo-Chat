@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { Dto } from "../../types/Dto";
+import { Dto } from "./Dto";
 import PasswordHandler from "../utilities/PasswordHandler";
 
 type ResetPassword = {

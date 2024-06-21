@@ -2,49 +2,83 @@ import { AuthenticationHandlers } from "@root/source/types/generated/protos/Auth
 import TransactionalCall from "../utilities/TransactionalCall";
 import SignUpUseCase from "@root/source/domain/use-cases/SignUp.usecase";
 import ValidateAccessTokenUseCase from "@root/source/domain/use-cases/ValidateAccessToken.usecase";
-import RefreshTokenUseCase from "@root/source/domain/use-cases/RefreshToken.usecase";
 import SignInUseCase from "@root/source/domain/use-cases/SignIn.usecase";
+import RefreshTokenUseCase from "@root/source/domain/use-cases/RefreshToken.usecase";
 
 class AuthenticationService implements AuthenticationHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;
-	SignUp = TransactionalCall(SignUpUseCase);
-	SignIn = TransactionalCall(SignInUseCase);
+	SignUp = TransactionalCall(
+		SignUpUseCase.Serializer,
+		SignUpUseCase.Authorize,
+		SignUpUseCase.Handler,
+	);
+	SignIn = TransactionalCall(
+		SignInUseCase.Serializer,
+		SignInUseCase.Authorize,
+		SignInUseCase.Handler,
+	);
 
-	ListDevices = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
+	ListDevices = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
 
-	ChangePassword = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
-	ForgetPassword = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
-	ResetPassword = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
+	ChangePassword = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
+	ForgetPassword = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
+	ResetPassword = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
 
-	SendEmailVerification = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
-	VerifyEmail = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
+	SendEmailVerification = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
+	VerifyEmail = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
 
-	ValidateAccessToken = TransactionalCall(ValidateAccessTokenUseCase);
+	ValidateAccessToken = TransactionalCall(
+		ValidateAccessTokenUseCase.Serializer,
+		ValidateAccessTokenUseCase.Authorize,
+		ValidateAccessTokenUseCase.Handler,
+	);
 
-	ValidateOTP = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
+	ValidateOTP = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
 
-	RefreshToken = TransactionalCall(RefreshTokenUseCase);
+	RefreshToken = TransactionalCall(
+		RefreshTokenUseCase.Serializer,
+		RefreshTokenUseCase.Authorize,
+		RefreshTokenUseCase.Handle,
+	);
 
-	SignOut = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
-	DeleteAccount = TransactionalCall<any, any>(() => {
-		return { error: "NotImplemented", result: null } as any;
-	});
+	SignOut = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
+	DeleteAccount = TransactionalCall<any, any, any>(
+		() => ({} as any),
+		async () => false,
+		async () => null,
+	);
 }
 
 export default AuthenticationService;
