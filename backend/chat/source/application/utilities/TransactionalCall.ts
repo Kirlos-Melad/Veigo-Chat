@@ -1,4 +1,4 @@
-import grpc, { Metadata, handleUnaryCall } from "@grpc/grpc-js";
+import grpc, { handleUnaryCall } from "@grpc/grpc-js";
 
 import DatabaseManager, {
 	DatabaseClient,
