@@ -2,7 +2,6 @@ import { ulid } from "ulidx";
 import bcrypt from "bcrypt";
 
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import { AuthenticationResponse } from "@root/source/types/generated/protos/AuthenticationPackage/AuthenticationResponse";
 import AuthenticationDto, { SignInSerialized } from "../../application/dtos";
 import JsonWebToken from "../../application/utilities/JsonWebToken";
 import AccountRepository from "@root/source/infrastructure/database/repositories/Account.repository";
