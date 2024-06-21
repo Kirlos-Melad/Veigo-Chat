@@ -68,7 +68,7 @@ class AuthorizationManager {
 	}
 
 	private async IsTokenValid(subject: string): Promise<boolean> {
-		return await this.Ask("use_token", { subject: subject });
+		return await this.Ask("use_access_token", { subject: subject });
 	}
 
 	public async CanReadRoom(room: string, user: string): Promise<boolean> {

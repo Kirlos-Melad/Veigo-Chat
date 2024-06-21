@@ -1,4 +1,4 @@
-package use_token
+package use_access_token
 
 import data.authorizer
 
@@ -10,10 +10,12 @@ allow {
             "type": "device",
             "resource": input.subject,
             "paths": [
+				"accessTokenId",
 				"forceRefreshToken",
 				"forceSignIn"
 			],
 			"values": [
+				input.id,
 				"false",
 				"false"
 			]
