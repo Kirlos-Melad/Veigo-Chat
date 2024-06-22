@@ -33,29 +33,20 @@ class SignUpGQLField extends GQLField<Args> {
 	}
 
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
-		async (source: any, args: Args, context: GQLContext) => {
-			try {
-				const result = await new Promise((resolve, reject) =>
-					GRPCServiceManagerRegistry.instance
-						.Get("Auth")
-						.Get("Authentication")
-						.SignUp(
-							args,
-							this.mIsGuarded
-								? context.metadata!
-								: new Metadata(),
-							(
-								error: ServiceError | null,
-								response: AuthenticationResponse | undefined,
-							) => (error ? reject(error) : resolve(response!)),
-						),
-				);
-
-				return result;
-			} catch (error) {
-				throw error;
-			}
-		};
+		async (source: any, args: Args, context: GQLContext) =>
+			await new Promise((resolve, reject) =>
+				GRPCServiceManagerRegistry.instance
+					.Get("Auth")
+					.Get("Authentication")
+					.SignUp(
+						args,
+						this.mIsGuarded ? context.metadata! : new Metadata(),
+						(
+							error: ServiceError | null,
+							response: AuthenticationResponse | undefined,
+						) => (error ? reject(error) : resolve(response!)),
+					),
+			);
 }
 
 export default new SignUpGQLField();

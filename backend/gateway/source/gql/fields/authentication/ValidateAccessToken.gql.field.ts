@@ -30,29 +30,18 @@ class ValidateAccessTokenGQLField extends GQLField<Args> {
 	}
 
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
-		async (source: any, args: Args, context: GQLContext) => {
-			try {
-				const result = await new Promise((resolve, reject) =>
-					GRPCServiceManagerRegistry.instance
-						.Get("Auth")
-						.Get("Authentication")
-						.ValidateAccessToken(
-							args,
-							this.mIsGuarded
-								? context.metadata!
-								: new Metadata(),
-							(error: ServiceError | null) =>
-								error
-									? reject(error)
-									: resolve({ success: true }),
-						),
-				);
-
-				return result;
-			} catch (error) {
-				throw error;
-			}
-		};
+		async (source: any, args: Args, context: GQLContext) =>
+			await new Promise((resolve, reject) =>
+				GRPCServiceManagerRegistry.instance
+					.Get("Auth")
+					.Get("Authentication")
+					.ValidateAccessToken(
+						args,
+						this.mIsGuarded ? context.metadata! : new Metadata(),
+						(error: ServiceError | null) =>
+							error ? reject(error) : resolve({ success: true }),
+					),
+			);
 }
 
 export default new ValidateAccessTokenGQLField();

@@ -32,29 +32,20 @@ class ProfileCreateGQLField extends GQLField<Args> {
 	}
 
 	protected mResolver: GraphQLFieldResolver<any, GQLContext, Args, unknown> =
-		async (source: any, args: Args, context: GQLContext) => {
-			try {
-				const result = await new Promise((resolve, reject) =>
-					GRPCServiceManagerRegistry.instance
-						.Get("Chat")
-						.Get("Profile")
-						.Create(
-							args,
-							this.mIsGuarded
-								? context.metadata!
-								: new Metadata(),
-							(
-								error: ServiceError | null,
-								response: ProfileObject | undefined,
-							) => (error ? reject(error) : resolve(response!)),
-						),
-				);
-
-				return result;
-			} catch (error) {
-				throw error;
-			}
-		};
+		async (source: any, args: Args, context: GQLContext) =>
+			await new Promise((resolve, reject) =>
+				GRPCServiceManagerRegistry.instance
+					.Get("Chat")
+					.Get("Profile")
+					.Create(
+						args,
+						this.mIsGuarded ? context.metadata! : new Metadata(),
+						(
+							error: ServiceError | null,
+							response: ProfileObject | undefined,
+						) => (error ? reject(error) : resolve(response!)),
+					),
+			);
 }
 
 export default new ProfileCreateGQLField();
