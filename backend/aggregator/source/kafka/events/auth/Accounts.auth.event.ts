@@ -14,7 +14,7 @@ interface AccountEntity {
 	isPhoneVerified: boolean;
 }
 
-class AccountssAuthEvent extends KafkaEvent<
+class AccountsAuthEvent extends KafkaEvent<
 	KafkaEvents,
 	"AUTH_DB_PUBLIC_ACCOUNTS",
 	AccountEntity
@@ -115,4 +115,4 @@ class AccountssAuthEvent extends KafkaEvent<
 	};
 }
 
-export default new AccountssAuthEvent();
+export default new AccountsAuthEvent();
