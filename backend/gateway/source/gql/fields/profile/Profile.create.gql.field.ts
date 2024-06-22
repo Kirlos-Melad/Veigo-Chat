@@ -49,3 +49,4 @@ class ProfileCreateGQLField extends GQLField<Args> {
 }
 
 export default new ProfileCreateGQLField();
+export { Args };

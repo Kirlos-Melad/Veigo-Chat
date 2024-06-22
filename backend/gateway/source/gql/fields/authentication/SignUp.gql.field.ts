@@ -50,3 +50,4 @@ class SignUpGQLField extends GQLField<Args> {
 }
 
 export default new SignUpGQLField();
+export { Args };
