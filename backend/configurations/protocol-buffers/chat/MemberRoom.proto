@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package MemberRoomPackage;
 
-import "../common/CommonObjects.proto";
-import "./ChatObjects.proto";
+import "CommonObjects.proto";
+import "ChatObjects.proto";
 
 message AddRequest {
     string roomId = 1;

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ChatObjectsPackage;
 
-import "../common/CommonObjects.proto";
+import "CommonObjects.proto";
 
 message RoomObject {
     string id = 1;

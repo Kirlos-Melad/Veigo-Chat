@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package AuthenticationPackage;
 
-import "../common/CommonObjects.proto";
-import "./AuthenticationObjects.proto";
+import "CommonObjects.proto";
+import "AuthenticationObjects.proto";
 
 message SignUpRequest {
     string email = 1;

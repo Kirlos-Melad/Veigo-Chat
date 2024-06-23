@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package AuthenticationObjectsPackage;
 
+import "CommonObjects.proto";
+
 message AccountObject {
     string id = 1;
 

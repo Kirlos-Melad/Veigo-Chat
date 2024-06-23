@@ -2,7 +2,7 @@ syntax = "proto3";
  
 package HealthCheck;
 
-import "./CommonObjects.proto";
+import "CommonObjects.proto";
  
 message HealthCheckResponse {
   enum ServingStatus {

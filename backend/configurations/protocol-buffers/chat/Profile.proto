@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ProfilePackage;
 
-import "./ChatObjects.proto";
+import "ChatObjects.proto";
 
 message CreateRequest {
     string photoPath = 2;
