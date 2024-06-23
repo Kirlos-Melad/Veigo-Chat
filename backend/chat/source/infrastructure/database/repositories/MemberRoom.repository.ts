@@ -5,7 +5,19 @@ import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectTo
 type MemberRoomCreate = Pick<MemberRoomEntity, "memberId" | "roomId">;
 type RoomMembers = { roomId: string; membersId: string[] };
 type RoomMember = { roomId: string; memberId: string };
-type MemberRoomRead = Partial<Pick<MemberRoomEntity, "memberId" | "roomId">>;
+type MemberRoomRead = (
+	| {
+			type: "memberId";
+			value: MemberRoomEntity["memberId"];
+	  }
+	| {
+			type: "roomId";
+			value: MemberRoomEntity["roomId"];
+	  }
+) & {
+	from?: string;
+	limit: number;
+};
 
 class MemberRoomRepository {
 	public async Create(
@@ -28,12 +40,12 @@ class MemberRoomRepository {
 			.rows[0];
 	}
 
-	public async BulkCreate(
+	public async CreateList(
 		connection: DatabaseClient,
 		roomMembers: RoomMembers,
-	): Promise<boolean> {
+	): Promise<MemberRoomEntity[]> {
 		const { roomId, membersId } = roomMembers;
-		if (!membersId.length) return true;
+		if (!membersId.length) return [];
 
 		const roomIdx = membersId.length + 1;
 
@@ -50,29 +62,35 @@ class MemberRoomRepository {
 		`;
 
 		return (
-			(
-				await connection.Execute<MemberRoomEntity>(query, [
-					...membersId,
-					roomId,
-				])
-			).rowCount == membersId.length
-		);
+			await connection.Execute<MemberRoomEntity>(query, [
+				...membersId,
+				roomId,
+			])
+		).rows;
 	}
 
-	public async Read(
+	public async List(
 		connection: DatabaseClient,
 		filter: MemberRoomRead,
 	): Promise<MemberRoomEntity[]> {
-		if (!filter.memberId && !filter.roomId) return [];
-
-		const query = `
+		let query = `
             SELECT *
             FROM members_rooms
-            WHERE
-			${filter.memberId ? `"memberId" = ${filter.memberId}` : ""}
-			${filter.roomId ? `"roomId" = ${filter.roomId}` : ""}
-			;
+            WHERE\n
         `;
+
+		if (filter.from) {
+			query += `
+				${filter.type} > ${filter.from}
+				AND\n
+			`;
+		}
+
+		query += `
+			${filter.type} = ${filter.value}
+			ORDER BY ${filter.type} ASC
+			LIMIT ${filter.limit};
+		`;
 
 		return (await connection.Execute<MemberRoomEntity>(query)).rows;
 	}

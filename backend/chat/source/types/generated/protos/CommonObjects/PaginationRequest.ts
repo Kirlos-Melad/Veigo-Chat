@@ -2,11 +2,11 @@
 
 
 export interface PaginationRequest {
-  'size'?: (number);
   'cursor'?: (string);
+  'size'?: (number);
 }
 
 export interface PaginationRequest__Output {
-  'size'?: (number);
   'cursor'?: (string);
+  'size'?: (number);
 }

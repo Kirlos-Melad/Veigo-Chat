@@ -1,0 +1,43 @@
+import CommonDto, {
+	PaginationRequestSerialized,
+} from "@root/source/application/dtos/common";
+import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
+import RoomRepository from "@root/source/infrastructure/database/repositories/Room.repository";
+import { PaginationRequest } from "@root/source/types/generated/protos/CommonObjects/PaginationRequest";
+
+const roomRepository = new RoomRepository();
+
+const Serializer = (data: PaginationRequest) => CommonDto.Pagination(data);
+
+const Authorize = async (
+	requesterId: string,
+	data: PaginationRequestSerialized,
+) => true;
+
+const Handle = async (
+	connection: DatabaseClient,
+	data: PaginationRequestSerialized & { requesterId: string },
+) => {
+	const rooms = await roomRepository.List(connection, {
+		profileId: data.requesterId,
+		from: data.cursor,
+		limit: data.size! + 1,
+	});
+
+	const hasNext = rooms.length > data.size!;
+	const cursor = hasNext ? rooms.pop()!.id : undefined;
+
+	return {
+		records: rooms,
+		metadata: {
+			cursor: cursor,
+			hasNext: hasNext,
+		},
+	};
+};
+
+export default {
+	Serializer,
+	Authorize,
+	Handle,
+};

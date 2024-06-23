@@ -1,7 +1,7 @@
 import MessageCreateDto, {
 	CreateRequestSerialized,
 } from "./Message.create.dto";
-import MessageReadDto, { ReadRequestSerialized } from "./Message.read.dto";
+import MessageListDto, { ListRequestSerialized } from "./Message.list.dto";
 import MessageUpdateDto, {
 	UpdateRequestSerialized,
 } from "./Message.update.dto";
@@ -14,8 +14,8 @@ class MessageDto {
 		return new MessageCreateDto(data);
 	}
 
-	public static Read(data: any) {
-		return new MessageReadDto(data);
+	public static List(data: any) {
+		return new MessageListDto(data);
 	}
 
 	public static Update(data: any) {
@@ -30,7 +30,7 @@ class MessageDto {
 export default MessageDto;
 export type {
 	CreateRequestSerialized,
-	ReadRequestSerialized,
+	ListRequestSerialized,
 	UpdateRequestSerialized,
 	DeleteRequestSerialized,
 };

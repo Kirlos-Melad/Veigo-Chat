@@ -18,7 +18,7 @@ const Handle = async (
 	data: AddRequestSerialized & { requesterId: string },
 ) => {
 	return {
-		members: await repository.BulkCreate(connection, {
+		members: await repository.CreateList(connection, {
 			roomId: data.roomId,
 			membersId: data.membersId,
 		}),

@@ -4,7 +4,10 @@ import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectTo
 
 type MessageCreate = Pick<MessageEntity, "roomId" | "senderId" | "content">;
 
-type MessagesRead = Pick<MessageEntity, "roomId">;
+type MessageList = Pick<MessageEntity, "roomId"> & {
+	from?: string;
+	limit: number;
+};
 type MessageRead = Pick<MessageEntity, "id">;
 
 type MessageUpdate = Partial<Pick<MessageEntity, "content">>;
@@ -42,15 +45,28 @@ class MessageRepository {
 		return (await connection.Execute<MessageEntity>(query)).rows[0];
 	}
 
-	public async ReadBulk(
+	public async List(
 		connection: DatabaseClient,
-		filter: MessagesRead,
+		filter: MessageList,
 	): Promise<MessageEntity[]> {
-		const query = `
-            SELECT *
+		let query = `
+            SELECT messages.*
             FROM messages
-            WHERE "roomId" = ${filter.roomId};
+            WHERE\n
         `;
+
+		if (filter.from) {
+			query += `
+				messages.id > ${filter.from}
+				AND\n
+			`;
+		}
+
+		query += `
+				messages."roomId" = '${filter.roomId}'
+			ORDER BY messages."createdAt" DESC
+			LIMIT ${filter.limit};
+		`;
 
 		return (await connection.Execute<MessageEntity>(query)).rows;
 	}

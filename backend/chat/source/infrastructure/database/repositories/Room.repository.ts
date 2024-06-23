@@ -1,14 +1,20 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 import RoomEntity from "@source/domain/entities/Room.entity";
 import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
+import ProfileEntity from "@root/source/domain/entities/Profile.entity";
 
 type RoomCreate = Optional<
 	Omit<RoomEntity, "id" | "createdAt" | "updatedAt">,
 	"photoPath" | "description"
 >;
 
-type RoomRead = Pick<RoomEntity, "id">;
+// @ts-expect-error
+type RoomList = PickAs<ProfileEntity, "id:profileId"> & {
+	from?: string;
+	limit: number;
+};
 
+type RoomRead = Pick<RoomEntity, "id">;
 type RoomUpdate = Partial<
 	Omit<RoomEntity, "id" | "type" | "createdAt" | "updatedAt">
 >;
@@ -44,6 +50,34 @@ class RoomRepository {
         `;
 
 		return (await connection.Execute<RoomEntity>(query)).rows[0];
+	}
+
+	public async List(
+		connection: DatabaseClient,
+		filter: RoomList,
+	): Promise<RoomEntity[]> {
+		let query = `
+            SELECT rooms.*
+            	FROM rooms
+			INNER JOIN members_rooms 
+				ON rooms.id = members_rooms.roomId
+			WHERE\n
+		`;
+
+		if (filter.from) {
+			query += `
+					rooms.id > ${filter.from}
+					AND\n
+			`;
+		}
+
+		query += `
+				members_rooms.profileId = ${filter.profileId}
+			ORDER BY rooms.id ASC
+			LIMIT ${filter.limit};
+		`;
+
+		return (await connection.Execute<RoomEntity>(query)).rows;
 	}
 
 	public async Update(
