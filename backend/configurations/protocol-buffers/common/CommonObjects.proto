@@ -16,8 +16,8 @@ message <MESSAGE_NAME> {
 }
 */
 message PaginationRequest {
-	int32 size = 1; // number of items per page
-	string cursor = 2; // cursor used by the server to get the next page
+	string cursor = 1; // cursor used by the server to get the next page
+	int32 size = 2; // number of items per page
 }
 
 /*
