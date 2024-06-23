@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package ChatObjectsPackage;
 
+import "../common/CommonObjects.proto";
+
 message RoomObject {
     string id = 1;
 
@@ -16,6 +18,11 @@ message RoomObject {
     string updatedAt = 8;
 }
 
+message RoomObjectPage {
+    repeated RoomObject records = 1;
+    PaginationResponse metadata = 2;
+}
+
 message ProfileObject {
     string id = 1;
 
@@ -25,6 +32,11 @@ message ProfileObject {
 
     string createdAt = 5;
     string updatedAt = 6;
+}
+
+message ProfileObjectPage {
+    repeated ProfileObject records = 1;
+    PaginationResponse metadata = 2;
 }
 
 message MessageObject {
@@ -38,10 +50,20 @@ message MessageObject {
     string updatedAt = 6;
 }
 
+message MessageObjectPage {
+    repeated MessageObject records = 1;
+    PaginationResponse metadata = 2;
+}
+
 message MemberRoomObject {
     string memberId = 1;
     string roomId = 2;
 
     string createdAt = 3;
     string updatedAt = 4;
+}
+
+message MemberRoomObjectPage {
+    repeated MemberRoomObject records = 1;
+    PaginationResponse metadata = 2;
 }

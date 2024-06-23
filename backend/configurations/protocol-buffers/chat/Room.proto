@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package RoomPackage;
 
+import "../common/CommonObjects.proto";
 import "./ChatObjects.proto";
 
 message CreateRequest {
@@ -15,8 +16,9 @@ message CreateRequest {
     repeated string members = 6;
 }
 
-message ReadRequest {
-    string id = 1;
+message CreateResponse {
+    RoomObject information = 1;
+    repeated MemberRoomObject members = 2;
 }
 
 message UpdateRequest {
@@ -29,13 +31,8 @@ message UpdateRequest {
     string privacy = 5;
 }
 
-message RoomInformation {
-    RoomObject information = 1;
-    repeated ProfileObject members = 2;
-}
-
 service Room {
-    rpc Create (CreateRequest) returns (RoomInformation);
-    rpc Read (ReadRequest) returns (RoomInformation);
+    rpc Create (CreateRequest) returns (CreateResponse);
+    rpc List (PaginationRequest) returns (RoomObjectPage);
     rpc Update (UpdateRequest) returns (RoomObject);
 }

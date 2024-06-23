@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package AuthenticationObjectsPackage;
+
+message AccountObject {
+    string id = 1;
+
+    string email = 2;
+    bool isEmailVerified = 3;
+
+    string phone = 4;
+    bool isPhoneVerified = 5;
+
+    string createdAt = 7;
+    string updatedAt = 8;
+}
+
+message TokenObject {
+    string access = 1;
+    string refresh = 2;
+}
+
+message DeviceObject {
+    string clientId = 1;
+}
+
+message DeviceObjectPage {
+	repeated DeviceObject records = 1;
+    PaginationResponse metadata = 2;
+}

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package MemberRoomPackage;
 
+import "../common/CommonObjects.proto";
 import "./ChatObjects.proto";
 
 message AddRequest {
@@ -9,15 +10,26 @@ message AddRequest {
     repeated string membersId = 2;
 }
 
+message AddResponse {
+    repeated MemberRoomObject members = 1;
+}
+
+message ListRequest {
+    string roomId = 1;
+    PaginationResponse page = 2;
+}
+
+message ListResponse {
+    repeated ProfileObject records = 1;
+    PaginationResponse metadata = 2;
+}
+
 message LeaveRequest {
     string roomId = 1;
 }
 
-message MemberRoomList {
-    repeated MemberRoomObject members = 1;
-}
-
 service MemberRoom {
-    rpc Add (AddRequest) returns (MemberRoomList);
+    rpc Add (AddRequest) returns (AddResponse);
+    rpc List (ListRequest) returns (ListResponse);
     rpc Leave (LeaveRequest) returns (MemberRoomObject);
 }
