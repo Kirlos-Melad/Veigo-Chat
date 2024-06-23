@@ -1,28 +1,41 @@
 #!/bin/bash
+export NODE_NO_WARNINGS=1
 
 CURRENT_DIR=$(dirname "$0")
-cd "${CURRENT_DIR}/../"
+cd "${CURRENT_DIR}/.."
 
-SOURCE_DIR=."./configurations/protocol-buffers/chat"
-
+# Define the source, destination and difinitions directories
+SOURCE_DIR="../configurations/protocol-buffers"
 DESTINATION_DIR="./source/types/generated/protos"
+DIFINITIONS_DIR="${DESTINATION_DIR}/definitions"
 
-DEFINITIONS_DIR="${DESTINATION_DIR}/definitions"
+echo -e "Cleaning up \"${DESTINATION_DIR}\" directory\n"
+rm -rf "${DESTINATION_DIR}" && mkdir -p "${DESTINATION_DIR}" && mkdir -p "${DIFINITIONS_DIR}"
 
-echo -e "Removing \"${DESTINATION_DIR}\"\n"
-rm -rf ${DESTINATION_DIR} 
+# Define the subdirectories to copy protocol buffer definitions from
+SUB_DIRECTORIES=("common" "chat")
 
-echo -e "Creating \"${DEFINITIONS_DIR}\"\n"
-mkdir -p ${DEFINITIONS_DIR}
-
-echo -e "Copying protocol buffer definitions from \"${SOURCE_DIR}\" to \"${DEFINITIONS_DIR}\"\n"
-cp -ra ${SOURCE_DIR}/. ${DEFINITIONS_DIR}
+echo -e "Copying protocol buffer definitions from \"${SOURCE_DIR}\" to \"${DIFINITIONS_DIR}\"\n"
+for sub_directory in "${SUB_DIRECTORIES[@]}"; do
+    find "${SOURCE_DIR}/${sub_directory}" -type f -exec cp -r "{}" "${DIFINITIONS_DIR}" \;
+done
 
 echo -e "Generating types from protocol buffer definitions\n"
+# Initialize an array to hold the include directories
+include_dirs=()
 
+# Loop through the subdirectories in "${DIFINITIONS_DIR}" that contain a "definitions" directory
+for dir in "${DIFINITIONS_DIR}"/*; do
+    # Check if the directory exists to avoid adding non-existent paths
+    if [ -d "$dir" ]; then
+        include_dirs+=("$dir")
+    fi
+done
+# Generate types from protocol buffer definitions
 npx proto-loader-gen-types \
     --grpcLib=@grpc/grpc-js \
-    --outDir=${DESTINATION_DIR} \
-    "${DEFINITIONS_DIR}"/*.proto
+    --includeDirs="${include_dirs[@]}" \
+    --outDir="${DESTINATION_DIR}" \
+    "${DIFINITIONS_DIR}"/*.proto
 
 echo "All types generated"
