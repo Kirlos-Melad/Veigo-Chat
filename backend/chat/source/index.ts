@@ -9,6 +9,7 @@ import RoomService from "./application/services/Room.service.ts";
 import MessageService from "./application/services/Message.service.ts";
 import MemberRoomService from "./application/services/MemberRoom.service.ts";
 import AuthorizationManager from "./application/utilities/AuthorizationManager.ts";
+import HealthCheckService from "./application/services/HealthCheck.service.ts";
 
 async function Migrate() {
 	Logger.information("Creating database manager");
@@ -34,6 +35,11 @@ async function Start() {
 	const serverManager = ServerManager.CreateInstance(
 		Environments.SERVICE_ADDRESS,
 		grpc.ServerCredentials.createInsecure(),
+	);
+
+	serverManager.AddService(
+		"source/types/generated/protos/definitions/HealthCheck.proto",
+		HealthCheckService,
 	);
 	serverManager.AddService(
 		"source/types/generated/protos/definitions/Profile.proto",
