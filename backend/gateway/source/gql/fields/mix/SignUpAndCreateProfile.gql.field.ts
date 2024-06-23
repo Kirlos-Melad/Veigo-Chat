@@ -1,9 +1,7 @@
 import {
 	GraphQLFieldConfigArgumentMap,
 	GraphQLFieldResolver,
-	GraphQLNonNull,
 	GraphQLObjectType,
-	GraphQLString,
 } from "graphql";
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
