@@ -1,4 +1,4 @@
-// Original file: source/types/generated/protos/definitions/Authentication.proto
+// Original file: source/types/generated/protos/definitions/authentication/Authentication.proto
 
 
 export interface ForgetPasswordRequest {

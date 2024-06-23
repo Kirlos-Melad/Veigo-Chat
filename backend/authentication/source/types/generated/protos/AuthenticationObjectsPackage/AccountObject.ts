@@ -1,4 +1,4 @@
-// Original file: source/types/generated/protos/definitions/Authentication.proto
+// Original file: source/types/generated/protos/definitions/authentication/AuthenticationObjects.proto
 
 
 export interface AccountObject {

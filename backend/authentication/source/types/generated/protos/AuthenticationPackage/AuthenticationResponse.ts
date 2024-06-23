@@ -1,14 +1,14 @@
-// Original file: source/types/generated/protos/definitions/Authentication.proto
+// Original file: source/types/generated/protos/definitions/authentication/Authentication.proto
 
-import type { AccountObject as _AuthenticationPackage_AccountObject, AccountObject__Output as _AuthenticationPackage_AccountObject__Output } from '../AuthenticationPackage/AccountObject';
-import type { TokenObject as _AuthenticationPackage_TokenObject, TokenObject__Output as _AuthenticationPackage_TokenObject__Output } from '../AuthenticationPackage/TokenObject';
+import type { AccountObject as _AuthenticationObjectsPackage_AccountObject, AccountObject__Output as _AuthenticationObjectsPackage_AccountObject__Output } from '../AuthenticationObjectsPackage/AccountObject';
+import type { TokenObject as _AuthenticationObjectsPackage_TokenObject, TokenObject__Output as _AuthenticationObjectsPackage_TokenObject__Output } from '../AuthenticationObjectsPackage/TokenObject';
 
 export interface AuthenticationResponse {
-  'account'?: (_AuthenticationPackage_AccountObject | null);
-  'token'?: (_AuthenticationPackage_TokenObject | null);
+  'account'?: (_AuthenticationObjectsPackage_AccountObject | null);
+  'token'?: (_AuthenticationObjectsPackage_TokenObject | null);
 }
 
 export interface AuthenticationResponse__Output {
-  'account'?: (_AuthenticationPackage_AccountObject__Output);
-  'token'?: (_AuthenticationPackage_TokenObject__Output);
+  'account'?: (_AuthenticationObjectsPackage_AccountObject__Output);
+  'token'?: (_AuthenticationObjectsPackage_TokenObject__Output);
 }

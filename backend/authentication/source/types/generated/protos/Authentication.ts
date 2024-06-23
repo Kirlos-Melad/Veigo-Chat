@@ -8,25 +8,31 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 };
 
 export interface ProtoGrpcType {
-  AuthenticationPackage: {
+  AuthenticationObjectsPackage: {
     AccountObject: MessageTypeDefinition
+    DeviceObject: MessageTypeDefinition
+    DeviceObjectPage: MessageTypeDefinition
+    TokenObject: MessageTypeDefinition
+  }
+  AuthenticationPackage: {
     Authentication: SubtypeConstructor<typeof grpc.Client, _AuthenticationPackage_AuthenticationClient> & { service: _AuthenticationPackage_AuthenticationDefinition }
     AuthenticationResponse: MessageTypeDefinition
     ChangePasswordRequest: MessageTypeDefinition
-    DeleteRequest: MessageTypeDefinition
-    DeviceObject: MessageTypeDefinition
-    DevicesListObject: MessageTypeDefinition
-    EmptyObject: MessageTypeDefinition
+    DeleteAccountRequest: MessageTypeDefinition
     ForgetPasswordRequest: MessageTypeDefinition
     ResetPasswordRequest: MessageTypeDefinition
     SendEmailVerificationRequest: MessageTypeDefinition
     SignInRequest: MessageTypeDefinition
     SignOutRequest: MessageTypeDefinition
     SignUpRequest: MessageTypeDefinition
-    TokenObject: MessageTypeDefinition
     TokenRequest: MessageTypeDefinition
     ValidateOTPRequest: MessageTypeDefinition
     VerifyEmailRequest: MessageTypeDefinition
+  }
+  CommonObjects: {
+    EmptyObject: MessageTypeDefinition
+    PaginationRequest: MessageTypeDefinition
+    PaginationResponse: MessageTypeDefinition
   }
 }
 
