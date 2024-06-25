@@ -6,11 +6,16 @@ services:
     build:
       context: ${GATEWAY_SERVICE_PATH}
     depends_on:
-      - authentication
-      - chat
-      - real-time
-      - aggregator
-      - opa
+      authentication:
+        condition: service_healthy
+      chat:
+        condition: service_healthy
+      real-time:
+        condition: service_healthy
+      aggregator:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
     ports:
       - "${GATEWAY_HOST_PORT}:${GATEWAY_CONTAINER_PORT}"
     environment:
@@ -29,8 +34,6 @@ services:
       context: ${AUTH_SERVICE_PATH}
     depends_on:
       pg-db:
-        condition: service_healthy
-      kafka:
         condition: service_healthy
       opa:
         condition: service_healthy
@@ -59,10 +62,8 @@ services:
     depends_on:
       pg-db:
         condition: service_healthy
-      storage:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
+      # storage:
+      #   condition: service_healthy
       opa:
         condition: service_healthy
     ports:
@@ -123,8 +124,6 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      opa:
-        condition: service_healthy
     ports:
       - "${AGGREGATOR_HOST_PORT}:${AGGREGATOR_CONTAINER_PORT}"
     environment:
@@ -182,34 +181,34 @@ services:
   mongo-ui:
     container_name: "${MONGO_UI_CONTAINER_NAME}"
     image: mongo-express:1.0.2-20-alpine3.19
+    depends_on:
+      mongo-db:
+        condition: service_healthy
     ports:
       - "${MONGO_UI_HOST_PORT}:${MONGO_UI_CONTAINER_PORT}"
     environment:
       - ME_CONFIG_BASICAUTH=false
       - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_DB_USER}:${MONGO_DB_PASSWORD}@${MONGO_DB_CONTAINER_NAME}:${MONGO_DB_CONTAINER_PORT}
-    depends_on:
-      mongo-db:
-        condition: service_healthy
 
-  storage:
-    container_name: "${STORAGE_CONTAINER_NAME}"
-    image: bitnami/minio:2024.5.10
-    ports:
-      - "${STORAGE_HOST_DATA_PORT}:${STORAGE_CONTAINER_DATA_PORT}"
-      - "${STORAGE_HOST_CONSOLE_PORT}:${STORAGE_CONTAINER_CONSOLE_PORT}"
-    environment:
-      - MINIO_ROOT_USER=${STORAGE_USER}
-      - MINIO_ROOT_PASSWORD=${STORAGE_PASSWORD}
-      - MINIO_API_PORT_NUMBER=${STORAGE_CONTAINER_DATA_PORT}
-      - MINIO_CONSOLE_PORT_NUMBER=${STORAGE_CONTAINER_CONSOLE_PORT}
-      - MINIO_DEFAULT_BUCKETS=${STORAGE_CHAT_BUCKET}:public
-    # volumes:
-    #   - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${STORAGE_CONTAINER_DATA_PORT}/minio/health/live || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # storage:
+  #   container_name: "${STORAGE_CONTAINER_NAME}"
+  #   image: bitnami/minio:2024.5.10
+  #   ports:
+  #     - "${STORAGE_HOST_DATA_PORT}:${STORAGE_CONTAINER_DATA_PORT}"
+  #     - "${STORAGE_HOST_CONSOLE_PORT}:${STORAGE_CONTAINER_CONSOLE_PORT}"
+  #   environment:
+  #     - MINIO_ROOT_USER=${STORAGE_USER}
+  #     - MINIO_ROOT_PASSWORD=${STORAGE_PASSWORD}
+  #     - MINIO_API_PORT_NUMBER=${STORAGE_CONTAINER_DATA_PORT}
+  #     - MINIO_CONSOLE_PORT_NUMBER=${STORAGE_CONTAINER_CONSOLE_PORT}
+  #     - MINIO_DEFAULT_BUCKETS=${STORAGE_CHAT_BUCKET}:public
+  #   # volumes:
+  #   #   - "${STORAGE_SERVICE_PATH}/files:/bitnami/minio/data"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl -f http://localhost:${STORAGE_CONTAINER_DATA_PORT}/minio/health/live || exit 1"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
   debezium:
     container_name: "${DEBEZIUM_CONTAINER_NAME}"
@@ -290,18 +289,21 @@ services:
   kafka-ui:
     container_name: ${KAFKA_UI_CONTAINER_NAME}
     image: provectuslabs/kafka-ui:v0.7.2
+    depends_on:
+      kafka:
+        condition: service_healthy
     ports:
       - "${KAFKA_UI_HOST_PORT}:${KAFKA_UI_CONTAINER_PORT}"
     environment:
       - DYNAMIC_CONFIG_ENABLED=true
-    depends_on:
-      kafka:
-        condition: service_healthy
 
   opa:
     container_name: "${OPA_CONTAINER_NAME}"
     build:
       context: ${OPA_CONFIG_FOLDER}
+    depends_on:
+      aggregator:
+        condition: service_healthy
     ports:
       - "${OPA_HOST_PORT}:${OPA_CONTAINER_PORT}"
     environment:
