@@ -131,6 +131,12 @@ services:
       - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
     volumes:
       - ${AGGREGATOR_SERVICE_PATH}/source:/app/source
+    healthcheck:
+      test: ["CMD-SHELL", "curl localhost:${AGGREGATOR_CONTAINER_PORT} -X OPTIONS"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    restart: always
   
   pg-db:
     container_name: "${PG_DB_CONTAINER_NAME}"
