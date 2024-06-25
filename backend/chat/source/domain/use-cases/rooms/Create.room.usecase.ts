@@ -36,17 +36,14 @@ const Handle = async (
 
 	const members = AddRoomCreatorAsMember(data.requesterId, data.members);
 
-	const success = await memberRoomRepository.BulkCreate(connection, {
+	const membersEntity = await memberRoomRepository.CreateList(connection, {
 		roomId: room.id,
 		membersId: members,
 	});
 
-	if (!success)
-		throw new Error("Something happened while adding members to the room");
-
 	return {
 		information: room,
-		members: await profilesRepository.BulkRead(connection, members),
+		members: membersEntity,
 	};
 };
 
