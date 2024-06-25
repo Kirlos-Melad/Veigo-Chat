@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package RoomPackage;
+package room;
 
-import "CommonObjects.proto";
-import "ChatObjects.proto";
+import "common_objects.proto";
+import "chat_objects.proto";
 
 message CreateRequest {
     string photoPath = 1;
@@ -17,8 +17,8 @@ message CreateRequest {
 }
 
 message CreateResponse {
-    RoomObject information = 1;
-    repeated MemberRoomObject members = 2;
+    chat_objects.RoomObject information = 1;
+    repeated chat_objects.MemberRoomObject members = 2;
 }
 
 message UpdateRequest {
@@ -33,6 +33,6 @@ message UpdateRequest {
 
 service Room {
     rpc Create (CreateRequest) returns (CreateResponse);
-    rpc List (PaginationRequest) returns (RoomObjectPage);
-    rpc Update (UpdateRequest) returns (RoomObject);
+    rpc List (common_objects.PaginationRequest) returns (chat_objects.RoomObjectPage);
+    rpc Update (UpdateRequest) returns (chat_objects.RoomObject);
 }

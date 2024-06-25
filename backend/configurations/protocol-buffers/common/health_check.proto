@@ -1,8 +1,8 @@
 syntax = "proto3";
  
-package HealthCheckPackage;
+package health_check;
 
-import "CommonObjects.proto";
+import "common_objects.proto";
  
 message HealthCheckResponse {
   enum ServingStatus {
@@ -15,5 +15,5 @@ message HealthCheckResponse {
 }
  
 service HealthCheck {
-  rpc Check(EmptyObject) returns (HealthCheckResponse);
+  rpc Check(common_objects.EmptyObject) returns (HealthCheckResponse);
 }

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package ChatObjectsPackage;
+package chat_objects;
 
-import "CommonObjects.proto";
+import "common_objects.proto";
 
 message RoomObject {
     string id = 1;
@@ -20,7 +20,7 @@ message RoomObject {
 
 message RoomObjectPage {
     repeated RoomObject records = 1;
-    PaginationResponse metadata = 2;
+    common_objects.PaginationResponse metadata = 2;
 }
 
 message ProfileObject {
@@ -36,7 +36,7 @@ message ProfileObject {
 
 message ProfileObjectPage {
     repeated ProfileObject records = 1;
-    PaginationResponse metadata = 2;
+    common_objects.PaginationResponse metadata = 2;
 }
 
 message MessageObject {
@@ -52,7 +52,7 @@ message MessageObject {
 
 message MessageObjectPage {
     repeated MessageObject records = 1;
-    PaginationResponse metadata = 2;
+    common_objects.PaginationResponse metadata = 2;
 }
 
 message MemberRoomObject {
@@ -65,5 +65,5 @@ message MemberRoomObject {
 
 message MemberRoomObjectPage {
     repeated MemberRoomObject records = 1;
-    PaginationResponse metadata = 2;
+    common_objects.PaginationResponse metadata = 2;
 }

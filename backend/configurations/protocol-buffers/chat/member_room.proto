@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package MemberRoomPackage;
+package member_room;
 
-import "CommonObjects.proto";
-import "ChatObjects.proto";
+import "common_objects.proto";
+import "chat_objects.proto";
 
 message AddRequest {
     string roomId = 1;
@@ -11,17 +11,17 @@ message AddRequest {
 }
 
 message AddResponse {
-    repeated MemberRoomObject members = 1;
+    repeated chat_objects.MemberRoomObject members = 1;
 }
 
 message ListRequest {
     string roomId = 1;
-    PaginationResponse page = 2;
+    common_objects.PaginationResponse page = 2;
 }
 
 message ListResponse {
     repeated ProfileObject records = 1;
-    PaginationResponse metadata = 2;
+    common_objects.PaginationResponse metadata = 2;
 }
 
 message LeaveRequest {
@@ -31,5 +31,5 @@ message LeaveRequest {
 service MemberRoom {
     rpc Add (AddRequest) returns (AddResponse);
     rpc List (ListRequest) returns (ListResponse);
-    rpc Leave (LeaveRequest) returns (MemberRoomObject);
+    rpc Leave (LeaveRequest) returns (chat_objects.MemberRoomObject);
 }

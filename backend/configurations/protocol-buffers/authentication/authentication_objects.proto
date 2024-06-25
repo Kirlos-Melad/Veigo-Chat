@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package AuthenticationObjectsPackage;
+package authentication_objects;
 
-import "CommonObjects.proto";
+import "common_objects.proto";
 
 message AccountObject {
     string id = 1;
@@ -28,5 +28,5 @@ message DeviceObject {
 
 message DeviceObjectPage {
 	repeated DeviceObject records = 1;
-    PaginationResponse metadata = 2;
+    common_objects.PaginationResponse metadata = 2;
 }
