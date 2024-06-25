@@ -107,6 +107,11 @@ services:
       - KAFKA_BROKERS=${KAFKA_CONTAINER_NAME}:${KAFKA_CONTAINER_PORT}
     volumes:
       - ${RT_SERVICE_PATH}/source:/app/source
+    healthcheck:
+      test: ["CMD-SHELL", "curl localhost:${RT_CONTAINER_PORT} -X OPTIONS"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
     restart: always
 
   aggregator:

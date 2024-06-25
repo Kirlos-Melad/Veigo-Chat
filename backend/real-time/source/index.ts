@@ -21,6 +21,11 @@ await kafkaConsumer.Start();
 
 const httpServer = http.createServer();
 
+httpServer.on("request", (request, response) => {
+	response.writeHead(200, { "Content-Type": "text/plain" });
+	response.end("Real-Time Service Online");
+});
+
 const socketServer = SocketServer.CreateInstance({ httpServer: httpServer });
 
 // Logger.information("Loading Socket Server Events");
