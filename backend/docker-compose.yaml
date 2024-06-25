@@ -71,6 +71,11 @@ services:
       - DATABASE_CONNECTION=postgres://${PG_DB_USER}:${PG_DB_PASSWORD}@${PG_DB_CONTAINER_NAME}:${PG_DB_CONTAINER_PORT}/${PG_DB_CHAT_NAME}
     volumes:
       - ${CHAT_SERVICE_PATH}/source:/app/source
+    healthcheck:
+      test: ["CMD-SHELL", "/app/scripts/is_healthy.sh"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
     restart: always
 
   real-time:
