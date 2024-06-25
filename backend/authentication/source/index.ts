@@ -5,6 +5,7 @@ import Environments from "@source/configurations/Environments.js";
 import Logger from "./application/utilities/Logger.ts";
 import DatabaseManager from "./infrastructure/database/DatabaseManager.ts";
 import AuthenticationService from "./application/services/Authentication.service.ts";
+import HealthCheckService from "./application/services/HealthCheck.service.ts";
 
 async function Migrate() {
 	Logger.information("Creating database manager");
@@ -23,16 +24,26 @@ async function Start() {
 	);
 
 	Logger.information("Creating services");
-	const authService = new AuthenticationService();
 
 	const serverManager = ServerManager.CreateInstance(
 		Environments.SERVICE_ADDRESS,
 		grpc.ServerCredentials.createInsecure(),
 	);
-	serverManager.AddService(
-		"source/types/generated/protos/definitions/Authentication.proto",
-		authService,
-	);
+
+	const PROTOS_PATH = "source/types/generated/protos/definitions";
+	serverManager.AddService(PROTOS_PATH, {
+		file: "health_check.proto",
+		packageName: "health_check",
+		serviceName: "HealthCheck",
+		serviceImplementation: HealthCheckService,
+	});
+
+	serverManager.AddService(PROTOS_PATH, {
+		file: "authentication.proto",
+		packageName: "authentication",
+		serviceName: "Authentication",
+		serviceImplementation: AuthenticationService,
+	});
 
 	Logger.information("Starting server");
 	const port = await serverManager.StartServer();

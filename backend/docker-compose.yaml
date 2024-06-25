@@ -45,6 +45,11 @@ services:
       - ${AUTH_SERVICE_PATH}/.env
     volumes:
       - ${AUTH_SERVICE_PATH}/source:/app/source
+    healthcheck:
+      test: ["CMD-SHELL", "/app/scripts/is_healthy.sh"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
     restart: always
 
   chat:

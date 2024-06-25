@@ -1,21 +1,15 @@
 import type * as grpc from '@grpc/grpc-js';
 import type { MessageTypeDefinition } from '@grpc/proto-loader';
 
-import type { AuthenticationClient as _AuthenticationPackage_AuthenticationClient, AuthenticationDefinition as _AuthenticationPackage_AuthenticationDefinition } from './AuthenticationPackage/Authentication';
+import type { AuthenticationClient as _authentication_AuthenticationClient, AuthenticationDefinition as _authentication_AuthenticationDefinition } from './authentication/Authentication';
 
 type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> = {
   new(...args: ConstructorParameters<Constructor>): Subtype;
 };
 
 export interface ProtoGrpcType {
-  AuthenticationObjectsPackage: {
-    AccountObject: MessageTypeDefinition
-    DeviceObject: MessageTypeDefinition
-    DeviceObjectPage: MessageTypeDefinition
-    TokenObject: MessageTypeDefinition
-  }
-  AuthenticationPackage: {
-    Authentication: SubtypeConstructor<typeof grpc.Client, _AuthenticationPackage_AuthenticationClient> & { service: _AuthenticationPackage_AuthenticationDefinition }
+  authentication: {
+    Authentication: SubtypeConstructor<typeof grpc.Client, _authentication_AuthenticationClient> & { service: _authentication_AuthenticationDefinition }
     AuthenticationResponse: MessageTypeDefinition
     ChangePasswordRequest: MessageTypeDefinition
     DeleteAccountRequest: MessageTypeDefinition
@@ -29,7 +23,13 @@ export interface ProtoGrpcType {
     ValidateOTPRequest: MessageTypeDefinition
     VerifyEmailRequest: MessageTypeDefinition
   }
-  CommonObjects: {
+  authentication_objects: {
+    AccountObject: MessageTypeDefinition
+    DeviceObject: MessageTypeDefinition
+    DeviceObjectPage: MessageTypeDefinition
+    TokenObject: MessageTypeDefinition
+  }
+  common_objects: {
     EmptyObject: MessageTypeDefinition
     PaginationRequest: MessageTypeDefinition
     PaginationResponse: MessageTypeDefinition

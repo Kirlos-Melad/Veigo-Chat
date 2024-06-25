@@ -1,4 +1,4 @@
-import { AuthenticationHandlers } from "@root/source/types/generated/protos/AuthenticationPackage/Authentication";
+import { AuthenticationHandlers } from "@root/source/types/generated/protos/authentication/Authentication";
 import TransactionalCall from "../utilities/TransactionalCall";
 import SignUpUseCase from "@root/source/domain/use-cases/SignUp.usecase";
 import ValidateAccessTokenUseCase from "@root/source/domain/use-cases/ValidateAccessToken.usecase";
@@ -81,4 +81,4 @@ class AuthenticationService implements AuthenticationHandlers {
 	);
 }
 
-export default AuthenticationService;
+export default new AuthenticationService();

@@ -3,7 +3,7 @@ import { ulid } from "ulidx";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import AuthenticationDto from "../../application/dtos";
 import JsonWebToken from "../../application/utilities/JsonWebToken";
-import { TokenRequest } from "@root/source/types/generated/protos/AuthenticationPackage/TokenRequest";
+import { TokenRequest } from "@root/source/types/generated/protos/authentication/TokenRequest";
 import Logger from "@root/source/application/utilities/Logger";
 import DeviceRepository from "@root/source/infrastructure/database/repositories/Device.repository";
 import { RefreshTokenSerialized } from "@root/source/application/dtos/RefreshToken.dto";

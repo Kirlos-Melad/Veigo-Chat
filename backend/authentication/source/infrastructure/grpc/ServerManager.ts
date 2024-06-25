@@ -51,9 +51,15 @@ class ServerManager {
 	}
 
 	public AddService(
-		definitionPath: string,
-		implementation: grpc.UntypedServiceImplementation,
+		protosPath: string,
+		proto: {
+			file: string;
+			packageName: string;
+			serviceName: string;
+			serviceImplementation: grpc.UntypedServiceImplementation;
+		},
 	) {
+		const { file, packageName, serviceName, serviceImplementation } = proto;
 		const currentPath = AbsolutePath(import.meta.url);
 
 		const packageDefinition = protoLoader.loadSync(
@@ -61,22 +67,24 @@ class ServerManager {
 			path.resolve(
 				currentPath,
 				// Convert the given path to relative path to the current file
-				path.relative(currentPath, definitionPath),
+				path.relative(currentPath, `${protosPath}/${file}`),
 			),
-			{},
+			{ includeDirs: [protosPath] },
 		);
 		const grpcObject = grpc.loadPackageDefinition(packageDefinition);
-		const packageName = Object.keys(grpcObject)[0];
-		const servicePackage = grpcObject[packageName] as any;
+		const grpcPackage = grpcObject[packageName] as any;
+		if (!grpcPackage)
+			throw new Error(
+				`Package ${packageName} not found in the proto file ${file}`,
+			);
 
-		for (const key in servicePackage) {
-			if (servicePackage[key].service) {
-				this.mServer.addService(
-					servicePackage[key].service,
-					implementation,
-				);
-			}
-		}
+		const grpcService = grpcPackage[serviceName] as any;
+		if (!grpcService || !grpcService.service)
+			throw new Error(
+				`Service ${serviceName} not found in the package ${packageName}`,
+			);
+
+		this.mServer.addService(grpcService.service, serviceImplementation);
 	}
 }
 

@@ -1,7 +1,7 @@
 import { ulid } from "ulidx";
 
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import { SignUpRequest } from "@root/source/types/generated/protos/AuthenticationPackage/SignUpRequest";
+import { SignUpRequest } from "@root/source/types/generated/protos/authentication/SignUpRequest";
 import AuthenticationDto, { SignUpSerialized } from "../../application/dtos";
 import JsonWebToken from "../../application/utilities/JsonWebToken";
 import AccountRepository from "@root/source/infrastructure/database/repositories/Account.repository";
@@ -11,10 +11,7 @@ const Serializer = (data: SignUpRequest) => AuthenticationDto.SignUp(data);
 
 const Authorize = async () => true;
 
-const Handler = async (
-	connection: DatabaseClient,
-	data: SignUpSerialized,
-) => {
+const Handler = async (connection: DatabaseClient, data: SignUpSerialized) => {
 	const account = await AccountRepository.Create(connection, {
 		email: data.email,
 		password: data.password,

@@ -6,7 +6,7 @@ import AuthenticationDto, { SignInSerialized } from "../../application/dtos";
 import JsonWebToken from "../../application/utilities/JsonWebToken";
 import AccountRepository from "@root/source/infrastructure/database/repositories/Account.repository";
 import DeviceRepository from "@root/source/infrastructure/database/repositories/Device.repository";
-import { SignInRequest } from "@root/source/types/generated/protos/AuthenticationPackage/SignInRequest";
+import { SignInRequest } from "@root/source/types/generated/protos/authentication/SignInRequest";
 
 const Serializer = (data: SignInRequest) => AuthenticationDto.SignIn(data);
 
