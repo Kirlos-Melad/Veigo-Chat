@@ -11,7 +11,10 @@ const repository = new MemberRoomRepository();
 const Serializer = (data: AddRequest) => MemberRoomDto.Add(data);
 
 const Authorize = async (requesterId: string, data: AddRequestSerialized) =>
-	await AuthorizationManager.instance.CanEditRoom(requesterId, data.roomId);
+	await AuthorizationManager.instance.CanEditRoom({
+		roomId: data.roomId,
+		userId: requesterId,
+	});
 
 const Handle = async (
 	connection: DatabaseClient,

@@ -11,7 +11,10 @@ const repository = new RoomRepository();
 const Serializer = (data: UpdateRequest) => RoomDto.Update(data);
 
 const Authorize = async (requesterId: string, data: UpdateRequestSerialized) =>
-	await AuthorizationManager.instance.CanEditRoom(requesterId, data.id);
+	await AuthorizationManager.instance.CanEditRoom({
+		userId: requesterId,
+		roomId: data.id,
+	});
 
 const Handle = async (
 	connection: DatabaseClient,

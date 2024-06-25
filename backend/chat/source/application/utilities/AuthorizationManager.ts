@@ -42,9 +42,9 @@ class AuthorizationManager {
 
 		const { subject } = await JsonWebToken.Verify(token);
 
-		const isTokenValid = await this.IsTokenValid(
-			JsonWebToken.NormalizeSubject(subject!),
-		);
+		const isTokenValid = await this.IsTokenValid({
+			subject: JsonWebToken.NormalizeSubject(subject!),
+		});
 
 		if (!isTokenValid) {
 			throw new Error("Unauthorized action");
@@ -53,7 +53,8 @@ class AuthorizationManager {
 		return subject!.accountId;
 	}
 
-	private async Ask(policy: string, input: any): Promise<boolean> {
+	private async Ask(args: { policy: string; input: any }): Promise<boolean> {
+		const { policy, input } = args;
 		try {
 			const response = await axios.post(
 				`${this.mConnection}/v1/data/${policy}`,
@@ -67,40 +68,51 @@ class AuthorizationManager {
 		}
 	}
 
-	private async IsTokenValid(subject: string): Promise<boolean> {
-		return await this.Ask("use_access_token", { subject: subject });
-	}
-
-	public async CanReadRoom(room: string, user: string): Promise<boolean> {
-		return await this.Ask("read_room", {
-			roomId: room,
-			userId: user,
+	private async IsTokenValid(args: { subject: string }): Promise<boolean> {
+		return await this.Ask({
+			policy: "use_access_token",
+			input: { subject: args.subject },
 		});
 	}
 
-	public async CanEditRoom(room: string, user: string): Promise<boolean> {
-		return await this.Ask("edit_room", {
-			roomId: room,
-			userId: user,
+	public async CanReadRoom(args: {
+		roomId: string;
+		userId: string;
+	}): Promise<boolean> {
+		return await this.Ask({
+			policy: "read_room",
+			input: args,
 		});
 	}
 
-	public async CanSendMessage(room: string, user: string): Promise<boolean> {
-		return await this.Ask("send_message", {
-			roomId: room,
-			userId: user,
+	public async CanEditRoom(args: {
+		roomId: string;
+		userId: string;
+	}): Promise<boolean> {
+		return await this.Ask({
+			policy: "edit_room",
+			input: args,
 		});
 	}
 
-	public async CanEditMessage(
-		user: string,
-		room: string,
-		message: string,
-	): Promise<boolean> {
-		return await this.Ask("edit_message", {
-			userId: user,
-			roomId: room,
-			messageId: message,
+	public async CanSendMessage(args: {
+		roomId: string;
+		userId: string;
+	}): Promise<boolean> {
+		return await this.Ask({
+			policy: "send_message",
+			input: args,
+		});
+	}
+
+	public async CanEditMessage(args: {
+		userId: string;
+		roomId: string;
+		messageId: string;
+	}): Promise<boolean> {
+		return await this.Ask({
+			policy: "edit_message",
+			input: args,
 		});
 	}
 }

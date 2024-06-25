@@ -11,10 +11,10 @@ const repository = new MessageRepository();
 const Serializer = (data: CreateRequest) => MessageDto.Create(data);
 
 const Authorize = async (requesterId: string, data: CreateRequestSerialized) =>
-	await AuthorizationManager.instance.CanSendMessage(
-		data.roomId,
-		requesterId,
-	);
+	await AuthorizationManager.instance.CanSendMessage({
+		roomId: data.roomId,
+		userId: requesterId,
+	});
 
 const Handle = async (
 	connection: DatabaseClient,

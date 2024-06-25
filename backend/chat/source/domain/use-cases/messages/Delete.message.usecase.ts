@@ -11,11 +11,11 @@ const repository = new MessageRepository();
 const Serializer = (data: DeleteRequest) => MessageDto.Delete(data);
 
 const Authorize = async (requesterId: string, data: DeleteRequestSerialized) =>
-	await AuthorizationManager.instance.CanEditMessage(
-		requesterId,
-		data.roomId,
-		data.messageId,
-	);
+	await AuthorizationManager.instance.CanEditMessage({
+		userId: requesterId,
+		roomId: data.roomId,
+		messageId: data.messageId,
+	});
 
 const Handle = async (
 	connection: DatabaseClient,
