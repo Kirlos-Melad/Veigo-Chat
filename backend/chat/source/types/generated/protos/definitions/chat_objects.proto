@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package chat_objects;
+
+import "common_objects.proto";
+
+message RoomObject {
+    string id = 1;
+
+    string photoPath = 2;
+    string name = 3;
+    string description = 4;
+
+    string type = 5;
+    string privacy = 6;
+
+    string createdAt = 7;
+    string updatedAt = 8;
+}
+
+message RoomObjectPage {
+    repeated RoomObject records = 1;
+    common_objects.PaginationResponse metadata = 2;
+}
+
+message ProfileObject {
+    string id = 1;
+
+    string photoPath = 2;
+    string name = 3;
+    string about = 4;
+
+    string createdAt = 5;
+    string updatedAt = 6;
+}
+
+message ProfileObjectPage {
+    repeated ProfileObject records = 1;
+    common_objects.PaginationResponse metadata = 2;
+}
+
+message MessageObject {
+    string id = 1;
+
+    string roomId = 2;
+    string senderId = 3;
+    string content = 4;
+
+    string createdAt = 5;
+    string updatedAt = 6;
+}
+
+message MessageObjectPage {
+    repeated MessageObject records = 1;
+    common_objects.PaginationResponse metadata = 2;
+}
+
+message MemberRoomObject {
+    string memberId = 1;
+    string roomId = 2;
+
+    string createdAt = 3;
+    string updatedAt = 4;
+}
+
+message MemberRoomObjectPage {
+    repeated MemberRoomObject records = 1;
+    common_objects.PaginationResponse metadata = 2;
+}

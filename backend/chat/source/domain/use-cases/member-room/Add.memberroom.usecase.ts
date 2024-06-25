@@ -4,7 +4,7 @@ import MemberRoomDto, {
 import AuthorizationManager from "@root/source/application/utilities/AuthorizationManager";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
-import { AddRequest } from "@root/source/types/generated/protos/MemberRoomPackage/AddRequest";
+import { AddRequest } from "@root/source/types/generated/protos/member_room/AddRequest";
 
 const repository = new MemberRoomRepository();
 

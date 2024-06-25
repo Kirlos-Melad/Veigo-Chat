@@ -3,7 +3,7 @@ import CommonDto, {
 } from "@root/source/application/dtos/common";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import RoomRepository from "@root/source/infrastructure/database/repositories/Room.repository";
-import { PaginationRequest } from "@root/source/types/generated/protos/CommonObjects/PaginationRequest";
+import { PaginationRequest } from "@root/source/types/generated/protos/common_objects/PaginationRequest";
 
 const roomRepository = new RoomRepository();
 

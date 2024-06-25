@@ -3,7 +3,7 @@ import MemberRoomDto, {
 } from "@root/source/application/dtos/member-room";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
-import { LeaveRequest } from "@root/source/types/generated/protos/MemberRoomPackage/LeaveRequest";
+import { LeaveRequest } from "@root/source/types/generated/protos/member_room/LeaveRequest";
 
 const repository = new MemberRoomRepository();
 

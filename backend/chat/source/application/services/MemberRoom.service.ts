@@ -1,4 +1,4 @@
-import { MemberRoomHandlers } from "@source/types/generated/protos/MemberRoomPackage/MemberRoom";
+import { MemberRoomHandlers } from "@source/types/generated/protos/member_room/MemberRoom";
 import TransactionalCall from "../utilities/TransactionalCall";
 import AddMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Add.memberroom.usecase";
 import LeaveMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Leave.memberroom.usecase";

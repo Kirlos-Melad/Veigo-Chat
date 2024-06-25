@@ -1,4 +1,4 @@
-import { RoomHandlers } from "@source/types/generated/protos/RoomPackage/Room";
+import { RoomHandlers } from "@source/types/generated/protos/room/Room";
 import TransactionalCall from "../utilities/TransactionalCall";
 import CreateRoomUseCase from "@root/source/domain/use-cases/rooms/Create.room.usecase";
 import ListRoomUseCase from "@root/source/domain/use-cases/rooms/List.room.usecase";

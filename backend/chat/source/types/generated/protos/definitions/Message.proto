@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package MessagePackage;
+package message;
 
-import "ChatObjects.proto";
-import "CommonObjects.proto";
+import "common_objects.proto";
+import "chat_objects.proto";
 
 message CreateRequest {
     string roomId = 1;
@@ -12,7 +12,7 @@ message CreateRequest {
 
 message ListRequest {
     string roomId = 1;
-    PaginationRequest page = 2;
+    common_objects.PaginationRequest page = 2;
 }
 
 message UpdateRequest {
@@ -28,8 +28,8 @@ message DeleteRequest {
 }
 
 service Message {
-    rpc Create (CreateRequest) returns (MessageObject);
-    rpc List (ListRequest) returns (MessageObjectPage);
-    rpc Update (UpdateRequest) returns (MessageObject);
-    rpc Delete (DeleteRequest) returns (MessageObject);
+    rpc Create (CreateRequest) returns (chat_objects.MessageObject);
+    rpc List (ListRequest) returns (chat_objects.MessageObjectPage);
+    rpc Update (UpdateRequest) returns (chat_objects.MessageObject);
+    rpc Delete (DeleteRequest) returns (chat_objects.MessageObject);
 }

@@ -4,7 +4,7 @@ import RoomDto, {
 import AuthorizationManager from "@root/source/application/utilities/AuthorizationManager";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import RoomRepository from "@root/source/infrastructure/database/repositories/Room.repository";
-import { UpdateRequest } from "@root/source/types/generated/protos/RoomPackage/UpdateRequest";
+import { UpdateRequest } from "@root/source/types/generated/protos/room/UpdateRequest";
 
 const repository = new RoomRepository();
 

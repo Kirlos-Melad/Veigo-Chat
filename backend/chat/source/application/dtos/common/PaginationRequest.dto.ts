@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Dto } from "../Dto";
-import { PaginationRequest } from "@root/source/types/generated/protos/CommonObjects/PaginationRequest";
+import { PaginationRequest } from "@root/source/types/generated/protos/common_objects/PaginationRequest";
 
 type PaginationRequestSerialized = PaginationRequest;
 

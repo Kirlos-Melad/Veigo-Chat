@@ -3,7 +3,7 @@ import ProfileDto, {
 } from "@root/source/application/dtos/profile";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import ProfileRepository from "@root/source/infrastructure/database/repositories/Profile.repository";
-import { ReadRequest } from "@root/source/types/generated/protos/ProfilePackage/ReadRequest";
+import { ReadRequest } from "@root/source/types/generated/protos/profile/ReadRequest";
 
 const repository = new ProfileRepository();
 

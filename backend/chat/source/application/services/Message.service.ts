@@ -1,4 +1,4 @@
-import { MessageHandlers } from "@source/types/generated/protos/MessagePackage/Message";
+import { MessageHandlers } from "@source/types/generated/protos/message/Message";
 import TransactionalCall from "../utilities/TransactionalCall";
 import CreateMessageUseCase from "@root/source/domain/use-cases/messages/Create.message.usecase";
 import ListMessageUseCase from "@root/source/domain/use-cases/messages/List.message.usecase";

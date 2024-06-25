@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package ProfilePackage;
+package profile;
 
-import "ChatObjects.proto";
+import "chat_objects.proto";
 
 message CreateRequest {
     string photoPath = 2;
@@ -26,8 +26,8 @@ message DeleteRequest {
 }
 
 service Profile {
-    rpc Create (CreateRequest) returns (ProfileObject);
-    rpc Read (ReadRequest) returns (ProfileObject);
-    rpc Update (UpdateRequest) returns (ProfileObject);
-    rpc Delete (DeleteRequest) returns (ProfileObject);
+    rpc Create (CreateRequest) returns (chat_objects.ProfileObject);
+    rpc Read (ReadRequest) returns (chat_objects.ProfileObject);
+    rpc Update (UpdateRequest) returns (chat_objects.ProfileObject);
+    rpc Delete (DeleteRequest) returns (chat_objects.ProfileObject);
 }

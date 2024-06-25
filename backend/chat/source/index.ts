@@ -37,26 +37,38 @@ async function Start() {
 		grpc.ServerCredentials.createInsecure(),
 	);
 
-	serverManager.AddService(
-		"source/types/generated/protos/definitions/HealthCheck.proto",
-		HealthCheckService,
-	);
-	serverManager.AddService(
-		"source/types/generated/protos/definitions/Profile.proto",
-		ProfileService,
-	);
-	serverManager.AddService(
-		"source/types/generated/protos/definitions/Room.proto",
-		RoomService,
-	);
-	serverManager.AddService(
-		"source/types/generated/protos/definitions/Message.proto",
-		MessageService,
-	);
-	serverManager.AddService(
-		"source/types/generated/protos/definitions/MemberRoom.proto",
-		MemberRoomService,
-	);
+	const PROTOS_PATH = "source/types/generated/protos/definitions";
+
+	serverManager.AddService(PROTOS_PATH, {
+		file: "health_check.proto",
+		packageName: "health_check",
+		serviceName: "HealthCheck",
+		serviceImplementation: HealthCheckService,
+	});
+	serverManager.AddService(PROTOS_PATH, {
+		file: "profile.proto",
+		packageName: "profile",
+		serviceName: "Profile",
+		serviceImplementation: ProfileService,
+	});
+	serverManager.AddService(PROTOS_PATH, {
+		file: "room.proto",
+		packageName: "room",
+		serviceName: "Room",
+		serviceImplementation: RoomService,
+	});
+	serverManager.AddService(PROTOS_PATH, {
+		file: "message.proto",
+		packageName: "message",
+		serviceName: "Message",
+		serviceImplementation: MessageService,
+	});
+	serverManager.AddService(PROTOS_PATH, {
+		file: "member_room.proto",
+		packageName: "member_room",
+		serviceName: "MemberRoom",
+		serviceImplementation: MemberRoomService,
+	});
 
 	Logger.information("Starting server");
 	const port = await serverManager.StartServer();

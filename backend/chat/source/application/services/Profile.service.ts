@@ -1,4 +1,4 @@
-import { ProfileHandlers } from "@source/types/generated/protos/ProfilePackage/Profile";
+import { ProfileHandlers } from "@source/types/generated/protos/profile/Profile";
 import TransactionalCall from "../utilities/TransactionalCall";
 import CreateProfileUseCase from "@source/domain/use-cases/profiles/Create.profile.usecase";
 import ReadProfileUseCase from "@source/domain/use-cases/profiles/Read.profile.usecase";

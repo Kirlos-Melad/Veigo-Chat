@@ -1,14 +1,14 @@
 import type * as grpc from '@grpc/grpc-js';
 import type { MessageTypeDefinition } from '@grpc/proto-loader';
 
-import type { MessageClient as _MessagePackage_MessageClient, MessageDefinition as _MessagePackage_MessageDefinition } from './MessagePackage/Message';
+import type { MessageClient as _message_MessageClient, MessageDefinition as _message_MessageDefinition } from './message/Message';
 
 type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> = {
   new(...args: ConstructorParameters<Constructor>): Subtype;
 };
 
 export interface ProtoGrpcType {
-  ChatObjectsPackage: {
+  chat_objects: {
     MemberRoomObject: MessageTypeDefinition
     MemberRoomObjectPage: MessageTypeDefinition
     MessageObject: MessageTypeDefinition
@@ -18,16 +18,16 @@ export interface ProtoGrpcType {
     RoomObject: MessageTypeDefinition
     RoomObjectPage: MessageTypeDefinition
   }
-  CommonObjects: {
+  common_objects: {
     EmptyObject: MessageTypeDefinition
     PaginationRequest: MessageTypeDefinition
     PaginationResponse: MessageTypeDefinition
   }
-  MessagePackage: {
+  message: {
     CreateRequest: MessageTypeDefinition
     DeleteRequest: MessageTypeDefinition
     ListRequest: MessageTypeDefinition
-    Message: SubtypeConstructor<typeof grpc.Client, _MessagePackage_MessageClient> & { service: _MessagePackage_MessageDefinition }
+    Message: SubtypeConstructor<typeof grpc.Client, _message_MessageClient> & { service: _message_MessageDefinition }
     UpdateRequest: MessageTypeDefinition
   }
 }

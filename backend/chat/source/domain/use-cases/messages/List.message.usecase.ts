@@ -4,7 +4,7 @@ import MessageDto, {
 import AuthorizationManager from "@root/source/application/utilities/AuthorizationManager";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import MessageRepository from "@root/source/infrastructure/database/repositories/Message.repository";
-import { ListRequest } from "@root/source/types/generated/protos/MessagePackage/ListRequest";
+import { ListRequest } from "@root/source/types/generated/protos/message/ListRequest";
 
 const repository = new MessageRepository();
 

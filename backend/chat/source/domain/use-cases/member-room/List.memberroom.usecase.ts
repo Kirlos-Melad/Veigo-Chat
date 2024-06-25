@@ -3,7 +3,7 @@ import { ListRequestSerialized } from "@root/source/application/dtos/message";
 import AuthorizationManager from "@root/source/application/utilities/AuthorizationManager";
 import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
 import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
-import { ListRequest } from "@root/source/types/generated/protos/MemberRoomPackage/ListRequest";
+import { ListRequest } from "@root/source/types/generated/protos/member_room/ListRequest";
 
 const repository = new MemberRoomRepository();
 
