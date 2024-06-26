@@ -16,12 +16,7 @@ message AddResponse {
 
 message ListRequest {
     string roomId = 1;
-    common_objects.PaginationResponse page = 2;
-}
-
-message ListResponse {
-    repeated ProfileObject records = 1;
-    common_objects.PaginationResponse metadata = 2;
+    common_objects.PaginationRequest page = 2;
 }
 
 message LeaveRequest {
@@ -30,6 +25,6 @@ message LeaveRequest {
 
 service MemberRoom {
     rpc Add (AddRequest) returns (AddResponse);
-    rpc List (ListRequest) returns (ListResponse);
+    rpc List (ListRequest) returns (chat_objects.MemberRoomObjectPage);
     rpc Leave (LeaveRequest) returns (chat_objects.MemberRoomObject);
 }

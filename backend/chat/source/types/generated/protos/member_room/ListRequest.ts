@@ -1,13 +1,13 @@
 // Original file: source/types/generated/protos/definitions/member_room.proto
 
-import type { PaginationResponse as _common_objects_PaginationResponse, PaginationResponse__Output as _common_objects_PaginationResponse__Output } from '../common_objects/PaginationResponse';
+import type { PaginationRequest as _common_objects_PaginationRequest, PaginationRequest__Output as _common_objects_PaginationRequest__Output } from '../common_objects/PaginationRequest';
 
 export interface ListRequest {
   'roomId'?: (string);
-  'page'?: (_common_objects_PaginationResponse | null);
+  'page'?: (_common_objects_PaginationRequest | null);
 }
 
 export interface ListRequest__Output {
   'roomId'?: (string);
-  'page'?: (_common_objects_PaginationResponse__Output);
+  'page'?: (_common_objects_PaginationRequest__Output);
 }

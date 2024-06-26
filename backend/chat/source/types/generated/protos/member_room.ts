@@ -28,7 +28,6 @@ export interface ProtoGrpcType {
     AddResponse: MessageTypeDefinition
     LeaveRequest: MessageTypeDefinition
     ListRequest: MessageTypeDefinition
-    ListResponse: MessageTypeDefinition
     MemberRoom: SubtypeConstructor<typeof grpc.Client, _member_room_MemberRoomClient> & { service: _member_room_MemberRoomDefinition }
   }
 }
