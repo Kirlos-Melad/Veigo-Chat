@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package message;
+
+import "common_objects.proto";
+import "chat_objects.proto";
+
+message CreateRequest {
+    string roomId = 1;
+    string content = 2;
+}
+
+message ListRequest {
+    string roomId = 1;
+    common_objects.PaginationRequest page = 2;
+}
+
+message UpdateRequest {
+    string roomId = 1;
+    string messageId = 2;
+
+    string content = 3;
+}
+
+message DeleteRequest {
+    string roomId = 1;
+    string messageId = 2;
+}
+
+service Message {
+    rpc Create (CreateRequest) returns (chat_objects.MessageObject);
+    rpc List (ListRequest) returns (chat_objects.MessageObjectPage);
+    rpc Update (UpdateRequest) returns (chat_objects.MessageObject);
+    rpc Delete (DeleteRequest) returns (chat_objects.MessageObject);
+}

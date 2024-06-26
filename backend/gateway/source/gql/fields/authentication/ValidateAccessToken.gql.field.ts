@@ -10,7 +10,6 @@ import GQLField from "@root/source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import SuccessGQLType from "../../types/Success.gql.type";
 import { GQLContext } from "../../GQLHandler";
-import { EmptyObject } from "@root/source/types/generated/protos/authentication/AuthenticationPackage/EmptyObject";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	token: { type: new GraphQLNonNull(GraphQLString) },

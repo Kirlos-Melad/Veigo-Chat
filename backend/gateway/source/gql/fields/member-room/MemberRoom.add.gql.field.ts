@@ -10,8 +10,8 @@ import { Metadata, ServiceError } from "@grpc/grpc-js";
 import GQLField from "@root/source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { GQLContext } from "../../GQLHandler";
-import { MemberRoomList } from "@root/source/types/generated/protos/chat/MemberRoomPackage/MemberRoomList";
 import MemberRoomGQLType from "../../types/MemberRoom.gql.type";
+import { AddResponse } from "@root/source/types/generated/protos/member_room/AddResponse";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	roomId: { type: new GraphQLNonNull(GraphQLString) },
@@ -26,7 +26,7 @@ class MemberRoomAddGQLField extends GQLField<Args> {
 			type: "mutation",
 			name: "AddMembersToRoom",
 			args: Args,
-			outputType: MemberRoomGQLType,
+			outputType: new GraphQLList(MemberRoomGQLType),
 			isGuarded: true,
 		});
 	}
@@ -42,7 +42,7 @@ class MemberRoomAddGQLField extends GQLField<Args> {
 						this.mIsGuarded ? context.metadata! : new Metadata(),
 						(
 							error: ServiceError | null,
-							response: MemberRoomList | undefined,
+							response: AddResponse | undefined,
 						) => (error ? reject(error) : resolve(response!)),
 					),
 			);

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package member_room;
+
+import "common_objects.proto";
+import "chat_objects.proto";
+
+message AddRequest {
+    string roomId = 1;
+    repeated string membersId = 2;
+}
+
+message AddResponse {
+    repeated chat_objects.MemberRoomObject members = 1;
+}
+
+message ListRequest {
+    string roomId = 1;
+    common_objects.PaginationRequest page = 2;
+}
+
+message LeaveRequest {
+    string roomId = 1;
+}
+
+service MemberRoom {
+    rpc Add (AddRequest) returns (AddResponse);
+    rpc List (ListRequest) returns (chat_objects.MemberRoomObjectPage);
+    rpc Leave (LeaveRequest) returns (chat_objects.MemberRoomObject);
+}

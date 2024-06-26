@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package room;
+
+import "common_objects.proto";
+import "chat_objects.proto";
+
+message CreateRequest {
+    string photoPath = 1;
+    string name = 2;
+    string description = 3;
+
+    string type = 4;
+    string privacy = 5;
+
+    repeated string members = 6;
+}
+
+message CreateResponse {
+    chat_objects.RoomObject information = 1;
+    repeated chat_objects.MemberRoomObject members = 2;
+}
+
+message UpdateRequest {
+    string id = 1;
+
+    string photoPath = 2;
+    string name = 3;
+    string description = 4;
+
+    string privacy = 5;
+}
+
+service Room {
+    rpc Create (CreateRequest) returns (CreateResponse);
+    rpc List (common_objects.PaginationRequest) returns (chat_objects.RoomObjectPage);
+    rpc Update (UpdateRequest) returns (chat_objects.RoomObject);
+}

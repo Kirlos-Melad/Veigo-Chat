@@ -3,16 +3,20 @@ import {
 	GraphQLFieldResolver,
 	GraphQLList,
 	GraphQLNonNull,
+	GraphQLObjectType,
 	GraphQLString,
 } from "graphql";
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
 import GQLField from "@root/source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
-import { RoomPrivacyGQLType, RoomTypeGQLType } from "../../types/Room.gql.type";
+import RoomGQLType, {
+	RoomPrivacyGQLType,
+	RoomTypeGQLType,
+} from "../../types/Room.gql.type";
 import { GQLContext } from "../../GQLHandler";
-import { RoomInformation } from "@root/source/types/generated/protos/chat/RoomPackage/RoomInformation";
-import RoomInformationGQLType from "../../types/RoomInformation.gql.type";
+import { CreateRequest } from "@root/source/types/generated/protos/room/CreateRequest";
+import MemberRoomGQLType from "../../types/MemberRoom.gql.type";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	photoPath: { type: GraphQLString },
@@ -31,7 +35,13 @@ class RoomCreateGQLField extends GQLField<Args> {
 			type: "mutation",
 			name: "CreateRoom",
 			args: Args,
-			outputType: RoomInformationGQLType,
+			outputType: new GraphQLObjectType({
+				name: "CreateRoomOutput",
+				fields: {
+					information: { type: RoomGQLType },
+					members: { type: new GraphQLList(MemberRoomGQLType) },
+				},
+			}),
 			isGuarded: true,
 		});
 	}
@@ -47,7 +57,7 @@ class RoomCreateGQLField extends GQLField<Args> {
 						this.mIsGuarded ? context.metadata! : new Metadata(),
 						(
 							error: ServiceError | null,
-							response: RoomInformation | undefined,
+							response: CreateRequest | undefined,
 						) => (error ? reject(error) : resolve(response!)),
 					),
 			);

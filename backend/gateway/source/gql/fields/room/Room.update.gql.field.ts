@@ -7,11 +7,11 @@ import {
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
 import GQLField from "@root/source/gql/fields/GQLField";
-import { UpdateRequest } from "@source/types/generated/protos/chat/RoomPackage/UpdateRequest";
+import { UpdateRequest } from "@source/types/generated/protos/room/UpdateRequest";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import RoomGQLType, { RoomPrivacyGQLType } from "../../types/Room.gql.type";
 import { GQLContext } from "../../GQLHandler";
-import { RoomObject } from "@root/source/types/generated/protos/chat/ChatObjectsPackage/RoomObject";
+import { RoomObject } from "@root/source/types/generated/protos/chat_objects/RoomObject";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	id: { type: new GraphQLNonNull(GraphQLString) },

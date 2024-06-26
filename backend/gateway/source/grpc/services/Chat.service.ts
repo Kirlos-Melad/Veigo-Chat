@@ -1,9 +1,11 @@
-import { ProfileClient } from "@source/types/generated/protos/chat/ProfilePackage/Profile";
-import { RoomClient } from "@source/types/generated/protos/chat/RoomPackage/Room";
-import { MessageClient } from "@source/types/generated/protos/chat/MessagePackage/Message";
+import { ProfileClient } from "@source/types/generated/protos/profile/Profile";
+import { RoomClient } from "@source/types/generated/protos/room/Room";
+import { MessageClient } from "@source/types/generated/protos/message/Message";
+import { MemberRoomClient } from "@root/source/types/generated/protos/member_room/MemberRoom";
 import Environments from "@source/configurations/Environments";
 import GRPCServiceManager from "../GRPCServiceManager";
-import { MemberRoomClient } from "@root/source/types/generated/protos/chat/MemberRoomPackage/MemberRoom";
+
+const PROTO_PATH = "source/types/generated/protos/definitions";
 
 const ChatService = new GRPCServiceManager<{
 	Profile: ProfileClient;
@@ -13,11 +15,10 @@ const ChatService = new GRPCServiceManager<{
 }>(
 	"Chat",
 	{
-		Profile: "source/types/generated/protos/chat/definitions/Profile.proto",
-		Room: "source/types/generated/protos/chat/definitions/Room.proto",
-		MemberRoom:
-			"source/types/generated/protos/chat/definitions/MemberRoom.proto",
-		Message: "source/types/generated/protos/chat/definitions/Message.proto",
+		Profile: `${PROTO_PATH}/Profile.proto`,
+		Room: `${PROTO_PATH}/Room.proto`,
+		MemberRoom: `${PROTO_PATH}/MemberRoom.proto`,
+		Message: `${PROTO_PATH}/Message.proto`,
 	},
 	Environments.CHAT_SERVICE_CONNECTION,
 	Environments.CHAT_SERVICE_CREDENTIALS,
