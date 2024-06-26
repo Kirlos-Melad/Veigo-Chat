@@ -11,9 +11,9 @@ import LoginResponseGQLType from "../../types/LoginResponse.gql.type";
 import { AuthenticationResponse } from "@root/source/types/generated/protos/authentication/AuthenticationResponse";
 import { GQLContext } from "../../GQLHandler";
 import ProfileGQLType from "../../types/Profile.gql.type";
-import { ProfileObject } from "@root/source/types/generated/protos/profile/ProfileObject";
 import { Args as SignUpArgs } from "../authentication/SignUp.gql.field";
 import { Args as CreateProfileArgs } from "../profile/Profile.create.gql.field";
+import { ProfileObject } from "@root/source/types/generated/protos/chat_objects/ProfileObject";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	...SignUpArgs,
