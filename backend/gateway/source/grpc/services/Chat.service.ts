@@ -15,10 +15,10 @@ const ChatService = new GRPCServiceManager<{
 }>(
 	"Chat",
 	{
-		Profile: `${PROTO_PATH}/Profile.proto`,
-		Room: `${PROTO_PATH}/Room.proto`,
-		MemberRoom: `${PROTO_PATH}/MemberRoom.proto`,
-		Message: `${PROTO_PATH}/Message.proto`,
+		Profile: `${PROTO_PATH}/profile.proto`,
+		Room: `${PROTO_PATH}/room.proto`,
+		MemberRoom: `${PROTO_PATH}/member_room.proto`,
+		Message: `${PROTO_PATH}/message.proto`,
 	},
 	Environments.CHAT_SERVICE_CONNECTION,
 	Environments.CHAT_SERVICE_CREDENTIALS,

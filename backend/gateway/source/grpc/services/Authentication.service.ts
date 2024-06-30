@@ -9,7 +9,7 @@ const AuthService = new GRPCServiceManager<{
 }>(
 	"Auth",
 	{
-		Authentication: `${PROTO_PATH}/Authentication.proto`,
+		Authentication: `${PROTO_PATH}/authentication.proto`,
 	},
 	Environments.AUTH_SERVICE_CONNECTION,
 	Environments.AUTH_SERVICE_CREDENTIALS,
