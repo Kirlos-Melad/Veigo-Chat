@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Dto } from "./Dto";
-import DeviceEntity from "@root/source/domain/entities/Device.entity";
+import DeviceEntity from "@source/domain/entities/Device.entity";
 
 type SignOut = Pick<DeviceEntity, "accountId" | "clientId">;
 

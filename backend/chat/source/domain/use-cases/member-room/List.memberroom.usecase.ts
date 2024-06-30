@@ -1,9 +1,9 @@
-import MemberRoomDto from "@root/source/application/dtos/member-room";
-import { ListRequestSerialized } from "@root/source/application/dtos/message";
-import AuthorizationManager from "@root/source/application/utilities/AuthorizationManager";
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
-import { ListRequest } from "@root/source/types/generated/protos/member_room/ListRequest";
+import MemberRoomDto from "@source/application/dtos/member-room";
+import { ListRequestSerialized } from "@source/application/dtos/message";
+import AuthorizationManager from "@source/application/utilities/AuthorizationManager";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import MemberRoomRepository from "@source/infrastructure/database/repositories/MemberRoom.repository";
+import { ListRequest } from "@source/types/generated/protos/member_room/ListRequest";
 
 const repository = new MemberRoomRepository();
 

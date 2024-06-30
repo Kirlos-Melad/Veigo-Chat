@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Dto } from "./Dto";
-import AccountEntity from "@root/source/domain/entities/Account.entity";
-import DeviceEntity from "@root/source/domain/entities/Device.entity";
+import AccountEntity from "@source/domain/entities/Account.entity";
+import DeviceEntity from "@source/domain/entities/Device.entity";
 import PasswordHandler from "../utilities/PasswordHandler";
 
 type SignInSerialized = Pick<AccountEntity, "email" | "password"> &

@@ -8,12 +8,12 @@ import {
 } from "graphql";
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
-import GQLField from "@root/source/gql/fields/GQLField";
+import GQLField from "@source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { GQLContext } from "../../GQLHandler";
 import MemberRoomGQLType from "../../types/MemberRoom.gql.type";
 import PaginationRequestGQLType from "../../types/PaginationRequest.gql.type";
-import { MemberRoomObjectPage } from "@root/source/types/generated/protos/chat_objects/MemberRoomObjectPage";
+import { MemberRoomObjectPage } from "@source/types/generated/protos/chat_objects/MemberRoomObjectPage";
 import PaginationResponseMetadataGQLType from "../../types/PaginationResponseMetaData.gql.type";
 
 const Args: GraphQLFieldConfigArgumentMap = {

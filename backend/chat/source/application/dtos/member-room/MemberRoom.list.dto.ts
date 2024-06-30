@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Dto } from "../Dto";
-import MemberRoomEntity from "@root/source/domain/entities/MemberRoom.entity";
+import MemberRoomEntity from "@source/domain/entities/MemberRoom.entity";
 import { PaginationRequestSerialized } from "../common";
 
 type ListRequestSerialized = Pick<MemberRoomEntity, "roomId"> & {

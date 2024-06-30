@@ -1,5 +1,5 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import MemberRoomEntity from "@root/source/domain/entities/MemberRoom.entity";
+import MemberRoomEntity from "@source/domain/entities/MemberRoom.entity";
 import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
 
 type MemberRoomCreate = Pick<MemberRoomEntity, "memberId" | "roomId">;

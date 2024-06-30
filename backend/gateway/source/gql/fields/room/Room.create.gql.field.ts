@@ -8,14 +8,14 @@ import {
 } from "graphql";
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
-import GQLField from "@root/source/gql/fields/GQLField";
+import GQLField from "@source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import RoomGQLType, {
 	RoomPrivacyGQLType,
 	RoomTypeGQLType,
 } from "../../types/Room.gql.type";
 import { GQLContext } from "../../GQLHandler";
-import { CreateRequest } from "@root/source/types/generated/protos/room/CreateRequest";
+import { CreateRequest } from "@source/types/generated/protos/room/CreateRequest";
 import MemberRoomGQLType from "../../types/MemberRoom.gql.type";
 
 const Args: GraphQLFieldConfigArgumentMap = {

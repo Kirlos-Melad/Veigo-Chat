@@ -1,10 +1,10 @@
 import RoomDto, {
 	UpdateRequestSerialized,
-} from "@root/source/application/dtos/room";
-import AuthorizationManager from "@root/source/application/utilities/AuthorizationManager";
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import RoomRepository from "@root/source/infrastructure/database/repositories/Room.repository";
-import { UpdateRequest } from "@root/source/types/generated/protos/room/UpdateRequest";
+} from "@source/application/dtos/room";
+import AuthorizationManager from "@source/application/utilities/AuthorizationManager";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import RoomRepository from "@source/infrastructure/database/repositories/Room.repository";
+import { UpdateRequest } from "@source/types/generated/protos/room/UpdateRequest";
 
 const repository = new RoomRepository();
 

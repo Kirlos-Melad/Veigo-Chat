@@ -1,7 +1,7 @@
 import { ProfileClient } from "@source/types/generated/protos/profile/Profile";
 import { RoomClient } from "@source/types/generated/protos/room/Room";
 import { MessageClient } from "@source/types/generated/protos/message/Message";
-import { MemberRoomClient } from "@root/source/types/generated/protos/member_room/MemberRoom";
+import { MemberRoomClient } from "@source/types/generated/protos/member_room/MemberRoom";
 import Environments from "@source/configurations/Environments";
 import GRPCServiceManager from "../GRPCServiceManager";
 

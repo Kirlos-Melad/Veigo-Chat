@@ -1,6 +1,6 @@
 import Environments from "@source/configurations/Environments";
 import GRPCServiceManager from "../GRPCServiceManager";
-import { AuthenticationClient } from "@root/source/types/generated/protos/authentication/Authentication";
+import { AuthenticationClient } from "@source/types/generated/protos/authentication/Authentication";
 
 const PROTO_PATH = "source/types/generated/protos/definitions";
 
@@ -9,8 +9,7 @@ const AuthService = new GRPCServiceManager<{
 }>(
 	"Auth",
 	{
-		Authentication:
-			`${PROTO_PATH}/Authentication.proto`,
+		Authentication: `${PROTO_PATH}/Authentication.proto`,
 	},
 	Environments.AUTH_SERVICE_CONNECTION,
 	Environments.AUTH_SERVICE_CREDENTIALS,

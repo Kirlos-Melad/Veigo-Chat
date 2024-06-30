@@ -4,7 +4,7 @@ import ServerManager, {
 	SocketClient,
 	SocketClientEvents,
 } from "../SocketServer";
-import AuthorizationManager from "@root/source/utilities/AuthorizationManager";
+import AuthorizationManager from "@source/utilities/AuthorizationManager";
 import SocketServer from "../SocketServer";
 
 class ChatMessageEvent extends Event<SocketClientEvents, "JOIN_ROOM"> {

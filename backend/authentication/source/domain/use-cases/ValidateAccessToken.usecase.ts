@@ -1,11 +1,11 @@
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 import AuthenticationDto, {
 	ValidateAccessTokenSerialized,
 } from "../../application/dtos";
 import JsonWebToken from "../../application/utilities/JsonWebToken";
-import { TokenRequest } from "@root/source/types/generated/protos/authentication/TokenRequest";
-import Logger from "@root/source/application/utilities/Logger";
-import DeviceRepository from "@root/source/infrastructure/database/repositories/Device.repository";
+import { TokenRequest } from "@source/types/generated/protos/authentication/TokenRequest";
+import Logger from "@source/application/utilities/Logger";
+import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
 
 const Serializer = (data: TokenRequest) =>
 	AuthenticationDto.ValidateAccessToken(data);

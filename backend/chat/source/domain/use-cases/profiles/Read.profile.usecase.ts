@@ -1,9 +1,9 @@
 import ProfileDto, {
 	ReadRequestSerialized,
-} from "@root/source/application/dtos/profile";
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import ProfileRepository from "@root/source/infrastructure/database/repositories/Profile.repository";
-import { ReadRequest } from "@root/source/types/generated/protos/profile/ReadRequest";
+} from "@source/application/dtos/profile";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import ProfileRepository from "@source/infrastructure/database/repositories/Profile.repository";
+import { ReadRequest } from "@source/types/generated/protos/profile/ReadRequest";
 
 const repository = new ProfileRepository();
 

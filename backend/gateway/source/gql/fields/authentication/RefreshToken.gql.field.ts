@@ -6,11 +6,11 @@ import {
 } from "graphql";
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
-import GQLField from "@root/source/gql/fields/GQLField";
+import GQLField from "@source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { GQLContext } from "../../GQLHandler";
 import TokenGQLType from "../../types/Token.gql.type";
-import { TokenObject } from "@root/source/types/generated/protos/authentication_objects/TokenObject";
+import { TokenObject } from "@source/types/generated/protos/authentication_objects/TokenObject";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	token: { type: new GraphQLNonNull(GraphQLString) },

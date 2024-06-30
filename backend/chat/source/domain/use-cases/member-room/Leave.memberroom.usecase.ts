@@ -1,9 +1,9 @@
 import MemberRoomDto, {
 	LeaveRequestSerialized,
-} from "@root/source/application/dtos/member-room";
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
-import { LeaveRequest } from "@root/source/types/generated/protos/member_room/LeaveRequest";
+} from "@source/application/dtos/member-room";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import MemberRoomRepository from "@source/infrastructure/database/repositories/MemberRoom.repository";
+import { LeaveRequest } from "@source/types/generated/protos/member_room/LeaveRequest";
 
 const repository = new MemberRoomRepository();
 

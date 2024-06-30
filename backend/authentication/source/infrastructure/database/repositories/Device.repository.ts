@@ -1,11 +1,11 @@
-import DeviceEntity from "@root/source/domain/entities/Device.entity";
+import DeviceEntity from "@source/domain/entities/Device.entity";
 import { DatabaseClient } from "../DatabaseManager";
-import ConvertObjectToArrays from "@root/source/application/utilities/ConvertObjectToArrays";
+import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
 import IDeviceRepository, {
 	DeviceCreate,
 	DeviceRead,
 	DeviceUpdate,
-} from "@root/source/domain/repositories/IDevice.repository";
+} from "@source/domain/repositories/IDevice.repository";
 
 class DeviceRepository implements IDeviceRepository {
 	public async Create(connection: DatabaseClient, device: DeviceCreate) {

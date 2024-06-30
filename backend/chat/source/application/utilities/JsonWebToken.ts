@@ -1,4 +1,4 @@
-import Environments from "@root/source/configurations/Environments";
+import Environments from "@source/configurations/Environments";
 import * as jose from "jose";
 import crypto from "crypto";
 

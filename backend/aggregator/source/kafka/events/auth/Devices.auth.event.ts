@@ -3,9 +3,9 @@ import { z } from "zod";
 
 import { KafkaEvents } from "../../KafkaConsumer";
 import Logger from "@source/utilities/Logger";
-import KafkaEvent from "@root/source/types/KafkaEvent";
-import DebeziumMessage from "@root/source/utilities/DebeziumMessage";
-import ConfigurationModel from "@root/source/models/Configuration.model";
+import KafkaEvent from "@source/types/KafkaEvent";
+import DebeziumMessage from "@source/utilities/DebeziumMessage";
+import ConfigurationModel from "@source/models/Configuration.model";
 
 interface DeviceEntity {
 	accountId: string;

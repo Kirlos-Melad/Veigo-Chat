@@ -1,11 +1,11 @@
 import RoomDto, {
 	CreateRequestSerialized,
-} from "@root/source/application/dtos/room";
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import MemberRoomRepository from "@root/source/infrastructure/database/repositories/MemberRoom.repository";
-import RoomRepository from "@root/source/infrastructure/database/repositories/Room.repository";
-import { CreateRequest } from "@root/source/types/generated/protos/room/CreateRequest";
-import ProfileRepository from "@root/source/infrastructure/database/repositories/Profile.repository";
+} from "@source/application/dtos/room";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import MemberRoomRepository from "@source/infrastructure/database/repositories/MemberRoom.repository";
+import RoomRepository from "@source/infrastructure/database/repositories/Room.repository";
+import { CreateRequest } from "@source/types/generated/protos/room/CreateRequest";
+import ProfileRepository from "@source/infrastructure/database/repositories/Profile.repository";
 
 const roomRepository = new RoomRepository();
 const memberRoomRepository = new MemberRoomRepository();

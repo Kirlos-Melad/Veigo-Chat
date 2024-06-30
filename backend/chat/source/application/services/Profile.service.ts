@@ -2,8 +2,8 @@ import { ProfileHandlers } from "@source/types/generated/protos/profile/Profile"
 import TransactionalCall from "../utilities/TransactionalCall";
 import CreateProfileUseCase from "@source/domain/use-cases/profiles/Create.profile.usecase";
 import ReadProfileUseCase from "@source/domain/use-cases/profiles/Read.profile.usecase";
-import UpdateProfileUseCase from "@root/source/domain/use-cases/profiles/Update.profile.usecase";
-import DeleteProfileUseCase from "@root/source/domain/use-cases/profiles/Delete.profile.usecase";
+import UpdateProfileUseCase from "@source/domain/use-cases/profiles/Update.profile.usecase";
+import DeleteProfileUseCase from "@source/domain/use-cases/profiles/Delete.profile.usecase";
 
 class ProfileService implements ProfileHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;

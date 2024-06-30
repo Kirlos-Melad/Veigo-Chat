@@ -1,9 +1,9 @@
-import { AuthenticationHandlers } from "@root/source/types/generated/protos/authentication/Authentication";
+import { AuthenticationHandlers } from "@source/types/generated/protos/authentication/Authentication";
 import TransactionalCall from "../utilities/TransactionalCall";
-import SignUpUseCase from "@root/source/domain/use-cases/SignUp.usecase";
-import ValidateAccessTokenUseCase from "@root/source/domain/use-cases/ValidateAccessToken.usecase";
-import SignInUseCase from "@root/source/domain/use-cases/SignIn.usecase";
-import RefreshTokenUseCase from "@root/source/domain/use-cases/RefreshToken.usecase";
+import SignUpUseCase from "@source/domain/use-cases/SignUp.usecase";
+import ValidateAccessTokenUseCase from "@source/domain/use-cases/ValidateAccessToken.usecase";
+import SignInUseCase from "@source/domain/use-cases/SignIn.usecase";
+import RefreshTokenUseCase from "@source/domain/use-cases/RefreshToken.usecase";
 
 class AuthenticationService implements AuthenticationHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;

@@ -1,9 +1,9 @@
 import CommonDto, {
 	PaginationRequestSerialized,
-} from "@root/source/application/dtos/common";
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import RoomRepository from "@root/source/infrastructure/database/repositories/Room.repository";
-import { PaginationRequest } from "@root/source/types/generated/protos/common_objects/PaginationRequest";
+} from "@source/application/dtos/common";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import RoomRepository from "@source/infrastructure/database/repositories/Room.repository";
+import { PaginationRequest } from "@source/types/generated/protos/common_objects/PaginationRequest";
 
 const roomRepository = new RoomRepository();
 

@@ -1,4 +1,4 @@
-import DeviceEntity from "@root/source/domain/entities/Device.entity";
+import DeviceEntity from "@source/domain/entities/Device.entity";
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
 type DeviceCreate = {

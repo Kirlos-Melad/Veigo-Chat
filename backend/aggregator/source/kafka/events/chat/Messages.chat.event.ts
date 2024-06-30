@@ -3,10 +3,10 @@ import { z } from "zod";
 
 import { KafkaEvents } from "../../KafkaConsumer";
 import Logger from "@source/utilities/Logger";
-import KafkaEvent from "@root/source/types/KafkaEvent";
-import DebeziumMessage from "@root/source/utilities/DebeziumMessage";
-import OwnershipModel from "@root/source/models/Ownership.model";
-import MembershipModel from "@root/source/models/Membership.model";
+import KafkaEvent from "@source/types/KafkaEvent";
+import DebeziumMessage from "@source/utilities/DebeziumMessage";
+import OwnershipModel from "@source/models/Ownership.model";
+import MembershipModel from "@source/models/Membership.model";
 
 interface MessageEntity {
 	id: string;

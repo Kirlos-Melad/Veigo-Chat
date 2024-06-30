@@ -1,8 +1,8 @@
 import { MemberRoomHandlers } from "@source/types/generated/protos/member_room/MemberRoom";
 import TransactionalCall from "../utilities/TransactionalCall";
-import AddMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Add.memberroom.usecase";
-import LeaveMemberRoomUseCase from "@root/source/domain/use-cases/member-room/Leave.memberroom.usecase";
-import ListMemberRoomUseCase from "@root/source/domain/use-cases/member-room/List.memberroom.usecase";
+import AddMemberRoomUseCase from "@source/domain/use-cases/member-room/Add.memberroom.usecase";
+import LeaveMemberRoomUseCase from "@source/domain/use-cases/member-room/Leave.memberroom.usecase";
+import ListMemberRoomUseCase from "@source/domain/use-cases/member-room/List.memberroom.usecase";
 
 class MemberRoomService implements MemberRoomHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;

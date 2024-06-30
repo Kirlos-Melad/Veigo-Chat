@@ -1,10 +1,10 @@
 import MessageDto, {
 	DeleteRequestSerialized,
-} from "@root/source/application/dtos/message";
-import AuthorizationManager from "@root/source/application/utilities/AuthorizationManager";
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import MessageRepository from "@root/source/infrastructure/database/repositories/Message.repository";
-import { DeleteRequest } from "@root/source/types/generated/protos/message/DeleteRequest";
+} from "@source/application/dtos/message";
+import AuthorizationManager from "@source/application/utilities/AuthorizationManager";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import MessageRepository from "@source/infrastructure/database/repositories/Message.repository";
+import { DeleteRequest } from "@source/types/generated/protos/message/DeleteRequest";
 
 const repository = new MessageRepository();
 

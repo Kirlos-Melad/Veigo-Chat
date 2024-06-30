@@ -1,9 +1,9 @@
 import ProfileDto, {
 	DeleteRequestSerialized,
-} from "@root/source/application/dtos/profile";
-import { DatabaseClient } from "@root/source/infrastructure/database/DatabaseManager";
-import ProfileRepository from "@root/source/infrastructure/database/repositories/Profile.repository";
-import { DeleteRequest } from "@root/source/types/generated/protos/profile/DeleteRequest";
+} from "@source/application/dtos/profile";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import ProfileRepository from "@source/infrastructure/database/repositories/Profile.repository";
+import { DeleteRequest } from "@source/types/generated/protos/profile/DeleteRequest";
 
 const repository = new ProfileRepository();
 

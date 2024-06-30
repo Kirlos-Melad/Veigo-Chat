@@ -1,8 +1,8 @@
 import Logger from "./Logger";
 import { Metadata } from "@grpc/grpc-js";
 import JsonWebToken from "./JsonWebToken";
-import DeviceRepository from "@root/source/infrastructure/database/repositories/Device.repository";
-import DatabaseManager from "@root/source/infrastructure/database/DatabaseManager";
+import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
+import DatabaseManager from "@source/infrastructure/database/DatabaseManager";
 
 type TokenType = "ACCESS" | "REFRESH";
 

@@ -8,10 +8,10 @@ import {
 } from "graphql";
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
-import GQLField from "@root/source/gql/fields/GQLField";
+import GQLField from "@source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { GQLContext } from "../../GQLHandler";
-import { MessageObjectPage } from "@root/source/types/generated/protos/chat_objects/MessageObjectPage";
+import { MessageObjectPage } from "@source/types/generated/protos/chat_objects/MessageObjectPage";
 import MessageGQLType from "../../types/Message.gql.type";
 import PaginationResponseMetadataGQLType from "../../types/PaginationResponseMetaData.gql.type";
 

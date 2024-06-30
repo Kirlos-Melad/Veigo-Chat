@@ -1,7 +1,7 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 import RoomEntity from "@source/domain/entities/Room.entity";
 import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
-import ProfileEntity from "@root/source/domain/entities/Profile.entity";
+import ProfileEntity from "@source/domain/entities/Profile.entity";
 
 type RoomCreate = Optional<
 	Omit<RoomEntity, "id" | "createdAt" | "updatedAt">,

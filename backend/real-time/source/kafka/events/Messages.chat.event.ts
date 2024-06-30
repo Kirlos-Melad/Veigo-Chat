@@ -3,9 +3,9 @@ import { z } from "zod";
 
 import { KafkaEvents } from "@source/kafka/KafkaConsumer";
 import Logger from "@source/utilities/Logger";
-import KafkaEvent from "@root/source/types/KafkaEvent";
-import DebeziumMessage from "@root/source/utilities/DebeziumMessage";
-import SocketServer from "@root/source/websocket/SocketServer";
+import KafkaEvent from "@source/types/KafkaEvent";
+import DebeziumMessage from "@source/utilities/DebeziumMessage";
+import SocketServer from "@source/websocket/SocketServer";
 
 interface MessageEntity {
 	roomId: string;

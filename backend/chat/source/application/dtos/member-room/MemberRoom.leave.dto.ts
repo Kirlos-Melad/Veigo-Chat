@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Dto } from "../Dto";
-import RoomEntity from "@root/source/domain/entities/Room.entity";
+import RoomEntity from "@source/domain/entities/Room.entity";
 
 //@ts-expect-error
 type LeaveRequestSerialized = PickAs<RoomEntity, "id:roomId">;

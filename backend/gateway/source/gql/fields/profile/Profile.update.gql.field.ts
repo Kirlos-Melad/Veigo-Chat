@@ -6,7 +6,7 @@ import {
 } from "graphql";
 import { Metadata, ServiceError } from "@grpc/grpc-js";
 
-import GQLField from "@root/source/gql/fields/GQLField";
+import GQLField from "@source/gql/fields/GQLField";
 import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry";
 import { ProfileObject } from "@source/types/generated/protos/chat_objects/ProfileObject";
 import ProfileGQLType from "../../types/Profile.gql.type";

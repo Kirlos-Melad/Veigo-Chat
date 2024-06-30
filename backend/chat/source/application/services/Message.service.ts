@@ -1,9 +1,9 @@
 import { MessageHandlers } from "@source/types/generated/protos/message/Message";
 import TransactionalCall from "../utilities/TransactionalCall";
-import CreateMessageUseCase from "@root/source/domain/use-cases/messages/Create.message.usecase";
-import ListMessageUseCase from "@root/source/domain/use-cases/messages/List.message.usecase";
-import UpdateMessageUseCase from "@root/source/domain/use-cases/messages/Update.message.usecase";
-import DeleteMessageUseCase from "@root/source/domain/use-cases/messages/Delete.message.usecase";
+import CreateMessageUseCase from "@source/domain/use-cases/messages/Create.message.usecase";
+import ListMessageUseCase from "@source/domain/use-cases/messages/List.message.usecase";
+import UpdateMessageUseCase from "@source/domain/use-cases/messages/Update.message.usecase";
+import DeleteMessageUseCase from "@source/domain/use-cases/messages/Delete.message.usecase";
 
 class MessageService implements MessageHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;

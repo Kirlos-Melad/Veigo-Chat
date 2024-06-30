@@ -1,4 +1,4 @@
-import AccountEntity from "@root/source/domain/entities/Account.entity";
+import AccountEntity from "@source/domain/entities/Account.entity";
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
 type AccountCreate = { email: string; password: string; phone?: string };
