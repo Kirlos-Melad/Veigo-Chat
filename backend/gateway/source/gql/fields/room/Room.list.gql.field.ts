@@ -12,7 +12,7 @@ import GRPCServiceManagerRegistry from "@source/grpc/GRPCServiceManagerRegistry"
 import { GQLContext } from "../../GQLHandler";
 import { PaginationRequest } from "@source/types/generated/protos/common_objects/PaginationRequest";
 import RoomGQLType from "../../types/Room.gql.type";
-import PaginationResponseMetadataGQLType from "../../types/PaginationResponseMetaData.gql.type";
+import PaginationResponseMetadataGQLType from "../../types/PaginationResponseMetadata.gql.type";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	id: { type: new GraphQLNonNull(GraphQLString) },

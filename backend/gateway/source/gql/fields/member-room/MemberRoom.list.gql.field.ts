@@ -14,7 +14,7 @@ import { GQLContext } from "../../GQLHandler";
 import MemberRoomGQLType from "../../types/MemberRoom.gql.type";
 import PaginationRequestGQLType from "../../types/PaginationRequest.gql.type";
 import { MemberRoomObjectPage } from "@source/types/generated/protos/chat_objects/MemberRoomObjectPage";
-import PaginationResponseMetadataGQLType from "../../types/PaginationResponseMetaData.gql.type";
+import PaginationResponseMetadataGQLType from "../../types/PaginationResponseMetadata.gql.type";
 
 const Args: GraphQLFieldConfigArgumentMap = {
 	roomId: { type: new GraphQLNonNull(GraphQLString) },
