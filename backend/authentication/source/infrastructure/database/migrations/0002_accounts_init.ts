@@ -1,4 +1,4 @@
-import { DatabaseClient } from "../DatabaseManager";
+import { DatabaseClient } from "source/infrastructure/database/DatabaseManager";
 
 async function up(connection: DatabaseClient) {
 	await connection.Execute(`
@@ -28,7 +28,9 @@ async function up(connection: DatabaseClient) {
 }
 
 async function down(connection: DatabaseClient) {
-	await connection.Execute(`DROP TRIGGER update_accounts_updated_at ON "accounts";`);
+	await connection.Execute(
+		`DROP TRIGGER update_accounts_updated_at ON "accounts";`,
+	);
 	await connection.Execute(`DROP TABLE IF EXISTS "accounts";`);
 }
 

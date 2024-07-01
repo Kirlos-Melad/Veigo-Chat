@@ -9,7 +9,7 @@ import wrapAnsi from "wrap-ansi";
 import util from "util";
 import { createInterface } from "readline";
 
-import DateFormatter from "./DateFormatter.ts";
+import DateFormatter from "source/application/utilities/DateFormatter";
 
 const { combine, colorize, printf } = format;
 

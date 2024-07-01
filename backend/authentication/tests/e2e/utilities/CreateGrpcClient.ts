@@ -1,8 +1,8 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
 import path from "path";
-import AbsolutePath from "@source/application/utilities/AbsolutePath";
-import Environments from "@source/configurations/Environments";
+import AbsolutePath from "source/application/utilities/AbsolutePath";
+import Environments from "source/configurations/Environments";
 
 function CreateGrpcClient<T>(
 	protoPath: string,

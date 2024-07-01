@@ -1,6 +1,6 @@
 import { UntypedServiceImplementation } from "@grpc/grpc-js";
 
-import DatabaseManager from "@source/infrastructure/database/DatabaseManager";
+import DatabaseManager from "source/infrastructure/database/DatabaseManager";
 
 abstract class GrpcService<T extends UntypedServiceImplementation> {
 	protected mDatabaseManager: DatabaseManager;

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { Dto } from "./Dto";
-import PasswordHandler from "../utilities/PasswordHandler";
+import { Dto } from "source/application/dtos/Dto";
+import PasswordHandler from "source/application/utilities/PasswordHandler";
 
 type ChangePassword = {
 	email: string;

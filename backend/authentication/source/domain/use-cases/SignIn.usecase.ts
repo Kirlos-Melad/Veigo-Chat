@@ -1,12 +1,12 @@
 import { ulid } from "ulidx";
 import bcrypt from "bcrypt";
 
-import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import AuthenticationDto, { SignInSerialized } from "../../application/dtos";
-import JsonWebToken from "../../application/utilities/JsonWebToken";
-import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
-import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
-import { SignInRequest } from "@source/types/generated/protos/authentication/SignInRequest";
+import { DatabaseClient } from "source/infrastructure/database/DatabaseManager";
+import AuthenticationDto, { SignInSerialized } from "source/application/dtos";
+import JsonWebToken from "source/application/utilities/JsonWebToken";
+import AccountRepository from "source/infrastructure/database/repositories/Account.repository";
+import DeviceRepository from "source/infrastructure/database/repositories/Device.repository";
+import { SignInRequest } from "source/types/generated/protos/authentication/SignInRequest";
 
 const Serializer = (data: SignInRequest) => AuthenticationDto.SignIn(data);
 

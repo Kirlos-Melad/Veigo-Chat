@@ -1,11 +1,11 @@
 import { ulid } from "ulidx";
 
-import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import { SignUpRequest } from "@source/types/generated/protos/authentication/SignUpRequest";
-import AuthenticationDto, { SignUpSerialized } from "../../application/dtos";
-import JsonWebToken from "../../application/utilities/JsonWebToken";
-import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
-import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
+import { DatabaseClient } from "source/infrastructure/database/DatabaseManager";
+import { SignUpRequest } from "source/types/generated/protos/authentication/SignUpRequest";
+import AuthenticationDto, { SignUpSerialized } from "source/application/dtos";
+import JsonWebToken from "source/application/utilities/JsonWebToken";
+import AccountRepository from "source/infrastructure/database/repositories/Account.repository";
+import DeviceRepository from "source/infrastructure/database/repositories/Device.repository";
 
 const Serializer = (data: SignUpRequest) => AuthenticationDto.SignUp(data);
 

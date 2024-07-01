@@ -1,19 +1,37 @@
-import ChangePasswordDto, { ChangePassword } from "./ChangePassword.dto";
-import DeleteAccountDto, { DeleteAccount } from "./DeleteAccount.dto";
-import ForgetPasswordDto, { ForgetPassword } from "./ForgetPassword.dto";
-import RefreshTokenDto, { RefreshTokenSerialized } from "./RefreshToken.dto";
-import ResetPasswordDto, { ResetPassword } from "./ResetPassword.dto";
+import ChangePasswordDto, {
+	ChangePassword,
+} from "source/application/dtos/ChangePassword.dto";
+import DeleteAccountDto, {
+	DeleteAccount,
+} from "source/application/dtos/DeleteAccount.dto";
+import ForgetPasswordDto, {
+	ForgetPassword,
+} from "source/application/dtos/ForgetPassword.dto";
+import RefreshTokenDto, {
+	RefreshTokenSerialized,
+} from "source/application/dtos/RefreshToken.dto";
+import ResetPasswordDto, {
+	ResetPassword,
+} from "source/application/dtos/ResetPassword.dto";
 import SendEmailVerificationDto, {
 	SendEmailVerification,
-} from "./SendEmailVerification.dto";
-import SignInDto, { SignInSerialized } from "./SignIn.dto";
-import SignOutDto, { SignOut } from "./SignOut.dto";
-import SignUpDto, { SignUpSerialized } from "./SignUp.dto";
+} from "source/application/dtos/SendEmailVerification.dto";
+import SignInDto, {
+	SignInSerialized,
+} from "source/application/dtos/SignIn.dto";
+import SignOutDto, { SignOut } from "source/application/dtos/SignOut.dto";
+import SignUpDto, {
+	SignUpSerialized,
+} from "source/application/dtos/SignUp.dto";
 import ValidateAccessTokenDto, {
 	ValidateAccessTokenSerialized,
-} from "./ValidateAccessToken.dto";
-import ValidateOTPDto, { ValidateOTP } from "./ValidateOTP.dto";
-import VerifyEmailDto, { VerifyEmail } from "./VerifyEmail.dto";
+} from "source/application/dtos/ValidateAccessToken.dto";
+import ValidateOTPDto, {
+	ValidateOTP,
+} from "source/application/dtos/ValidateOTP.dto";
+import VerifyEmailDto, {
+	VerifyEmail,
+} from "source/application/dtos/VerifyEmail.dto";
 
 class AuthenticationDto {
 	public static SignUp(data: any) {

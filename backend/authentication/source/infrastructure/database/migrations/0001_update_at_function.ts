@@ -1,4 +1,4 @@
-import { DatabaseClient } from "../DatabaseManager";
+import { DatabaseClient } from "source/infrastructure/database/DatabaseManager";
 
 async function up(connection: DatabaseClient) {
 	await connection.Execute(`

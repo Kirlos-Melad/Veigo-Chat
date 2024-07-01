@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import { Dto } from "./Dto";
-import AccountEntity from "@source/domain/entities/Account.entity";
-import DeviceEntity from "@source/domain/entities/Device.entity";
-import PasswordHandler from "../utilities/PasswordHandler";
+import { Dto } from "source/application/dtos/Dto";
+import AccountEntity from "source/domain/entities/Account.entity";
+import DeviceEntity from "source/domain/entities/Device.entity";
+import PasswordHandler from "source/application/utilities/PasswordHandler";
 
 type SignUpSerialized = Optional<
 	Pick<AccountEntity, "email" | "password" | "phone">,

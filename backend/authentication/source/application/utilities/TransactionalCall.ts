@@ -2,10 +2,10 @@ import grpc, { handleUnaryCall } from "@grpc/grpc-js";
 
 import DatabaseManager, {
 	DatabaseClient,
-} from "@source/infrastructure/database/DatabaseManager";
-import Logger from "./Logger";
-import ErrorSerializer from "./SerializeError";
-import { Dto } from "../dtos/Dto";
+} from "source/infrastructure/database/DatabaseManager";
+import Logger from "source/application/utilities/Logger";
+import ErrorSerializer from "source/application/utilities/SerializeError";
+import { Dto } from "source/application/dtos/Dto";
 
 type SerializerFunction<T, U> = (data: T) => Dto<U>;
 

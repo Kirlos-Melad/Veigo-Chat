@@ -1,9 +1,9 @@
-import AccountEntity from "@source/domain/entities/Account.entity";
-import { DatabaseClient } from "../DatabaseManager";
-import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
+import AccountEntity from "source/domain/entities/Account.entity";
+import { DatabaseClient } from "source/infrastructure/database/DatabaseManager";
+import ConvertObjectToArrays from "source/application/utilities/ConvertObjectToArrays";
 import IAccountRepository, {
 	AccountCreate,
-} from "@source/domain/repositories/IAccount.repository";
+} from "source/domain/repositories/IAccount.repository";
 
 class AccountRepository implements IAccountRepository {
 	public async Create(connection: DatabaseClient, account: AccountCreate) {
