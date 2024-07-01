@@ -1,11 +1,11 @@
 import grpc from "@grpc/grpc-js";
 
-import ServerManager from "@source/infrastructure/grpc/ServerManager.ts";
-import Environments from "@source/configurations/Environments.js";
-import Logger from "@source/application/utilities/Logger.ts";
-import DatabaseManager from "@source/infrastructure/database/DatabaseManager.ts";
-import AuthenticationService from "@source/application/services/Authentication.service.ts";
-import HealthCheckService from "@source/application/services/HealthCheck.service.ts";
+import ServerManager from "@source/infrastructure/grpc/ServerManager";
+import Environments from "@source/configurations/Environments";
+import Logger from "@source/application/utilities/Logger";
+import DatabaseManager from "@source/infrastructure/database/DatabaseManager";
+import AuthenticationService from "@source/application/services/Authentication.service";
+import HealthCheckService from "@source/application/services/HealthCheck.service";
 
 async function Migrate() {
 	Logger.information("Creating database manager");
