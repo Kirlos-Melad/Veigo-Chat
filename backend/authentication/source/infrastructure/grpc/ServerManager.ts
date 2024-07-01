@@ -1,6 +1,6 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
-import AbsolutePath from "source/application/utilities/AbsolutePath";
+import AbsolutePath from "@source/application/utilities/AbsolutePath";
 import path from "path";
 
 class ServerManager {

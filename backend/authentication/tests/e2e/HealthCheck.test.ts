@@ -1,13 +1,13 @@
 import { expect } from "chai";
-import CreateGrpcClient from "tests/e2e/utilities/CreateGrpcClient";
-import { HealthCheckClient } from "source/types/generated/protos/health_check/HealthCheck";
+import CreateGrpcClient from "@tests/e2e/utilities/CreateGrpcClient";
+import { HealthCheckClient } from "@source/types/generated/protos/health_check/HealthCheck";
 
 describe("Health Check Service test", () => {
 	let client: HealthCheckClient;
 
 	before((done) => {
 		client = CreateGrpcClient<HealthCheckClient>(
-			"source/types/generated/protos/definitions/health_check.proto",
+			"@source/types/generated/protos/definitions/health_check.proto",
 			"health_check",
 			"HealthCheck",
 		);

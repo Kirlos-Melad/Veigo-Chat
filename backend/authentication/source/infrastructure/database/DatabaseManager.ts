@@ -3,8 +3,8 @@ import { format as sqlFormatter } from "sql-formatter";
 import path from "path";
 import { promises as fs } from "fs";
 
-import Logger from "source/application/utilities/Logger";
-import AbsolutePath from "source/application/utilities/AbsolutePath";
+import Logger from "@source/application/utilities/Logger";
+import AbsolutePath from "@source/application/utilities/AbsolutePath";
 
 const IsolationLevel = {
 	READ_UNCOMMITTED: "READ UNCOMMITTED",

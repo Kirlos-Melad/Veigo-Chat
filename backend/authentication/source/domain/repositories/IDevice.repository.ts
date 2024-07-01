@@ -1,5 +1,5 @@
-import DeviceEntity from "source/domain/entities/Device.entity";
-import { DatabaseClient } from "source/infrastructure/database/DatabaseManager";
+import DeviceEntity from "@source/domain/entities/Device.entity";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
 type DeviceCreate = {
 	accountId: string;

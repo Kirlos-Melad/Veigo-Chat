@@ -1,11 +1,11 @@
 import grpc from "@grpc/grpc-js";
 
-import ServerManager from "source/infrastructure/grpc/ServerManager.ts";
-import Environments from "source/configurations/Environments.js";
-import Logger from "source/application/utilities/Logger.ts";
-import DatabaseManager from "source/infrastructure/database/DatabaseManager.ts";
-import AuthenticationService from "source/application/services/Authentication.service.ts";
-import HealthCheckService from "source/application/services/HealthCheck.service.ts";
+import ServerManager from "@source/infrastructure/grpc/ServerManager.ts";
+import Environments from "@source/configurations/Environments.js";
+import Logger from "@source/application/utilities/Logger.ts";
+import DatabaseManager from "@source/infrastructure/database/DatabaseManager.ts";
+import AuthenticationService from "@source/application/services/Authentication.service.ts";
+import HealthCheckService from "@source/application/services/HealthCheck.service.ts";
 
 async function Migrate() {
 	Logger.information("Creating database manager");
@@ -30,7 +30,7 @@ async function Start() {
 		grpc.ServerCredentials.createInsecure(),
 	);
 
-	const PROTOS_PATH = "source/types/generated/protos/definitions";
+	const PROTOS_PATH = "@source/types/generated/protos/definitions";
 	serverManager.AddService(PROTOS_PATH, {
 		file: "health_check.proto",
 		packageName: "health_check",

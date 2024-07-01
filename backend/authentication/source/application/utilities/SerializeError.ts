@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
 import pg from "pg";
-import Logger from "source/application/utilities/Logger";
+import Logger from "@source/application/utilities/Logger";
 
 const ERROR = {
 	INTERNAL_SERVER_ERROR: {

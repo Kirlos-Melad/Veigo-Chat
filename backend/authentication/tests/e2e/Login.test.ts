@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { faker } from "@faker-js/faker";
 
-import CreateGrpcClient from "tests/e2e/utilities/CreateGrpcClient";
-import { AuthenticationClient } from "source/types/generated/protos/authentication/Authentication";
+import CreateGrpcClient from "@tests/e2e/utilities/CreateGrpcClient";
+import { AuthenticationClient } from "@source/types/generated/protos/authentication/Authentication";
 
 describe("Profile Service Test", () => {
 	let client: AuthenticationClient;
@@ -34,7 +34,7 @@ describe("Profile Service Test", () => {
 
 	before((done) => {
 		client = CreateGrpcClient<AuthenticationClient>(
-			"source/types/generated/protos/definitions/authentication.proto",
+			"@source/types/generated/protos/definitions/authentication.proto",
 			"authentication",
 			"Authentication",
 		);

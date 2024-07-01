@@ -1,8 +1,8 @@
-import Logger from "source/application/utilities/Logger";
+import Logger from "@source/application/utilities/Logger";
 import { Metadata } from "@grpc/grpc-js";
-import JsonWebToken from "source/application/utilities/JsonWebToken";
-import DeviceRepository from "source/infrastructure/database/repositories/Device.repository";
-import DatabaseManager from "source/infrastructure/database/DatabaseManager";
+import JsonWebToken from "@source/application/utilities/JsonWebToken";
+import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
+import DatabaseManager from "@source/infrastructure/database/DatabaseManager";
 
 class AuthorizationManager {
 	private static sInstance: AuthorizationManager;

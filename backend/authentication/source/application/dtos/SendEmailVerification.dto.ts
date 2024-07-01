@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Dto } from "source/application/dtos/Dto";
+import { Dto } from "@source/application/dtos/Dto";
 
 type SendEmailVerification = { email: string };
 
