@@ -48,6 +48,7 @@ services:
       - ${AUTH_SERVICE_PATH}/.env
     volumes:
       - ${AUTH_SERVICE_PATH}/source:/app/source
+      - ${AUTH_SERVICE_PATH}/tests:/app/tests
     healthcheck:
       test: ["CMD-SHELL", "/app/scripts/is_healthy.sh"]
       interval: 10s
