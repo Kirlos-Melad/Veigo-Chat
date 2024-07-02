@@ -2,6 +2,6 @@
     "require": [
         "tsx"
     ],
-    "spec": "source/tests/**/*.test.ts",
+    "spec": "./tests/**/*.test.ts",
     "recursive": true
 }
