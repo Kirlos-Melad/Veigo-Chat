@@ -1,3 +1,5 @@
+type Primitive = string | number | boolean;
+
 function ConvertObjectToArrays(object: Record<string, Primitive | undefined>): {
 	fields: string[];
 	values: Primitive[];
@@ -6,10 +8,8 @@ function ConvertObjectToArrays(object: Record<string, Primitive | undefined>): {
 	const values: Primitive[] = [];
 
 	Object.keys(object).forEach((key) => {
-		if (object[key]) {
-			fields.push(`"${key}"`);
-			values.push(object[key] as Primitive);
-		}
+		fields.push(`"${key}"`);
+		values.push(object[key] as Primitive);
 	});
 
 	return { fields, values };
