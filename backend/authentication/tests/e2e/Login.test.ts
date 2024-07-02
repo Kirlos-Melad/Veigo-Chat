@@ -46,7 +46,7 @@ describe("Profile Service Test", () => {
 		client.close();
 	});
 
-	afterEach("Check if access token is valid", async (done) => {
+	afterEach("Check if access token is valid", (done) => {
 		client.ValidateAccessToken(
 			{
 				token: user.token!.access,
@@ -54,13 +54,13 @@ describe("Profile Service Test", () => {
 			(error, response) => {
 				expect(error).to.be.null;
 				expect(response).not.to.be.undefined;
-				expect(response).to.be.empty("object");
+				expect(response).to.be.deep.equal({});
 				done();
 			},
 		);
 	});
 
-	it("Should sign up successfully", async (done) => {
+	it("Should sign up successfully", (done) => {
 		client.SignUp(
 			{
 				clientId: user.clientId,
@@ -95,7 +95,7 @@ describe("Profile Service Test", () => {
 		);
 	});
 
-	it("Should sign in successfully", async (done) => {
+	it("Should sign in successfully", (done) => {
 		client.signIn(
 			{
 				clientId: user.clientId,
@@ -127,7 +127,7 @@ describe("Profile Service Test", () => {
 		);
 	});
 
-	it("Should refresh token successfully", async (done) => {
+	it("Should refresh token successfully", (done) => {
 		client.RefreshToken(
 			{ token: user.token!.refresh },
 			(error, response) => {

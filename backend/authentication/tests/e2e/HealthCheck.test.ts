@@ -15,10 +15,12 @@ describe("Health Check Service test", () => {
 		client.waitForReady(Date.now() + 1000, (error) => done(error));
 	});
 
-	it("Should be serving", () => {
+	it("Should be serving", (done) => {
 		client.Check({}, (error, response) => {
 			expect(error).to.be.null;
 			expect(response).to.have.property("status").equal(1);
+
+			done();
 		});
 	});
 
