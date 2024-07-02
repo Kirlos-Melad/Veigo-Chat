@@ -34,7 +34,7 @@ describe("Profile Service Test", () => {
 
 	before((done) => {
 		client = CreateGrpcClient<AuthenticationClient>(
-			"@source/types/generated/protos/definitions/authentication.proto",
+			"source/types/generated/protos/definitions/authentication.proto",
 			"authentication",
 			"Authentication",
 		);

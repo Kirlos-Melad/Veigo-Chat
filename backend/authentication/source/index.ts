@@ -30,7 +30,7 @@ async function Start() {
 		grpc.ServerCredentials.createInsecure(),
 	);
 
-	const PROTOS_PATH = "@source/types/generated/protos/definitions";
+	const PROTOS_PATH = "source/types/generated/protos/definitions";
 	serverManager.AddService(PROTOS_PATH, {
 		file: "health_check.proto",
 		packageName: "health_check",

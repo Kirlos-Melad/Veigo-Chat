@@ -7,7 +7,7 @@ describe("Health Check Service test", () => {
 
 	before((done) => {
 		client = CreateGrpcClient<HealthCheckClient>(
-			"@source/types/generated/protos/definitions/health_check.proto",
+			"source/types/generated/protos/definitions/health_check.proto",
 			"health_check",
 			"HealthCheck",
 		);
