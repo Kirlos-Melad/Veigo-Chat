@@ -7,7 +7,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "bash \"./scripts/Protocol Buffers Builder.sh\"",
-		"test": "nyc --report-dir=./.nyc_output mocha",
+		"test": "mocha",
 		"start": "tsx ./source/index.ts start",
 		"start:watch": "nodemon -L --exec tsx ./source/index.ts start",
 		"migrate": "tsx ./source/index.ts migrate"
@@ -21,7 +21,6 @@
 		"mocha": "^10.5.2",
 		"mocha-steps": "^1.3.0",
 		"nodemon": "^3.1.1",
-		"nyc": "^15.1.0",
 		"sinon": "^18.0.0"
 	},
 	"dependencies": {
