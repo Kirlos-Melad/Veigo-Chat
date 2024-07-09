@@ -9,9 +9,9 @@ import HealthCheckService from "@source/application/services/HealthCheck.service
 
 async function Migrate() {
 	Logger.information("Creating database manager");
-	const databaseManager = DatabaseManager.CreateInstance(
-		Environments.DATABASE_CONNECTION,
-	);
+	const databaseManager = DatabaseManager.CreateInstance({
+		connection: Environments.DATABASE_CONNECTION,
+	});
 
 	Logger.information("Running database migrations");
 	await databaseManager.Migrate();
@@ -19,9 +19,9 @@ async function Migrate() {
 
 async function Start() {
 	Logger.information("Creating database manager");
-	const databaseManager = DatabaseManager.CreateInstance(
-		Environments.DATABASE_CONNECTION,
-	);
+	const databaseManager = DatabaseManager.CreateInstance({
+		connection: Environments.DATABASE_CONNECTION,
+	});
 
 	Logger.information("Creating services");
 

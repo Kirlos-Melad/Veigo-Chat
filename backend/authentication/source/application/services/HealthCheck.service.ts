@@ -7,7 +7,7 @@ class HealthCheckService implements HealthCheckHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;
 
 	Check = (
-		request: grpc.ServerUnaryCall<EmptyObject, HealthCheckResponse>,
+		_request: grpc.ServerUnaryCall<EmptyObject, HealthCheckResponse>,
 		respond: grpc.sendUnaryData<HealthCheckResponse>,
 	) => respond(null, { status: "SERVING" });
 }

@@ -6,7 +6,7 @@ interface AccountEntity {
 
 	password: string;
 
-	phone: string;
+	phone?: string;
 	isPhoneVerified: boolean;
 
 	createdAt: string;

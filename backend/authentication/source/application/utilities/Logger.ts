@@ -7,7 +7,6 @@ import {
 } from "winston";
 import wrapAnsi from "wrap-ansi";
 import util from "util";
-import { createInterface } from "readline";
 
 import DateFormatter from "@source/application/utilities/DateFormatter";
 
@@ -15,7 +14,6 @@ const { combine, colorize, printf } = format;
 
 class Logger {
 	private readonly mLogger: winstonLogger;
-	private readonly mReadline: ReturnType<typeof createInterface>;
 
 	public constructor() {
 		this.mLogger = createLogger({
@@ -32,10 +30,6 @@ class Logger {
 				this.AddMessageHeader(),
 			),
 			transports: [new transports.Console()],
-		});
-
-		this.mReadline = createInterface({
-			input: process.stdin,
 		});
 	}
 
@@ -62,7 +56,7 @@ class Logger {
 				const indentedMessage = wrappedMessage
 					.split("\n")
 					.map(
-						(line: string, index: number) =>
+						(line: string) =>
 							`${indentation}${line}`,
 					)
 					.join("\n");
@@ -112,14 +106,6 @@ class Logger {
 
 	public error(...messages: any[]) {
 		this.mLogger.log("ERROR", "", ...messages);
-	}
-
-	public async message(message: any) {
-		this.mLogger.log("MESSAGE", "", message);
-
-		return await new Promise<string>((resolve) =>
-			this.mReadline.question("", resolve),
-		);
 	}
 }
 

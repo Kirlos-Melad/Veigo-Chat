@@ -23,23 +23,24 @@ abstract class Database {
 		values: any[] = [],
 	): Promise<QueryResult<T>> {
 		try {
+			const formattedQuery = sqlFormatter(query, {
+				language: "postgresql",
+				useTabs: true,
+				tabWidth: 4,
+			});
+
 			Logger.information(
-				`Query:\n${sqlFormatter(query, {
-					language: "postgresql",
-					useTabs: true,
-					tabWidth: 4,
-				})}\nValues: [${values.join(", ")}]`,
+				`Query:\n${formattedQuery}\nValues: ${JSON.stringify(values)}`,
 			);
 		} catch (error) {
 			Logger.warning("Failed to format SQL query");
 			Logger.information(
-				`Query:\n${query}\nValues: [${values.join(", ")}]`,
+				`Query:\n${query}\nValues: ${JSON.stringify(values)}`,
 			);
 		}
 
 		try {
 			const result = await connection.query<T>(query, values);
-
 			return result;
 		} catch (error) {
 			Logger.error(error);
@@ -57,8 +58,8 @@ class DatabaseClient extends Database {
 		super();
 
 		this.mConnection = connection;
-		this.mInTransaction = false;
 		this.mIsConnected = true;
+		this.mInTransaction = false;
 	}
 
 	public get isConnected() {
@@ -104,27 +105,35 @@ class DatabaseClient extends Database {
 		if (this.isConnected) {
 			this.mConnection.release();
 			this.mIsConnected = false;
-		} else Logger.warning("Trying to close a connection already closed.");
+		} else throw new Error("Trying to close a connection already closed.");
 	}
 }
 
 class DatabaseManager extends Database {
 	private static sInstance: DatabaseManager;
 	private mMigrationsTableName: string;
+	private mMigrationsPath: string;
 	private mPool: pg.Pool;
 
-	protected constructor(connection: string) {
+	protected constructor(options: {
+		connection: string;
+		migrationsPath?: string;
+	}) {
 		super();
 		this.mMigrationsTableName = "migrations";
+		this.mMigrationsPath = options.migrationsPath || "migrations";
 
 		this.mPool = new pg.Pool({
-			connectionString: connection,
+			connectionString: options.connection,
 		});
 	}
 
-	public static CreateInstance(connection: string) {
+	public static CreateInstance(options: {
+		connection: string;
+		migrationsPath?: string;
+	}) {
 		if (!DatabaseManager.sInstance) {
-			DatabaseManager.sInstance = new DatabaseManager(connection);
+			DatabaseManager.sInstance = new DatabaseManager(options);
 		}
 
 		return DatabaseManager.sInstance;
@@ -199,7 +208,7 @@ class DatabaseManager extends Database {
 
 			const migrationsPath = path.join(
 				AbsolutePath(import.meta.url),
-				"migrations",
+				this.mMigrationsPath,
 			);
 
 			const files = await fs.readdir(migrationsPath, {
@@ -230,7 +239,7 @@ class DatabaseManager extends Database {
 		} catch (error) {
 			await client.RollbackTransaction();
 			await client.Release();
-			//process.exit(1);
+			throw error;
 		}
 	}
 }
