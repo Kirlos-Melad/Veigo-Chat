@@ -3,9 +3,7 @@ import { expect } from "chai";
 import { createSandbox } from "sinon";
 import { faker } from "@faker-js/faker";
 
-import DatabaseManager, {
-	DatabaseClient,
-} from "@source/infrastructure/database/DatabaseManager";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 import { SignUpSerialized } from "@source/application/dtos";
 import JsonWebToken from "@source/application/utilities/JsonWebToken";
 import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
@@ -18,7 +16,7 @@ import PasswordHandler from "@source/application/utilities/PasswordHandler";
 describe("Sign Up Handler", () => {
 	const sinon = createSandbox();
 
-	let connection: DatabaseClient;
+	const connection: DatabaseClient = {} as DatabaseClient;
 	let accountRepositoryStub: sinon.SinonStubbedInstance<
 		typeof AccountRepository
 	>;
@@ -32,24 +30,17 @@ describe("Sign Up Handler", () => {
 		clientId: faker.string.uuid(),
 	};
 
-	before(async () => {
-		const dbManager = DatabaseManager.CreateInstance({
-			connection: process.env.DATABASE_CONNECTION,
-		});
-		connection = await dbManager.LeaseConnection();
-		await connection.StartTransaction("SERIALIZABLE");
+	before(() => {
 		accountRepositoryStub = sinon.stub(AccountRepository);
 		deviceRepositoryStub = sinon.stub(DeviceRepository);
 		jwtStub = sinon.stub(JsonWebToken);
 	});
 
-	after(async () => {
-		await connection.RollbackTransaction();
-		await connection.Release();
+	after(() => {
 		sinon.restore();
 	});
 
-	step("Should Sign up successfully", async () => {
+	step("Should handle Sign up successfully", async () => {
 		const account: AccountEntity = {
 			id: faker.string.uuid(),
 			isEmailVerified: false,
@@ -76,16 +67,23 @@ describe("Sign Up Handler", () => {
 		jwtStub.GenerateAccessToken.resolves(accessToken);
 		jwtStub.GenerateRefreshToken.resolves(refreshToken);
 
-		const result = await SignUpUseCase.Handler(
-			connection,
-			serializedData,
-		);
+		const result = await SignUpUseCase.Handler(connection, serializedData);
 
-		expect(result.account).to.deep.equal(account);
-		expect(result.token.access).to.equal(accessToken);
-		expect(result.token.refresh).to.equal(refreshToken);
-		expect(accountRepositoryStub.Create.calledOnce).to.be.true;
-		expect(deviceRepositoryStub.Create.calledOnce).to.be.true;
+		expect(
+			accountRepositoryStub.Create.calledOnceWith(connection, {
+				email: serializedData.email,
+				password: serializedData.password,
+				phone: serializedData.phone,
+			}),
+		).to.be.true;
+		expect(
+			deviceRepositoryStub.Create.calledOnceWith(connection, {
+				accountId: account.id,
+				clientId: serializedData.clientId,
+				accessTokenId: sinon.match.string,
+				refreshTokenId: sinon.match.string,
+			}),
+		).to.be.true;
 		expect(
 			jwtStub.GenerateAccessToken.calledOnceWith({
 				id: device.accessTokenId,
@@ -104,5 +102,9 @@ describe("Sign Up Handler", () => {
 				},
 			}),
 		).to.be.true;
+
+		expect(result.account).to.deep.equal(account);
+		expect(result.token.access).to.equal(accessToken);
+		expect(result.token.refresh).to.equal(refreshToken);
 	});
 });

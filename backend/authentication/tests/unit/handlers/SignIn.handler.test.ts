@@ -2,9 +2,7 @@ import { expect } from "chai";
 import { createSandbox } from "sinon";
 import { faker } from "@faker-js/faker";
 
-import DatabaseManager, {
-	DatabaseClient,
-} from "@source/infrastructure/database/DatabaseManager";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 import { SignInSerialized } from "@source/application/dtos";
 import JsonWebToken from "@source/application/utilities/JsonWebToken";
 import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
@@ -17,7 +15,7 @@ import PasswordHandler from "@source/application/utilities/PasswordHandler";
 describe("Sign In Handler", () => {
 	const sinon = createSandbox();
 
-	let connection: DatabaseClient;
+	const connection: DatabaseClient = {} as DatabaseClient;
 	let accountRepositoryStub: sinon.SinonStubbedInstance<
 		typeof AccountRepository
 	>;
@@ -32,24 +30,17 @@ describe("Sign In Handler", () => {
 		clientId: faker.string.uuid(),
 	};
 
-	before(async () => {
-		const dbManager = DatabaseManager.CreateInstance({
-			connection: process.env.DATABASE_CONNECTION,
-		});
-		connection = await dbManager.LeaseConnection();
-		await connection.StartTransaction("SERIALIZABLE");
+	before(() => {
 		accountRepositoryStub = sinon.stub(AccountRepository);
 		deviceRepositoryStub = sinon.stub(DeviceRepository);
 		jwtStub = sinon.stub(JsonWebToken);
 	});
 
-	after(async () => {
-		await connection.RollbackTransaction();
-		await connection.Release();
+	after(() => {
 		sinon.restore();
 	});
 
-	it("Should sign in successfully", async () => {
+	it("Should handle sign in successfully", async () => {
 		const account: AccountEntity = {
 			id: faker.string.uuid(),
 			email: serializedData.email,
@@ -81,10 +72,12 @@ describe("Sign In Handler", () => {
 
 		const result = await SignInUseCase.Handler(connection, serializedData);
 
-		expect(result.account).to.deep.equal(account);
-		expect(result.token.access).to.equal(accessToken);
-		expect(result.token.refresh).to.equal(refreshToken);
-		expect(accountRepositoryStub.FindByEmail.calledOnce).to.be.true;
+		expect(
+			accountRepositoryStub.FindByEmail.calledOnceWith(
+				connection,
+				serializedData.email,
+			),
+		).to.be.true;
 		expect(
 			deviceRepositoryStub.Upsert.calledOnceWith(
 				sinon.match.any,
@@ -118,5 +111,9 @@ describe("Sign In Handler", () => {
 				},
 			}),
 		).to.be.true;
+
+		expect(result.account).to.deep.equal(account);
+		expect(result.token.access).to.equal(accessToken);
+		expect(result.token.refresh).to.equal(refreshToken);
 	});
 });
