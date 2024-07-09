@@ -16,11 +16,13 @@ const IsolationLevel = {
 type IsolationLevel = (typeof IsolationLevel)[keyof typeof IsolationLevel];
 
 abstract class Database {
-	protected async ExecuteQuery<T extends QueryResultRow>(
-		connection: PoolClient,
-		query: string,
-		values: any[] = [],
-	): Promise<QueryResult<T>> {
+	private mDebugMode: boolean;
+
+	public constructor(debug: boolean) {
+		this.mDebugMode = debug;
+	}
+
+	private Debug(query: string, values: any[] = []) {
 		try {
 			const formattedQuery = sqlFormatter(query, {
 				language: "postgresql",
@@ -37,6 +39,14 @@ abstract class Database {
 				`Query:\n${query}\nValues: ${JSON.stringify(values)}`,
 			);
 		}
+	}
+
+	protected async ExecuteQuery<T extends QueryResultRow>(
+		connection: PoolClient,
+		query: string,
+		values: any[] = [],
+	): Promise<QueryResult<T>> {
+		if (this.mDebugMode) this.Debug(query, values);
 
 		try {
 			const result = await connection.query<T>(query, values);
@@ -53,8 +63,8 @@ class DatabaseClient extends Database {
 	private mIsConnected: boolean;
 	private mInTransaction: boolean;
 
-	public constructor(connection: PoolClient) {
-		super();
+	public constructor(connection: PoolClient, debug: boolean = false) {
+		super(debug);
 
 		this.mConnection = connection;
 		this.mIsConnected = true;
@@ -117,8 +127,9 @@ class DatabaseManager extends Database {
 	protected constructor(options: {
 		connection: string;
 		migrationsPath?: string;
+		debug?: boolean;
 	}) {
-		super();
+		super(options.debug || false);
 		this.mMigrationsTableName = "migrations";
 		this.mMigrationsPath = options.migrationsPath || "migrations";
 
@@ -130,6 +141,7 @@ class DatabaseManager extends Database {
 	public static CreateInstance(options: {
 		connection: string;
 		migrationsPath?: string;
+		debug?: boolean;
 	}) {
 		if (!DatabaseManager.sInstance) {
 			DatabaseManager.sInstance = new DatabaseManager(options);
@@ -141,7 +153,7 @@ class DatabaseManager extends Database {
 	public static get instance() {
 		if (!DatabaseManager.sInstance)
 			throw new Error("DatabaseManager not initialized");
-		
+
 		return DatabaseManager.sInstance;
 	}
 

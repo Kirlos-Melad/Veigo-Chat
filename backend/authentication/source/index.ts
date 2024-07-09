@@ -11,6 +11,7 @@ async function Migrate() {
 	Logger.information("Creating database manager");
 	const databaseManager = DatabaseManager.CreateInstance({
 		connection: Environments.DATABASE_CONNECTION,
+		debug: Environments.IS_DEVELOPMENT,
 	});
 
 	Logger.information("Running database migrations");
@@ -21,6 +22,7 @@ async function Start() {
 	Logger.information("Creating database manager");
 	const databaseManager = DatabaseManager.CreateInstance({
 		connection: Environments.DATABASE_CONNECTION,
+		debug: Environments.IS_DEVELOPMENT,
 	});
 
 	Logger.information("Creating services");
