@@ -80,7 +80,7 @@ describe("Sign In Handler", () => {
 		).to.be.true;
 		expect(
 			deviceRepositoryStub.Upsert.calledOnceWith(
-				sinon.match.any,
+				connection,
 				{
 					accountId: account.id,
 					clientId: serializedData.clientId,
