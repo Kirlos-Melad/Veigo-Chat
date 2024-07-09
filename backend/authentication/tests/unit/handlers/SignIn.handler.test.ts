@@ -1,13 +1,15 @@
 import { expect } from "chai";
 import { createSandbox } from "sinon";
+import { faker } from "@faker-js/faker";
 
-import DatabaseManager from "@source/infrastructure/database/DatabaseManager";
+import DatabaseManager, {
+	DatabaseClient,
+} from "@source/infrastructure/database/DatabaseManager";
 import { SignInSerialized } from "@source/application/dtos";
 import JsonWebToken from "@source/application/utilities/JsonWebToken";
 import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
 import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
 import SignInUseCase from "@source/domain/use-cases/SignIn.usecase";
-import { faker } from "@faker-js/faker";
 import AccountEntity from "@source/domain/entities/Account.entity";
 import DeviceEntity from "@source/domain/entities/Device.entity";
 import PasswordHandler from "@source/application/utilities/PasswordHandler";
@@ -15,7 +17,7 @@ import PasswordHandler from "@source/application/utilities/PasswordHandler";
 describe("Sign In Handler", () => {
 	const sinon = createSandbox();
 
-	let dbManagerStub: sinon.SinonStubbedInstance<DatabaseManager>;
+	let connection: DatabaseClient;
 	let accountRepositoryStub: sinon.SinonStubbedInstance<
 		typeof AccountRepository
 	>;
@@ -30,14 +32,20 @@ describe("Sign In Handler", () => {
 		clientId: faker.string.uuid(),
 	};
 
-	before(() => {
-		dbManagerStub = sinon.createStubInstance(DatabaseManager);
+	before(async () => {
+		const dbManager = DatabaseManager.CreateInstance({
+			connection: process.env.DATABASE_CONNECTION,
+		});
+		connection = await dbManager.LeaseConnection();
+		await connection.StartTransaction("SERIALIZABLE");
 		accountRepositoryStub = sinon.stub(AccountRepository);
 		deviceRepositoryStub = sinon.stub(DeviceRepository);
 		jwtStub = sinon.stub(JsonWebToken);
 	});
 
-	after(() => {
+	after(async () => {
+		await connection.RollbackTransaction();
+		await connection.Release();
 		sinon.restore();
 	});
 
@@ -71,10 +79,7 @@ describe("Sign In Handler", () => {
 		jwtStub.GenerateAccessToken.resolves(accessToken);
 		jwtStub.GenerateRefreshToken.resolves(refreshToken);
 
-		const result = await SignInUseCase.Handler(
-			await dbManagerStub.LeaseConnection(),
-			serializedData,
-		);
+		const result = await SignInUseCase.Handler(connection, serializedData);
 
 		expect(result.account).to.deep.equal(account);
 		expect(result.token.access).to.equal(accessToken);

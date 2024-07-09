@@ -1,14 +1,16 @@
+import { step } from "mocha-steps";
 import { expect } from "chai";
 import { createSandbox } from "sinon";
-import { step } from "mocha-steps";
+import { faker } from "@faker-js/faker";
 
-import DatabaseManager from "@source/infrastructure/database/DatabaseManager";
+import DatabaseManager, {
+	DatabaseClient,
+} from "@source/infrastructure/database/DatabaseManager";
 import { SignUpSerialized } from "@source/application/dtos";
 import JsonWebToken from "@source/application/utilities/JsonWebToken";
 import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
 import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
 import SignUpUseCase from "@source/domain/use-cases/SignUp.usecase";
-import { faker } from "@faker-js/faker";
 import AccountEntity from "@source/domain/entities/Account.entity";
 import DeviceEntity from "@source/domain/entities/Device.entity";
 import PasswordHandler from "@source/application/utilities/PasswordHandler";
@@ -16,7 +18,7 @@ import PasswordHandler from "@source/application/utilities/PasswordHandler";
 describe("Sign Up Handler", () => {
 	const sinon = createSandbox();
 
-	let dbManagerStub: sinon.SinonStubbedInstance<DatabaseManager>;
+	let connection: DatabaseClient;
 	let accountRepositoryStub: sinon.SinonStubbedInstance<
 		typeof AccountRepository
 	>;
@@ -30,14 +32,20 @@ describe("Sign Up Handler", () => {
 		clientId: faker.string.uuid(),
 	};
 
-	before(() => {
-		dbManagerStub = sinon.createStubInstance(DatabaseManager);
+	before(async () => {
+		const dbManager = DatabaseManager.CreateInstance({
+			connection: process.env.DATABASE_CONNECTION,
+		});
+		connection = await dbManager.LeaseConnection();
+		await connection.StartTransaction("SERIALIZABLE");
 		accountRepositoryStub = sinon.stub(AccountRepository);
 		deviceRepositoryStub = sinon.stub(DeviceRepository);
 		jwtStub = sinon.stub(JsonWebToken);
 	});
 
-	after(() => {
+	after(async () => {
+		await connection.RollbackTransaction();
+		await connection.Release();
 		sinon.restore();
 	});
 
@@ -69,7 +77,7 @@ describe("Sign Up Handler", () => {
 		jwtStub.GenerateRefreshToken.resolves(refreshToken);
 
 		const result = await SignUpUseCase.Handler(
-			await dbManagerStub.LeaseConnection(),
+			connection,
 			serializedData,
 		);
 
