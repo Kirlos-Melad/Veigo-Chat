@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 import CreateGrpcClient from "@tests/e2e/utilities/CreateGrpcClient";
 import { AuthenticationClient } from "@source/types/generated/protos/authentication/Authentication";
 
-describe("Profile Service Test", () => {
+describe("Authentication Service Test", () => {
 	let client: AuthenticationClient;
 	const user: {
 		id?: string;

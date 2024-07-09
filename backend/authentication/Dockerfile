@@ -27,7 +27,8 @@ RUN npm install
 
 COPY . .
 
-# Make healthy script executable
+# Make scripts executable
 RUN chmod +x ./scripts/is_healthy.sh
+RUN chmod +x ./scripts/entrypoint.sh
 
-CMD npm run migrate && npm run start:watch
+ENTRYPOINT ["./scripts/entrypoint.sh"]

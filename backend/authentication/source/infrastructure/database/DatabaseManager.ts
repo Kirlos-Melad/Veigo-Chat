@@ -11,7 +11,6 @@ const IsolationLevel = {
 	READ_COMMITTED: "READ COMMITTED",
 	REPEATABLE_READ: "REPEATABLE READ",
 	SERIALIZABLE: "SERIALIZABLE",
-	SNAPSHOT: "SNAPSHOT",
 } as const;
 
 type IsolationLevel = (typeof IsolationLevel)[keyof typeof IsolationLevel];
@@ -140,6 +139,9 @@ class DatabaseManager extends Database {
 	}
 
 	public static get instance() {
+		if (!DatabaseManager.sInstance)
+			throw new Error("DatabaseManager not initialized");
+		
 		return DatabaseManager.sInstance;
 	}
 
