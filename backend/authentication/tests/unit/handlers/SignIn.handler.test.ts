@@ -11,6 +11,8 @@ import SignInUseCase from "@source/domain/use-cases/SignIn.usecase";
 import AccountEntity from "@source/domain/entities/Account.entity";
 import DeviceEntity from "@source/domain/entities/Device.entity";
 import PasswordHandler from "@source/application/utilities/PasswordHandler";
+import { AccountFactory } from "@tests/factories/Account.factory";
+import { DeviceFactory } from "@tests/factories/Device.factory";
 
 describe("Sign In Handler", () => {
 	const sinon = createSandbox();
@@ -41,26 +43,15 @@ describe("Sign In Handler", () => {
 	});
 
 	it("Should handle sign in successfully", async () => {
-		const account: AccountEntity = {
-			id: faker.string.uuid(),
+		const account: AccountEntity = AccountFactory({
 			email: serializedData.email,
 			password: PasswordHandler.hash(serializedData.password),
-			isEmailVerified: true,
-			isPhoneVerified: true,
-			createdAt: faker.date.recent().toString(),
-			updatedAt: faker.date.recent().toString(),
-		};
+		});
 
-		const device: DeviceEntity = {
+		const device: DeviceEntity = DeviceFactory({
 			accountId: account.id,
 			clientId: serializedData.clientId,
-			accessTokenId: faker.string.uuid(),
-			refreshTokenId: faker.string.uuid(),
-			forceRefreshToken: false,
-			forceSignIn: false,
-			createdAt: faker.date.recent().toString(),
-			updatedAt: faker.date.recent().toString(),
-		};
+		});
 
 		const accessToken = "access-token";
 		const refreshToken = "refresh-token";

@@ -2,9 +2,8 @@ import { expect } from "chai";
 import { faker } from "@faker-js/faker";
 import { step } from "mocha-steps";
 
-import DatabaseManager, {
-	DatabaseClient,
-} from "@source/infrastructure/database/DatabaseManager";
+import { DatabaseHooks } from "@tests/hooks/Database.hooks";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
 import {
 	DeviceCreate,
@@ -34,11 +33,7 @@ describe("Device Repository", () => {
 	};
 
 	before(async () => {
-		const dbManager = DatabaseManager.CreateInstance({
-			connection: process.env.DATABASE_CONNECTION,
-		});
-		connection = await dbManager.LeaseConnection();
-		await connection.StartTransaction("SERIALIZABLE");
+		connection = await DatabaseHooks.BeforeAll();
 
 		await connection.Execute(
 			`INSERT INTO accounts (id, email, password) VALUES ('${account.id}', '${account.email}', '${account.password}');`,
@@ -46,8 +41,7 @@ describe("Device Repository", () => {
 	});
 
 	after(async () => {
-		await connection.RollbackTransaction();
-		await connection.Release();
+		await DatabaseHooks.AfterAll(connection);
 	});
 
 	describe("Create device", () => {

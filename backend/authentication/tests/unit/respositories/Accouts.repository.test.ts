@@ -2,9 +2,8 @@ import { expect } from "chai";
 import { faker } from "@faker-js/faker";
 import { step } from "mocha-steps";
 
-import DatabaseManager, {
-	DatabaseClient,
-} from "@source/infrastructure/database/DatabaseManager";
+import { DatabaseHooks } from "@tests/hooks/Database.hooks";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 import { AccountCreate } from "@source/domain/repositories/IAccount.repository";
 import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
 
@@ -16,16 +15,11 @@ describe("Account Repository", () => {
 	};
 
 	before(async () => {
-		const dbManager = DatabaseManager.CreateInstance({
-			connection: process.env.DATABASE_CONNECTION,
-		});
-		connection = await dbManager.LeaseConnection();
-		await connection.StartTransaction("SERIALIZABLE");
+		connection = await DatabaseHooks.BeforeAll();
 	});
 
 	after(async () => {
-		await connection.RollbackTransaction();
-		await connection.Release();
+		await DatabaseHooks.AfterAll(connection);
 	});
 
 	step(

@@ -23,11 +23,11 @@ function TransactionalCall<T, U, K>(
 	serializer: SerializerFunction<T, U>,
 	authorize: AuthorizationFunction<U>,
 	handle: HandlerFunction<U & { requesterId?: string }, K>,
-): handleUnaryCall<T, K> {
+): Promisify<handleUnaryCall<T, K>> {
 	return async (
 		request: grpc.ServerUnaryCall<T, U>,
 		respond: grpc.sendUnaryData<K>,
-	) => {
+	): Promise<void> => {
 		let conn: DatabaseClient | null = null;
 
 		try {
@@ -64,3 +64,4 @@ function TransactionalCall<T, U, K>(
 }
 
 export default TransactionalCall;
+export type { SerializerFunction, AuthorizationFunction, HandlerFunction };
