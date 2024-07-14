@@ -1,0 +1,79 @@
+# NOTE: You can use the GraphQL Playground to run these queries. Remember to comment out the queries you do not wish to execute, leaving only the single query you intend to run.
+
+# After authentication, you can use the access token to access the protected routes using the Authorization header.
+mutation {
+	SignUpAndCreateProfile(
+		name: "Bob"
+		email: "bob@veigo.com"
+		password: "Password@123"
+		clientId: "123abc"
+	) {
+		account {
+			id
+		}
+
+		profile {
+			name
+		}
+
+		token {
+			access
+			refresh
+		}
+	}
+}
+
+mutation {
+	SignUp(
+		email: "bob@veigo.com"
+		password: "Password@123"
+		clientId: "123abc"
+	) {
+		account {
+			id
+		}
+
+		token {
+			access
+			refresh
+		}
+	}
+}
+
+mutation {
+	CreateProfile(name: "Bob") {
+		name
+	}
+}
+
+# You can set `$refresh_token` in the query variables section
+# Access token is valid for a short period of time, you can use the refresh token to get a new tokens
+mutation RefreshToken($refresh_token: String!) {
+	RefreshToken(token: $refresh_token) {
+		access
+		refresh
+	}
+}
+
+mutation {
+	CreateRoom(name: "Friends Group", type: group) {
+		information {
+			id
+			name
+		}
+
+		members {
+			id
+			name
+		}
+	}
+}
+
+# You can set `$room_id` in the query variables section
+mutation CreateMessage($room_id: String!) {
+	CreateMessage(roomId: $room_id, content: "Hello world!") {
+		id
+		content
+		senderId
+	}
+}
