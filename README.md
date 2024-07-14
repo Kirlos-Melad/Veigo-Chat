@@ -1,6 +1,6 @@
 # Veigo Chat
 
-**Veigo Chat** is a scalable and reliability chat platform designed for seamless real-time communication. It showcases a modern microservices architecture and leverages technologies such as GraphQL, WebSockets, gRPC, Kafka, and Debezium.
+**Veigo Chat** is a scalable and reliable chat platform designed for seamless real-time communication. It showcases a modern microservices architecture and leverages technologies such as GraphQL, WebSockets, gRPC, Kafka, and Debezium.
 
 ## Table of Contents
 
