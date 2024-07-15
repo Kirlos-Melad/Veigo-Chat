@@ -27,11 +27,14 @@ class DeviceRepository implements IDeviceRepository {
 		const query = `
 			SELECT *
 			FROM devices
-			WHERE "accountId" = '${filter.accountId}'
-			AND "clientId" = '${filter.clientId}';
+			WHERE "accountId" = $1
+			AND "clientId" = $2;
 		`;
 
-		const result = await connection.Execute<DeviceEntity>(query);
+		const result = await connection.Execute<DeviceEntity>(query, [
+			filter.accountId,
+			filter.clientId,
+		]);
 
 		return result.rowCount ? result.rows[0] : undefined;
 	}
@@ -56,12 +59,18 @@ class DeviceRepository implements IDeviceRepository {
 		const query = `
 			UPDATE devices
 			SET ${setClause}
-			WHERE "accountId" = '${filter.accountId}'
-			AND "clientId" = '${filter.clientId}'
+			WHERE "accountId" = $${fields.length + 1}
+			AND "clientId" = $${fields.length + 2}
 			RETURNING *;
 		`;
 
-		return (await connection.Execute<DeviceEntity>(query, values)).rows[0];
+		return (
+			await connection.Execute<DeviceEntity>(query, [
+				...values,
+				filter.accountId,
+				filter.clientId,
+			])
+		).rows[0];
 	}
 
 	public async Upsert(
