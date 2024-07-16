@@ -12,7 +12,6 @@ export interface ProtoGrpcType {
     Authentication: SubtypeConstructor<typeof grpc.Client, _authentication_AuthenticationClient> & { service: _authentication_AuthenticationDefinition }
     AuthenticationResponse: MessageTypeDefinition
     ChangePasswordRequest: MessageTypeDefinition
-    DeleteAccountRequest: MessageTypeDefinition
     ForgetPasswordRequest: MessageTypeDefinition
     ResetPasswordRequest: MessageTypeDefinition
     SendEmailVerificationRequest: MessageTypeDefinition

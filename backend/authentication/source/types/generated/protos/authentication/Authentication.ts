@@ -5,7 +5,6 @@ import type { MethodDefinition } from '@grpc/proto-loader'
 import type { AccountObject as _authentication_objects_AccountObject, AccountObject__Output as _authentication_objects_AccountObject__Output } from '../authentication_objects/AccountObject';
 import type { AuthenticationResponse as _authentication_AuthenticationResponse, AuthenticationResponse__Output as _authentication_AuthenticationResponse__Output } from '../authentication/AuthenticationResponse';
 import type { ChangePasswordRequest as _authentication_ChangePasswordRequest, ChangePasswordRequest__Output as _authentication_ChangePasswordRequest__Output } from '../authentication/ChangePasswordRequest';
-import type { DeleteAccountRequest as _authentication_DeleteAccountRequest, DeleteAccountRequest__Output as _authentication_DeleteAccountRequest__Output } from '../authentication/DeleteAccountRequest';
 import type { DeviceObjectPage as _authentication_objects_DeviceObjectPage, DeviceObjectPage__Output as _authentication_objects_DeviceObjectPage__Output } from '../authentication_objects/DeviceObjectPage';
 import type { EmptyObject as _common_objects_EmptyObject, EmptyObject__Output as _common_objects_EmptyObject__Output } from '../common_objects/EmptyObject';
 import type { ForgetPasswordRequest as _authentication_ForgetPasswordRequest, ForgetPasswordRequest__Output as _authentication_ForgetPasswordRequest__Output } from '../authentication/ForgetPasswordRequest';
@@ -30,14 +29,14 @@ export interface AuthenticationClient extends grpc.Client {
   changePassword(argument: _authentication_ChangePasswordRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_common_objects_EmptyObject__Output>): grpc.ClientUnaryCall;
   changePassword(argument: _authentication_ChangePasswordRequest, callback: grpc.requestCallback<_common_objects_EmptyObject__Output>): grpc.ClientUnaryCall;
   
-  DeleteAccount(argument: _authentication_DeleteAccountRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
-  DeleteAccount(argument: _authentication_DeleteAccountRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
-  DeleteAccount(argument: _authentication_DeleteAccountRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
-  DeleteAccount(argument: _authentication_DeleteAccountRequest, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
-  deleteAccount(argument: _authentication_DeleteAccountRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
-  deleteAccount(argument: _authentication_DeleteAccountRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
-  deleteAccount(argument: _authentication_DeleteAccountRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
-  deleteAccount(argument: _authentication_DeleteAccountRequest, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
+  DeleteAccount(argument: _common_objects_EmptyObject, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
+  DeleteAccount(argument: _common_objects_EmptyObject, metadata: grpc.Metadata, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
+  DeleteAccount(argument: _common_objects_EmptyObject, options: grpc.CallOptions, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
+  DeleteAccount(argument: _common_objects_EmptyObject, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
+  deleteAccount(argument: _common_objects_EmptyObject, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
+  deleteAccount(argument: _common_objects_EmptyObject, metadata: grpc.Metadata, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
+  deleteAccount(argument: _common_objects_EmptyObject, options: grpc.CallOptions, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
+  deleteAccount(argument: _common_objects_EmptyObject, callback: grpc.requestCallback<_authentication_objects_AccountObject__Output>): grpc.ClientUnaryCall;
   
   ForgetPassword(argument: _authentication_ForgetPasswordRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_common_objects_EmptyObject__Output>): grpc.ClientUnaryCall;
   ForgetPassword(argument: _authentication_ForgetPasswordRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_common_objects_EmptyObject__Output>): grpc.ClientUnaryCall;
@@ -143,7 +142,7 @@ export interface AuthenticationClient extends grpc.Client {
 export interface AuthenticationHandlers extends grpc.UntypedServiceImplementation {
   ChangePassword: grpc.handleUnaryCall<_authentication_ChangePasswordRequest__Output, _common_objects_EmptyObject>;
   
-  DeleteAccount: grpc.handleUnaryCall<_authentication_DeleteAccountRequest__Output, _authentication_objects_AccountObject>;
+  DeleteAccount: grpc.handleUnaryCall<_common_objects_EmptyObject__Output, _authentication_objects_AccountObject>;
   
   ForgetPassword: grpc.handleUnaryCall<_authentication_ForgetPasswordRequest__Output, _common_objects_EmptyObject>;
   
@@ -171,7 +170,7 @@ export interface AuthenticationHandlers extends grpc.UntypedServiceImplementatio
 
 export interface AuthenticationDefinition extends grpc.ServiceDefinition {
   ChangePassword: MethodDefinition<_authentication_ChangePasswordRequest, _common_objects_EmptyObject, _authentication_ChangePasswordRequest__Output, _common_objects_EmptyObject__Output>
-  DeleteAccount: MethodDefinition<_authentication_DeleteAccountRequest, _authentication_objects_AccountObject, _authentication_DeleteAccountRequest__Output, _authentication_objects_AccountObject__Output>
+  DeleteAccount: MethodDefinition<_common_objects_EmptyObject, _authentication_objects_AccountObject, _common_objects_EmptyObject__Output, _authentication_objects_AccountObject__Output>
   ForgetPassword: MethodDefinition<_authentication_ForgetPasswordRequest, _common_objects_EmptyObject, _authentication_ForgetPasswordRequest__Output, _common_objects_EmptyObject__Output>
   ListDevices: MethodDefinition<_common_objects_PaginationRequest, _authentication_objects_DeviceObjectPage, _common_objects_PaginationRequest__Output, _authentication_objects_DeviceObjectPage__Output>
   RefreshToken: MethodDefinition<_authentication_TokenRequest, _authentication_objects_TokenObject, _authentication_TokenRequest__Output, _authentication_objects_TokenObject__Output>

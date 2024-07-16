@@ -2,9 +2,9 @@ import { z } from "zod";
 import { Dto } from "@source/application/dtos/Dto";
 import DeviceEntity from "@source/domain/entities/Device.entity";
 
-type SignOut = Pick<DeviceEntity, "accountId" | "clientId">;
+type SignOutSerialized = Pick<DeviceEntity, "accountId" | "clientId">;
 
-class SignOutDto extends Dto<SignOut> {
+class SignOutDto extends Dto<SignOutSerialized> {
 	constructor(data: any) {
 		super(
 			data,
@@ -17,4 +17,4 @@ class SignOutDto extends Dto<SignOut> {
 }
 
 export default SignOutDto;
-export type { SignOut };
+export type { SignOutSerialized };

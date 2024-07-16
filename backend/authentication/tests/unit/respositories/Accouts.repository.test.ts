@@ -38,10 +38,9 @@ describe("Account Repository", () => {
 	step(
 		"Should find an account by email and return the account entity",
 		async () => {
-			const result = await AccountRepository.FindByEmail(
-				connection,
-				accountData.email,
-			);
+			const result = await AccountRepository.FindByEmail(connection, {
+				email: accountData.email,
+			});
 
 			expect(result).to.be.not.null;
 			expect(result!.email).to.be.equal(accountData.email);

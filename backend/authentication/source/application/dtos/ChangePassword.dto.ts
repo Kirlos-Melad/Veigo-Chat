@@ -3,18 +3,16 @@ import { z } from "zod";
 import { Dto } from "@source/application/dtos/Dto";
 import PasswordHandler from "@source/application/utilities/PasswordHandler";
 
-type ChangePassword = {
-	email: string;
+type ChangePasswordSerialized = {
 	oldPassword: string;
 	newPassword: string;
 };
 
-class ChangePasswordDto extends Dto<ChangePassword> {
+class ChangePasswordDto extends Dto<ChangePasswordSerialized> {
 	constructor(data: any) {
 		super(
 			data,
 			z.object({
-				email: z.string().email(),
 				oldPassword: PasswordHandler.schema,
 				newPassword: PasswordHandler.schema.transform(
 					PasswordHandler.hash,
@@ -25,4 +23,4 @@ class ChangePasswordDto extends Dto<ChangePassword> {
 }
 
 export default ChangePasswordDto;
-export type { ChangePassword };
+export type { ChangePasswordSerialized };

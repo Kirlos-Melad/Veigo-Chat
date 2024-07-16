@@ -10,15 +10,15 @@ import AccountRepository from "@source/infrastructure/database/repositories/Acco
 import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
 import JsonWebToken from "@source/application/utilities/JsonWebToken";
 import PasswordHandler from "@source/application/utilities/PasswordHandler";
+import IAccountRepository from "@source/domain/repositories/IAccount.repository";
+import IDeviceRepository from "@source/domain/repositories/IDevice.repository";
 
 describe("Sign In Functional", () => {
 	const sinon = createSandbox();
 
 	let connection: DatabaseClient;
-	let accountRepositorySpy: sinon.SinonSpiedInstance<
-		typeof AccountRepository
-	>;
-	let deviceRepositorySpy: sinon.SinonSpiedInstance<typeof DeviceRepository>;
+	let accountRepositorySpy: sinon.SinonSpiedInstance<IAccountRepository>;
+	let deviceRepositorySpy: sinon.SinonSpiedInstance<IDeviceRepository>;
 	let jwtSpy: sinon.SinonSpiedInstance<typeof JsonWebToken>;
 
 	const data: SignInRequest = {
@@ -53,16 +53,15 @@ describe("Sign In Functional", () => {
 		const result = await SignInUseCase.Handler(connection, serializedData);
 
 		expect(
-			accountRepositorySpy.FindByEmail.calledOnceWith(
-				connection,
-				serializedData.email,
-			),
+			accountRepositorySpy.FindByEmail.calledOnceWith(connection, {
+				email: serializedData.email,
+			}),
 		).to.be.true;
 		expect(
 			deviceRepositorySpy.Upsert.calledOnceWith(
 				connection,
 				{
-					accountId: result.account.id,
+					accountId: result.account!.id,
 					clientId: serializedData.clientId,
 				},
 				{
@@ -77,7 +76,7 @@ describe("Sign In Functional", () => {
 			jwtSpy.GenerateAccessToken.calledOnceWith({
 				id: sinon.match.string,
 				subject: {
-					accountId: result.account.id,
+					accountId: result.account!.id,
 					clientId: serializedData.clientId,
 				},
 			}),
@@ -86,7 +85,7 @@ describe("Sign In Functional", () => {
 			jwtSpy.GenerateRefreshToken.calledOnceWith({
 				id: sinon.match.string,
 				subject: {
-					accountId: result.account.id,
+					accountId: result.account!.id,
 					clientId: serializedData.clientId,
 				},
 			}),

@@ -4,6 +4,9 @@ import SignUpUseCase from "@source/domain/use-cases/SignUp.usecase";
 import ValidateAccessTokenUseCase from "@source/domain/use-cases/ValidateAccessToken.usecase";
 import SignInUseCase from "@source/domain/use-cases/SignIn.usecase";
 import RefreshTokenUseCase from "@source/domain/use-cases/RefreshToken.usecase";
+import { ListDevicesUseCase } from "@source/domain/use-cases/ListDevices.usecase";
+import { ChangePasswordUseCase } from "@source/domain/use-cases/ChangePassword.usecase";
+import { SignOutUseCase } from "@source/domain/use-cases/SignOut.usecase";
 
 class AuthenticationService implements AuthenticationHandlers {
 	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;
@@ -12,6 +15,7 @@ class AuthenticationService implements AuthenticationHandlers {
 		SignUpUseCase.Authorize,
 		SignUpUseCase.Handler,
 	);
+
 	SignIn = TransactionalCall(
 		SignInUseCase.Serializer,
 		SignInUseCase.Authorize,
@@ -19,21 +23,23 @@ class AuthenticationService implements AuthenticationHandlers {
 	);
 
 	ListDevices = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
+		ListDevicesUseCase.Serializer,
+		ListDevicesUseCase.Authorize,
+		ListDevicesUseCase.Handler,
 	);
 
 	ChangePassword = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
+		ChangePasswordUseCase.Serializer,
+		ChangePasswordUseCase.Authorize,
+		ChangePasswordUseCase.Handler,
 	);
+
 	ForgetPassword = TransactionalCall<any, any, any>(
 		() => ({} as any),
 		async () => false,
 		async () => null,
 	);
+
 	ResetPassword = TransactionalCall<any, any, any>(
 		() => ({} as any),
 		async () => false,
@@ -45,6 +51,7 @@ class AuthenticationService implements AuthenticationHandlers {
 		async () => false,
 		async () => null,
 	);
+
 	VerifyEmail = TransactionalCall<any, any, any>(
 		() => ({} as any),
 		async () => false,
@@ -70,10 +77,11 @@ class AuthenticationService implements AuthenticationHandlers {
 	);
 
 	SignOut = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
+		SignOutUseCase.Serializer,
+		SignOutUseCase.Authorize,
+		SignOutUseCase.Handler,
 	);
+
 	DeleteAccount = TransactionalCall<any, any, any>(
 		() => ({} as any),
 		async () => false,

@@ -7,6 +7,7 @@ import { TokenRequest } from "@source/types/generated/protos/authentication/Toke
 import Logger from "@source/application/utilities/Logger";
 import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
 import { RefreshTokenSerialized } from "@source/application/dtos/RefreshToken.dto";
+import { TokenObject } from "@source/types/generated/protos/authentication_objects/TokenObject";
 
 const Serializer = (data: TokenRequest) => AuthenticationDto.RefreshToken(data);
 
@@ -15,7 +16,7 @@ const Authorize = async () => true;
 const Handle = async (
 	connection: DatabaseClient,
 	data: RefreshTokenSerialized,
-) => {
+): Promise<TokenObject> => {
 	// Validate the access token
 	const jwt = await JsonWebToken.VerifyRefreshToken(data.token);
 

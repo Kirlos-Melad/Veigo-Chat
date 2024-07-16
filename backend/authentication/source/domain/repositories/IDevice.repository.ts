@@ -13,6 +13,12 @@ type DeviceRead = {
 	clientId: string;
 };
 
+type DevicesList = {
+	accountId: string;
+	from?: string;
+	limit: number;
+};
+
 type DeviceUpdate = {
 	accessTokenId?: string;
 	refreshTokenId?: string;
@@ -31,6 +37,11 @@ interface IDeviceRepository {
 		device: DeviceRead,
 	): Promise<DeviceEntity | undefined>;
 
+	List(
+		connection: DatabaseClient,
+		filter: DevicesList,
+	): Promise<DeviceEntity[]>;
+
 	Update(
 		connection: DatabaseClient,
 		filter: DeviceRead,
@@ -45,4 +56,4 @@ interface IDeviceRepository {
 }
 
 export default IDeviceRepository;
-export type { DeviceCreate, DeviceRead, DeviceUpdate };
+export type { DeviceCreate, DeviceRead, DevicesList, DeviceUpdate };

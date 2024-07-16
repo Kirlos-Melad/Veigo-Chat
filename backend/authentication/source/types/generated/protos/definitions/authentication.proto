@@ -24,9 +24,8 @@ message AuthenticationResponse {
 }
 
 message ChangePasswordRequest {
-    string email = 1;
-    string oldPassword = 2;
-    string newPassword = 3;
+    string oldPassword = 1;
+    string newPassword = 2;
 }
 
 message ForgetPasswordRequest {
@@ -58,12 +57,7 @@ message ValidateOTPRequest {
 }
 
 message SignOutRequest {
-    string accountId = 1;
-    string clientId = 2;
-}
-
-message DeleteAccountRequest {
-    string id = 1;
+    string clientId = 1;
 }
 
 service Authentication {
@@ -88,5 +82,5 @@ service Authentication {
     // Revocation
     rpc RefreshToken (TokenRequest) returns (authentication_objects.TokenObject);
     rpc SignOut (SignOutRequest) returns (common_objects.EmptyObject);
-    rpc DeleteAccount (DeleteAccountRequest) returns (authentication_objects.AccountObject);
+    rpc DeleteAccount (common_objects.EmptyObject) returns (authentication_objects.AccountObject);
 }

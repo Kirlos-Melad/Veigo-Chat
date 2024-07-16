@@ -13,17 +13,15 @@ import DeviceEntity from "@source/domain/entities/Device.entity";
 import PasswordHandler from "@source/application/utilities/PasswordHandler";
 import { AccountFactory } from "@tests/factories/Account.factory";
 import { DeviceFactory } from "@tests/factories/Device.factory";
+import IAccountRepository from "@source/domain/repositories/IAccount.repository";
+import IDeviceRepository from "@source/domain/repositories/IDevice.repository";
 
 describe("Sign In Handler", () => {
 	const sinon = createSandbox();
 
 	const connection: DatabaseClient = {} as DatabaseClient;
-	let accountRepositoryStub: sinon.SinonStubbedInstance<
-		typeof AccountRepository
-	>;
-	let deviceRepositoryStub: sinon.SinonStubbedInstance<
-		typeof DeviceRepository
-	>;
+	let accountRepositoryStub: sinon.SinonStubbedInstance<IAccountRepository>;
+	let deviceRepositoryStub: sinon.SinonStubbedInstance<IDeviceRepository>;
 	let jwtStub: sinon.SinonStubbedInstance<typeof JsonWebToken>;
 
 	const serializedData: SignInSerialized = {
@@ -64,10 +62,9 @@ describe("Sign In Handler", () => {
 		const result = await SignInUseCase.Handler(connection, serializedData);
 
 		expect(
-			accountRepositoryStub.FindByEmail.calledOnceWith(
-				connection,
-				serializedData.email,
-			),
+			accountRepositoryStub.FindByEmail.calledOnceWith(connection, {
+				email: serializedData.email,
+			}),
 		).to.be.true;
 		expect(
 			deviceRepositoryStub.Upsert.calledOnceWith(
@@ -104,7 +101,7 @@ describe("Sign In Handler", () => {
 		).to.be.true;
 
 		expect(result.account).to.deep.equal(account);
-		expect(result.token.access).to.equal(accessToken);
-		expect(result.token.refresh).to.equal(refreshToken);
+		expect(result.token!.access).to.equal(accessToken);
+		expect(result.token!.refresh).to.equal(refreshToken);
 	});
 });

@@ -19,7 +19,7 @@ describe("Sign Up Serializer", () => {
 		expect(serializer.data!.email).to.equal(signUpData.email);
 		expect(serializer.data!.clientId).to.equal(signUpData.clientId);
 		expect(
-			bcrpt.compareSync(signUpData.password!, serializer.data!.password),
+			bcrpt.compareSync(signUpData.password!, serializer.data!.password!),
 		).to.not.throw;
 	});
 });

@@ -9,15 +9,15 @@ import DeviceRepository from "@source/infrastructure/database/repositories/Devic
 import JsonWebToken from "@source/application/utilities/JsonWebToken";
 import { SignUpRequest } from "@source/types/generated/protos/authentication/SignUpRequest";
 import SignUpUseCase from "@source/domain/use-cases/SignUp.usecase";
+import IAccountRepository from "@source/domain/repositories/IAccount.repository";
+import IDeviceRepository from "@source/domain/repositories/IDevice.repository";
 
 describe("Sign Up Functional", () => {
 	const sinon = createSandbox();
 
 	let connection: DatabaseClient;
-	let accountRepositorySpy: sinon.SinonSpiedInstance<
-		typeof AccountRepository
-	>;
-	let deviceRepositorySpy: sinon.SinonSpiedInstance<typeof DeviceRepository>;
+	let accountRepositorySpy: sinon.SinonSpiedInstance<IAccountRepository>;
+	let deviceRepositorySpy: sinon.SinonSpiedInstance<IDeviceRepository>;
 	let jwtSpy: sinon.SinonSpiedInstance<typeof JsonWebToken>;
 
 	const data: SignUpRequest = {
@@ -54,7 +54,7 @@ describe("Sign Up Functional", () => {
 		).to.be.true;
 		expect(
 			deviceRepositorySpy.Create.calledOnceWith(connection, {
-				accountId: result.account.id,
+				accountId: result.account!.id,
 				clientId: serializedData.clientId,
 				accessTokenId: sinon.match.string,
 				refreshTokenId: sinon.match.string,
@@ -64,7 +64,7 @@ describe("Sign Up Functional", () => {
 			jwtSpy.GenerateAccessToken.calledOnceWith({
 				id: sinon.match.string,
 				subject: {
-					accountId: result.account.id,
+					accountId: result.account!.id,
 					clientId: serializedData.clientId,
 				},
 			}),
@@ -73,7 +73,7 @@ describe("Sign Up Functional", () => {
 			jwtSpy.GenerateRefreshToken.calledOnceWith({
 				id: sinon.match.string,
 				subject: {
-					accountId: result.account.id,
+					accountId: result.account!.id,
 					clientId: serializedData.clientId,
 				},
 			}),

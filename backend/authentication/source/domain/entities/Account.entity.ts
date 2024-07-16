@@ -4,7 +4,7 @@ interface AccountEntity {
 	email: string;
 	isEmailVerified: boolean;
 
-	password: string;
+	password?: string;
 
 	phone?: string;
 	isPhoneVerified: boolean;

@@ -6,12 +6,16 @@ import AuthenticationDto, { SignUpSerialized } from "@source/application/dtos";
 import JsonWebToken from "@source/application/utilities/JsonWebToken";
 import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
 import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
+import { AuthenticationResponse } from "@source/types/generated/protos/authentication/AuthenticationResponse";
 
 const Serializer = (data: SignUpRequest) => AuthenticationDto.SignUp(data);
 
 const Authorize = async () => true;
 
-const Handler = async (connection: DatabaseClient, data: SignUpSerialized) => {
+const Handler = async (
+	connection: DatabaseClient,
+	data: SignUpSerialized,
+): Promise<AuthenticationResponse> => {
 	const account = await AccountRepository.Create(connection, {
 		email: data.email,
 		password: data.password,

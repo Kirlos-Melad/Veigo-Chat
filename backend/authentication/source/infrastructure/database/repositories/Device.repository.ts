@@ -4,6 +4,7 @@ import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectTo
 import IDeviceRepository, {
 	DeviceCreate,
 	DeviceRead,
+	DevicesList,
 	DeviceUpdate,
 } from "@source/domain/repositories/IDevice.repository";
 
@@ -37,6 +38,30 @@ class DeviceRepository implements IDeviceRepository {
 		]);
 
 		return result.rowCount ? result.rows[0] : undefined;
+	}
+
+	public async List(connection: DatabaseClient, filter: DevicesList) {
+		let values: any[] = [filter.accountId];
+		let query = `
+			SELECT *
+			FROM devices
+			WHERE "accountId" = $1\n
+		`;
+
+		if (filter.from) {
+			values.push(filter.from);
+			query += `AND "clientId" > $${values.length}\n`;
+		}
+
+		values.push(filter.limit);
+		query += `
+			ORDER BY "clientId" ASC
+			LIMIT $${values.length}\n
+		`;
+
+		const result = await connection.Execute<DeviceEntity>(query, values);
+
+		return result.rows;
 	}
 
 	public async Update(

@@ -1,8 +1,8 @@
 import ChangePasswordDto, {
-	ChangePassword,
+	ChangePasswordSerialized,
 } from "@source/application/dtos/ChangePassword.dto";
 import DeleteAccountDto, {
-	DeleteAccount,
+	DeleteAccountSerialized,
 } from "@source/application/dtos/DeleteAccount.dto";
 import ForgetPasswordDto, {
 	ForgetPassword,
@@ -19,7 +19,9 @@ import SendEmailVerificationDto, {
 import SignInDto, {
 	SignInSerialized,
 } from "@source/application/dtos/SignIn.dto";
-import SignOutDto, { SignOut } from "@source/application/dtos/SignOut.dto";
+import SignOutDto, {
+	SignOutSerialized,
+} from "@source/application/dtos/SignOut.dto";
 import SignUpDto, {
 	SignUpSerialized,
 } from "@source/application/dtos/SignUp.dto";
@@ -32,6 +34,7 @@ import ValidateOTPDto, {
 import VerifyEmailDto, {
 	VerifyEmail,
 } from "@source/application/dtos/VerifyEmail.dto";
+import ListDevicesDto, { ListDevicesSerialized } from "./ListDevices.dto";
 
 class AuthenticationDto {
 	public static SignUp(data: any) {
@@ -40,6 +43,10 @@ class AuthenticationDto {
 
 	public static SignIn(data: any) {
 		return new SignInDto(data);
+	}
+
+	public static ListDevices(data: any) {
+		return new ListDevicesDto(data);
 	}
 
 	public static ChangePassword(data: any) {
@@ -87,7 +94,8 @@ export default AuthenticationDto;
 export type {
 	SignUpSerialized,
 	SignInSerialized,
-	ChangePassword,
+	ListDevicesSerialized,
+	ChangePasswordSerialized,
 	ForgetPassword,
 	ResetPassword,
 	SendEmailVerification,
@@ -95,6 +103,6 @@ export type {
 	ValidateAccessTokenSerialized,
 	ValidateOTP,
 	RefreshTokenSerialized,
-	SignOut,
-	DeleteAccount,
+	SignOutSerialized,
+	DeleteAccountSerialized,
 };

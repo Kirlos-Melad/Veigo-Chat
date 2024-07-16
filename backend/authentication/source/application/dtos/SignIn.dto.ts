@@ -3,8 +3,9 @@ import { Dto } from "@source/application/dtos/Dto";
 import AccountEntity from "@source/domain/entities/Account.entity";
 import DeviceEntity from "@source/domain/entities/Device.entity";
 
-type SignInSerialized = Pick<AccountEntity, "email" | "password"> &
-	Pick<DeviceEntity, "clientId">;
+type SignInSerialized = Required<
+	Pick<AccountEntity, "email" | "password"> & Pick<DeviceEntity, "clientId">
+>;
 
 class SignInDto extends Dto<SignInSerialized> {
 	constructor(data: any) {
