@@ -2,57 +2,57 @@ import DeviceEntity from "@source/domain/entities/Device.entity";
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
 type DeviceCreate = {
-	accountId: string;
-	clientId: string;
-	accessTokenId: string;
-	refreshTokenId: string;
+    accountId: string;
+    clientId: string;
+    accessTokenId: string;
+    refreshTokenId: string;
 };
 
 type DeviceRead = {
-	accountId: string;
-	clientId: string;
+    accountId: string;
+    clientId: string;
 };
 
 type DevicesList = {
-	accountId: string;
-	from?: string;
-	limit: number;
+    accountId: string;
+    from?: string;
+    limit: number;
 };
 
 type DeviceUpdate = {
-	accessTokenId?: string;
-	refreshTokenId?: string;
-	forceRefreshToken?: boolean;
-	forceSignIn?: boolean;
+    accessTokenId?: string;
+    refreshTokenId?: string;
+    forceRefreshToken?: boolean;
+    forceSignIn?: boolean;
 };
 
 interface IDeviceRepository {
-	Create(
-		connection: DatabaseClient,
-		device: DeviceCreate,
-	): Promise<DeviceEntity>;
+    Create(
+        connection: DatabaseClient,
+        device: DeviceCreate,
+    ): Promise<DeviceEntity>;
 
-	Read(
-		connection: DatabaseClient,
-		device: DeviceRead,
-	): Promise<DeviceEntity | undefined>;
+    Read(
+        connection: DatabaseClient,
+        device: DeviceRead,
+    ): Promise<DeviceEntity | undefined>;
 
-	List(
-		connection: DatabaseClient,
-		filter: DevicesList,
-	): Promise<DeviceEntity[]>;
+    List(
+        connection: DatabaseClient,
+        filter: DevicesList,
+    ): Promise<DeviceEntity[]>;
 
-	Update(
-		connection: DatabaseClient,
-		filter: DeviceRead,
-		update: DeviceUpdate,
-	): Promise<DeviceEntity>;
+    Update(
+        connection: DatabaseClient,
+        filter: DeviceRead,
+        update: DeviceUpdate,
+    ): Promise<DeviceEntity>;
 
-	Upsert(
-		connection: DatabaseClient,
-		filter: DeviceRead,
-		update: DeviceUpdate,
-	): Promise<DeviceEntity>;
+    Upsert(
+        connection: DatabaseClient,
+        filter: DeviceRead,
+        update: DeviceUpdate,
+    ): Promise<DeviceEntity>;
 }
 
 export default IDeviceRepository;

@@ -1,7 +1,7 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
 async function up(connection: DatabaseClient) {
-	await connection.Execute(`
+    await connection.Execute(`
         CREATE TABLE "otp" (
             "value" TEXT PRIMARY KEY,
             
@@ -12,7 +12,7 @@ async function up(connection: DatabaseClient) {
 }
 
 async function down(connection: DatabaseClient) {
-	await connection.Execute(`DROP TABLE IF EXISTS "otp";`);
+    await connection.Execute(`DROP TABLE IF EXISTS "otp";`);
 }
 
 export { up, down };

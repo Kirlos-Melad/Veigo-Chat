@@ -1,3 +1,3 @@
 namespace NodeJS {
-	interface ProcessEnv extends Record<string, never> {}
+    interface ProcessEnv extends Record<string, never> {}
 }

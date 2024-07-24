@@ -13,46 +13,46 @@ const Serializer = (data: SignUpRequest) => AuthenticationDto.SignUp(data);
 const Authorize = async () => true;
 
 const Handler = async (
-	connection: DatabaseClient,
-	data: SignUpSerialized,
+    connection: DatabaseClient,
+    data: SignUpSerialized,
 ): Promise<AuthenticationResponse> => {
-	const account = await AccountRepository.Create(connection, {
-		email: data.email,
-		password: data.password,
-		phone: data.phone,
-	});
+    const account = await AccountRepository.Create(connection, {
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+    });
 
-	const device = await DeviceRepository.Create(connection, {
-		accountId: account.id,
-		clientId: data.clientId,
-		accessTokenId: ulid(),
-		refreshTokenId: ulid(),
-	});
+    const device = await DeviceRepository.Create(connection, {
+        accountId: account.id,
+        clientId: data.clientId,
+        accessTokenId: ulid(),
+        refreshTokenId: ulid(),
+    });
 
-	const [accessToken, refreshToken] = await Promise.all([
-		JsonWebToken.GenerateAccessToken({
-			id: device.accessTokenId,
-			subject: {
-				accountId: device.accountId,
-				clientId: device.clientId,
-			},
-		}),
-		JsonWebToken.GenerateRefreshToken({
-			id: device.refreshTokenId,
-			subject: {
-				accountId: device.accountId,
-				clientId: device.clientId,
-			},
-		}),
-	]);
+    const [accessToken, refreshToken] = await Promise.all([
+        JsonWebToken.GenerateAccessToken({
+            id: device.accessTokenId,
+            subject: {
+                accountId: device.accountId,
+                clientId: device.clientId,
+            },
+        }),
+        JsonWebToken.GenerateRefreshToken({
+            id: device.refreshTokenId,
+            subject: {
+                accountId: device.accountId,
+                clientId: device.clientId,
+            },
+        }),
+    ]);
 
-	return {
-		account: account,
-		token: {
-			access: accessToken,
-			refresh: refreshToken,
-		},
-	};
+    return {
+        account: account,
+        token: {
+            access: accessToken,
+            refresh: refreshToken,
+        },
+    };
 };
 
 export default { Serializer, Authorize, Handler };

@@ -9,84 +9,84 @@ import { ChangePasswordUseCase } from "@source/domain/use-cases/ChangePassword.u
 import { SignOutUseCase } from "@source/domain/use-cases/SignOut.usecase";
 
 class AuthenticationService implements AuthenticationHandlers {
-	[name: string]: import("@grpc/grpc-js").UntypedHandleCall;
-	SignUp = TransactionalCall(
-		SignUpUseCase.Serializer,
-		SignUpUseCase.Authorize,
-		SignUpUseCase.Handler,
-	);
+    [name: string]: import("@grpc/grpc-js").UntypedHandleCall;
+    SignUp = TransactionalCall(
+        SignUpUseCase.Serializer,
+        SignUpUseCase.Authorize,
+        SignUpUseCase.Handler,
+    );
 
-	SignIn = TransactionalCall(
-		SignInUseCase.Serializer,
-		SignInUseCase.Authorize,
-		SignInUseCase.Handler,
-	);
+    SignIn = TransactionalCall(
+        SignInUseCase.Serializer,
+        SignInUseCase.Authorize,
+        SignInUseCase.Handler,
+    );
 
-	ListDevices = TransactionalCall<any, any, any>(
-		ListDevicesUseCase.Serializer,
-		ListDevicesUseCase.Authorize,
-		ListDevicesUseCase.Handler,
-	);
+    ListDevices = TransactionalCall<any, any, any>(
+        ListDevicesUseCase.Serializer,
+        ListDevicesUseCase.Authorize,
+        ListDevicesUseCase.Handler,
+    );
 
-	ChangePassword = TransactionalCall<any, any, any>(
-		ChangePasswordUseCase.Serializer,
-		ChangePasswordUseCase.Authorize,
-		ChangePasswordUseCase.Handler,
-	);
+    ChangePassword = TransactionalCall<any, any, any>(
+        ChangePasswordUseCase.Serializer,
+        ChangePasswordUseCase.Authorize,
+        ChangePasswordUseCase.Handler,
+    );
 
-	ForgetPassword = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
-	);
+    ForgetPassword = TransactionalCall<any, any, any>(
+        () => ({}) as any,
+        async () => false,
+        async () => null,
+    );
 
-	ResetPassword = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
-	);
+    ResetPassword = TransactionalCall<any, any, any>(
+        () => ({}) as any,
+        async () => false,
+        async () => null,
+    );
 
-	SendEmailVerification = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
-	);
+    SendEmailVerification = TransactionalCall<any, any, any>(
+        () => ({}) as any,
+        async () => false,
+        async () => null,
+    );
 
-	VerifyEmail = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
-	);
+    VerifyEmail = TransactionalCall<any, any, any>(
+        () => ({}) as any,
+        async () => false,
+        async () => null,
+    );
 
-	ValidateAccessToken = TransactionalCall(
-		ValidateAccessTokenUseCase.Serializer,
-		ValidateAccessTokenUseCase.Authorize,
-		ValidateAccessTokenUseCase.Handler,
-	);
+    ValidateAccessToken = TransactionalCall(
+        ValidateAccessTokenUseCase.Serializer,
+        ValidateAccessTokenUseCase.Authorize,
+        ValidateAccessTokenUseCase.Handler,
+    );
 
-	ValidateOTP = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
-	);
+    ValidateOTP = TransactionalCall<any, any, any>(
+        () => ({}) as any,
+        async () => false,
+        async () => null,
+    );
 
-	RefreshToken = TransactionalCall(
-		RefreshTokenUseCase.Serializer,
-		RefreshTokenUseCase.Authorize,
-		RefreshTokenUseCase.Handle,
-	);
+    RefreshToken = TransactionalCall(
+        RefreshTokenUseCase.Serializer,
+        RefreshTokenUseCase.Authorize,
+        RefreshTokenUseCase.Handle,
+    );
 
-	SignOut = TransactionalCall<any, any, any>(
-		SignOutUseCase.Serializer,
-		SignOutUseCase.Authorize,
-		SignOutUseCase.Handler,
-	);
+    SignOut = TransactionalCall<any, any, any>(
+        SignOutUseCase.Serializer,
+        SignOutUseCase.Authorize,
+        SignOutUseCase.Handler,
+    );
 
-	DeleteAccount = TransactionalCall<any, any, any>(
-		() => ({} as any),
-		async () => false,
-		async () => null,
-	);
+    DeleteAccount = TransactionalCall<any, any, any>(
+        () => ({}) as any,
+        async () => false,
+        async () => null,
+    );
 }
 
 export default new AuthenticationService();

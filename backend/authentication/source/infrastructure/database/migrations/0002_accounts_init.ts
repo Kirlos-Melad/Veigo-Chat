@@ -1,7 +1,7 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
 async function up(connection: DatabaseClient) {
-	await connection.Execute(`
+    await connection.Execute(`
         CREATE TABLE "accounts" (
             "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -18,7 +18,7 @@ async function up(connection: DatabaseClient) {
         );
     `);
 
-	await connection.Execute(`
+    await connection.Execute(`
         CREATE TRIGGER update_accounts_updated_at
             BEFORE UPDATE
             ON "accounts"
@@ -28,10 +28,10 @@ async function up(connection: DatabaseClient) {
 }
 
 async function down(connection: DatabaseClient) {
-	await connection.Execute(
-		`DROP TRIGGER update_accounts_updated_at ON "accounts";`,
-	);
-	await connection.Execute(`DROP TABLE IF EXISTS "accounts";`);
+    await connection.Execute(
+        `DROP TRIGGER update_accounts_updated_at ON "accounts";`,
+    );
+    await connection.Execute(`DROP TABLE IF EXISTS "accounts";`);
 }
 
 export { up, down };

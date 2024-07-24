@@ -6,25 +6,25 @@ import DeviceEntity from "@source/domain/entities/Device.entity";
 import PasswordHandler from "@source/application/utilities/PasswordHandler";
 
 type SignUpSerialized = Optional<
-	Pick<AccountEntity, "email" | "password" | "phone">,
-	"phone"
+    Pick<AccountEntity, "email" | "password" | "phone">,
+    "phone"
 > &
-	Pick<DeviceEntity, "clientId">;
+    Pick<DeviceEntity, "clientId">;
 
 class SignUpDto extends Dto<SignUpSerialized> {
-	constructor(data: any) {
-		super(
-			data,
-			z.object({
-				email: z.string().email(),
-				password: PasswordHandler.schema.transform(
-					PasswordHandler.hash,
-				),
-				clientId: z.string(),
-				phone: z.string().optional(),
-			}),
-		);
-	}
+    constructor(data: any) {
+        super(
+            data,
+            z.object({
+                email: z.string().email(),
+                password: PasswordHandler.schema.transform(
+                    PasswordHandler.hash,
+                ),
+                clientId: z.string(),
+                phone: z.string().optional(),
+            }),
+        );
+    }
 }
 
 export default SignUpDto;

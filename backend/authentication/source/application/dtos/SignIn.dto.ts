@@ -4,20 +4,20 @@ import AccountEntity from "@source/domain/entities/Account.entity";
 import DeviceEntity from "@source/domain/entities/Device.entity";
 
 type SignInSerialized = Required<
-	Pick<AccountEntity, "email" | "password"> & Pick<DeviceEntity, "clientId">
+    Pick<AccountEntity, "email" | "password"> & Pick<DeviceEntity, "clientId">
 >;
 
 class SignInDto extends Dto<SignInSerialized> {
-	constructor(data: any) {
-		super(
-			data,
-			z.object({
-				email: z.string().email(),
-				password: z.string(),
-				clientId: z.string(),
-			}),
-		);
-	}
+    constructor(data: any) {
+        super(
+            data,
+            z.object({
+                email: z.string().email(),
+                password: z.string(),
+                clientId: z.string(),
+            }),
+        );
+    }
 }
 
 export default SignInDto;
