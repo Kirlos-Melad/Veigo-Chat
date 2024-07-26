@@ -6,9 +6,8 @@ import { PaginationRequest } from "@source/types/generated/protos/common_objects
 type ListDevicesSerialized = PaginationRequest;
 
 class ListDevicesDto extends Dto<ListDevicesSerialized> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 cursor: z.string().optional(),
                 size: z.number().optional().default(10),
@@ -17,5 +16,5 @@ class ListDevicesDto extends Dto<ListDevicesSerialized> {
     }
 }
 
-export default ListDevicesDto;
+export { ListDevicesDto };
 export type { ListDevicesSerialized };

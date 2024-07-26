@@ -1,40 +1,44 @@
-import AccountEntity from "@source/domain/entities/Account.entity";
+import { AccountEntity } from "@source/domain/entities/Account.entity";
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
 type AccountCreate = Pick<AccountEntity, "email" | "password" | "phone">;
 type AccountFilters = {
-    All: Partial<Pick<AccountEntity, "id" | "email" | "phone">>;
+    all: Partial<Pick<AccountEntity, "id" | "email" | "phone">>;
 
-    IdOnly: Required<Pick<AccountFilters["All"], "id">>;
-    EmailOnly: Required<Pick<AccountFilters["All"], "email">>;
-    PhoneOnly: Required<Pick<AccountFilters["All"], "phone">>;
+    idOnly: Required<Pick<AccountFilters["all"], "id">>;
+    emailOnly: Required<Pick<AccountFilters["all"], "email">>;
+    phoneOnly: Required<Pick<AccountFilters["all"], "phone">>;
 };
 type AccountUpdate = Partial<
     Omit<AccountEntity, "id" | "createdAt" | "updatedAt">
 >;
 
 interface IAccountRepository {
-    Create(
+    create(
         connection: DatabaseClient,
         profile: AccountCreate,
     ): Promise<AccountEntity>;
 
-    FindById(
+    findById(
         connection: DatabaseClient,
-        filter: AccountFilters["IdOnly"],
+        filter: AccountFilters["idOnly"],
     ): Promise<AccountEntity | null>;
 
-    FindByEmail(
+    findByEmail(
         connection: DatabaseClient,
-        filter: AccountFilters["EmailOnly"],
+        filter: AccountFilters["emailOnly"],
     ): Promise<AccountEntity | null>;
 
-    Update(
+    update(
         connection: DatabaseClient,
-        filter: AccountFilters["IdOnly"],
+        filter: AccountFilters["idOnly"],
         update: AccountUpdate,
     ): Promise<AccountEntity>;
 }
 
-export default IAccountRepository;
-export type { AccountCreate, AccountFilters, AccountUpdate };
+export type {
+    IAccountRepository,
+    AccountCreate,
+    AccountFilters,
+    AccountUpdate,
+};

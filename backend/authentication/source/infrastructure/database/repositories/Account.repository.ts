@@ -1,15 +1,19 @@
-import AccountEntity from "@source/domain/entities/Account.entity";
+import { AccountEntity } from "@source/domain/entities/Account.entity";
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
-import IAccountRepository, {
+import { convertObjectToArrays } from "@source/application/utilities/ConvertObjectToArrays";
+import {
+    IAccountRepository,
     AccountCreate,
     AccountFilters,
     AccountUpdate,
 } from "@source/domain/repositories/IAccount.repository";
 
 class AccountRepository implements IAccountRepository {
-    public async Create(connection: DatabaseClient, account: AccountCreate) {
-        const { fields, values } = ConvertObjectToArrays(account);
+    public async create(
+        connection: DatabaseClient,
+        account: AccountCreate,
+    ): Promise<AccountEntity> {
+        const { fields, values } = convertObjectToArrays(account);
 
         const fieldsString = fields.join(", ");
         const valuesString = values.map((_, idx) => `$${idx + 1}`).join(", ");
@@ -20,43 +24,43 @@ class AccountRepository implements IAccountRepository {
 				VALUES(${valuesString})
 				RETURNING *;
 				`;
-        return (await connection.Execute<AccountEntity>(query, values)).rows[0];
+        return (await connection.execute<AccountEntity>(query, values)).rows[0];
     }
 
-    public async FindById(
+    public async findById(
         connection: DatabaseClient,
-        filter: AccountFilters["IdOnly"],
-    ) {
+        filter: AccountFilters["idOnly"],
+    ): Promise<AccountEntity | null> {
         const query = `
 				SELECT * FROM accounts
 				WHERE id = $1;
 				`;
-        const result = await connection.Execute<AccountEntity>(query, [
+        const result = await connection.execute<AccountEntity>(query, [
             filter.id,
         ]);
         return result.rowCount ? result.rows[0] : null;
     }
 
-    public async FindByEmail(
+    public async findByEmail(
         connection: DatabaseClient,
-        filter: AccountFilters["EmailOnly"],
-    ) {
+        filter: AccountFilters["emailOnly"],
+    ): Promise<AccountEntity | null> {
         const query = `
 				SELECT * FROM accounts
 				WHERE email = $1;
 				`;
-        const result = await connection.Execute<AccountEntity>(query, [
+        const result = await connection.execute<AccountEntity>(query, [
             filter.email,
         ]);
         return result.rowCount ? result.rows[0] : null;
     }
 
-    public async Update(
+    public async update(
         connection: DatabaseClient,
-        filter: AccountFilters["IdOnly"],
+        filter: AccountFilters["idOnly"],
         update: AccountUpdate,
-    ) {
-        const { fields, values } = ConvertObjectToArrays(update);
+    ): Promise<AccountEntity> {
+        const { fields, values } = convertObjectToArrays(update);
 
         const fieldsString = fields
             .map((field) => `${field} = $${field}`)
@@ -69,7 +73,7 @@ class AccountRepository implements IAccountRepository {
 				RETURNING *;
 				`;
         return (
-            await connection.Execute<AccountEntity>(query, [
+            await connection.execute<AccountEntity>(query, [
                 filter.id,
                 ...values,
             ])
@@ -77,4 +81,4 @@ class AccountRepository implements IAccountRepository {
     }
 }
 
-export default new AccountRepository();
+export { AccountRepository };

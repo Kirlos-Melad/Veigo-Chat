@@ -1,7 +1,7 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
-async function up(connection: DatabaseClient) {
-    await connection.Execute(`
+async function up(connection: DatabaseClient): Promise<void> {
+    await connection.execute(`
         CREATE OR REPLACE FUNCTION update_updated_at_column()
             RETURNS TRIGGER
             LANGUAGE PLPGSQL
@@ -14,8 +14,8 @@ async function up(connection: DatabaseClient) {
         `);
 }
 
-async function down(connection: DatabaseClient) {
-    await connection.Execute(`DROP FUNCTION update_updated_at_column;`);
+async function down(connection: DatabaseClient): Promise<void> {
+    await connection.execute(`DROP FUNCTION update_updated_at_column;`);
 }
 
 export { up, down };

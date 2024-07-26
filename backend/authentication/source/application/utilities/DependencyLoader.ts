@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { pathToFileURL } from "url";
 
-function Load(directory: string, recursive?: boolean) {
+function load(directory: string, recursive?: boolean): string[] {
     const directoryContent = fs.readdirSync(directory, {
         withFileTypes: true,
     });
@@ -13,24 +13,29 @@ function Load(directory: string, recursive?: boolean) {
         const contentPath = path.join(directory, content.name);
 
         if (content.isDirectory() && recursive)
-            files.push(...Load(contentPath, true));
+            files.push(...load(contentPath, true));
         else if (content.isFile()) files.push(contentPath);
     }
 
     return files;
 }
 
-async function DependencyLoader(directory: string, recursive?: boolean) {
-    const dependencies = Load(directory, recursive);
+async function dependencyLoader(
+    directory: string,
+    recursive?: boolean,
+): Promise<unknown[]> {
+    const dependencies = load(directory, recursive);
 
-    const promises = dependencies.map(async (dependencyPath) => {
-        const dependencyPathUrl = pathToFileURL(dependencyPath).href;
-        const dependency = await import(dependencyPathUrl);
-        return dependency;
-    });
+    const promises = dependencies.map(
+        async (dependencyPath): Promise<unknown> => {
+            const dependencyPathUrl = pathToFileURL(dependencyPath).href;
+            const dependency = (await import(dependencyPathUrl)) as unknown;
+            return dependency;
+        },
+    );
 
     const results = await Promise.all(promises);
     return results;
 }
 
-export default DependencyLoader;
+export { dependencyLoader };

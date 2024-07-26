@@ -22,7 +22,7 @@ const environmentVariables = z.object({
     DATABASE_CONNECTION: z.string(),
     JWT_CONFIGURATION: z
         .string()
-        .transform((value) => JSON.parse(value))
+        .transform((value: string): unknown => JSON.parse(value))
         .pipe(
             z.object({
                 algorithm: z.string(),
@@ -36,7 +36,7 @@ const environmentVariables = z.object({
         ),
     NODE_MAILER_AUTH: z
         .string()
-        .transform((value) => JSON.parse(value))
+        .transform((value: string): unknown => JSON.parse(value))
         .pipe(
             z.object({
                 hostName: z.string(),
@@ -51,4 +51,4 @@ const environmentVariables = z.object({
         .or(z.undefined()),
 });
 
-export default environmentVariables.parse(process.env);
+export const environments = environmentVariables.parse(process.env);

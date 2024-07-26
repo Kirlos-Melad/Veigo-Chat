@@ -1,7 +1,7 @@
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
-async function up(connection: DatabaseClient) {
-    await connection.Execute(`
+async function up(connection: DatabaseClient): Promise<void> {
+    await connection.execute(`
         CREATE TABLE "devices" (
             "accountId" UUID REFERENCES "accounts" NOT NULL,
             "clientId" TEXT NOT NULL,
@@ -19,7 +19,7 @@ async function up(connection: DatabaseClient) {
         );
     `);
 
-    await connection.Execute(`
+    await connection.execute(`
         CREATE TRIGGER update_devices_updated_at
 			BEFORE UPDATE
 			ON "devices"
@@ -28,11 +28,11 @@ async function up(connection: DatabaseClient) {
         `);
 }
 
-async function down(connection: DatabaseClient) {
-    await connection.Execute(
+async function down(connection: DatabaseClient): Promise<void> {
+    await connection.execute(
         `DROP TRIGGER update_devices_updated_at ON "devices";`,
     );
-    await connection.Execute(`DROP TABLE IF EXISTS "devices";`);
+    await connection.execute(`DROP TABLE IF EXISTS "devices";`);
 }
 
 export { up, down };

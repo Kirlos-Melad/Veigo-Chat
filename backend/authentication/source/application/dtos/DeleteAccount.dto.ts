@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { Dto } from "@source/application/dtos/Dto";
 
-type DeleteAccountSerialized = {};
+type DeleteAccountSerialized = object;
 
 class DeleteAccountDto extends Dto<DeleteAccountSerialized> {
-    constructor(data: any) {
-        super(data, z.object({}));
+    public constructor() {
+        super(z.object({}));
     }
 }
 
-export default DeleteAccountDto;
+export { DeleteAccountDto };
 export type { DeleteAccountSerialized };

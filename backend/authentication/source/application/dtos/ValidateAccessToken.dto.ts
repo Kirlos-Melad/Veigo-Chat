@@ -4,9 +4,8 @@ import { Dto } from "@source/application/dtos/Dto";
 type ValidateAccessTokenSerialized = { token: string };
 
 class ValidateAccessTokenDto extends Dto<ValidateAccessTokenSerialized> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 token: z.string(),
             }),
@@ -14,5 +13,5 @@ class ValidateAccessTokenDto extends Dto<ValidateAccessTokenSerialized> {
     }
 }
 
-export default ValidateAccessTokenDto;
+export { ValidateAccessTokenDto };
 export type { ValidateAccessTokenSerialized };

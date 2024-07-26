@@ -1,4 +1,6 @@
 // @ts-check
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
@@ -15,14 +17,34 @@ export default tseslint.config(
     {
         rules: {
             ...eslintConfigPrettier.rules,
-            /* eslint-disable-next-line @typescript-eslint/naming-convention */
             "@typescript-eslint/naming-convention": [
                 "error",
                 {
-                    selector: "interface",
+                    selector: "enumMember",
                     format: ["PascalCase"],
-                    prefix: ["I"],
                 },
+
+                {
+                    selector: "classProperty",
+                    format: ["camelCase", "UPPER_CASE"],
+                    leadingUnderscore: "require",
+                },
+
+                {
+                    selector: ["typeLike"],
+                    format: ["PascalCase"],
+                },
+
+                {
+                    selector: ["memberLike", "variableLike"],
+                    format: ["camelCase", "UPPER_CASE"],
+                    leadingUnderscore: "allow",
+                },
+            ],
+
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
             ],
             "no-restricted-syntax": [
                 "error",
@@ -31,6 +53,21 @@ export default tseslint.config(
                     message: "Only named exports are allowed",
                 },
             ],
+
+            "@typescript-eslint/restrict-template-expressions": [
+                "error",
+                {
+                    allowAny: true,
+                    allowBoolean: true,
+                    allowNullish: true,
+                    allowNumber: true,
+                    allowRegExp: true,
+                },
+            ],
+
+            "@typescript-eslint/explicit-member-accessibility": ["error"],
+            "@typescript-eslint/explicit-function-return-type": ["error"],
+            "@typescript-eslint/no-non-null-assertion": ["off"],
         },
 
         languageOptions: {

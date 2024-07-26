@@ -7,9 +7,8 @@ type ValidateOTP = {
 };
 
 class ValidateOTPDto extends Dto<ValidateOTP> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 email: z.string().email(),
                 otp: z.string(),
@@ -18,5 +17,5 @@ class ValidateOTPDto extends Dto<ValidateOTP> {
     }
 }
 
-export default ValidateOTPDto;
+export { ValidateOTPDto };
 export type { ValidateOTP };

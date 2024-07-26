@@ -1,22 +1,17 @@
 import { ZodType } from "zod";
 
 abstract class Dto<U> {
-    protected mRawData: any;
-    private mSchema: ZodType<U>;
-    private mSerializedData: U | undefined;
+    private _schema: ZodType<U>;
 
-    constructor(data: any, schema: ZodType<U>) {
-        this.mRawData = data;
-        this.mSchema = schema;
+    public constructor(schema: ZodType<U>) {
+        this._schema = schema;
     }
 
-    public get data() {
-        return Object.freeze(this.mSerializedData);
-    }
-
-    public Serialize(): void {
-        const result = this.mSchema.safeParse(this.mRawData);
-        if (result.success) this.mSerializedData = result.data;
+    public serialize(data: unknown): U {
+        const result = this._schema.safeParse(data);
+        if (result.success) return result.data;
+        //TODO: maybe better?
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         else throw result.error.format();
     }
 }

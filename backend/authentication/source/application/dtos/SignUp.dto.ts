@@ -1,9 +1,10 @@
 import { z } from "zod";
 
 import { Dto } from "@source/application/dtos/Dto";
-import AccountEntity from "@source/domain/entities/Account.entity";
-import DeviceEntity from "@source/domain/entities/Device.entity";
-import PasswordHandler from "@source/application/utilities/PasswordHandler";
+import { AccountEntity } from "@source/domain/entities/Account.entity";
+import { DeviceEntity } from "@source/domain/entities/Device.entity";
+import { passwordHandler } from "@source/application/utilities/PasswordHandler";
+import { Optional } from "@source/types/Optional";
 
 type SignUpSerialized = Optional<
     Pick<AccountEntity, "email" | "password" | "phone">,
@@ -12,13 +13,12 @@ type SignUpSerialized = Optional<
     Pick<DeviceEntity, "clientId">;
 
 class SignUpDto extends Dto<SignUpSerialized> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 email: z.string().email(),
-                password: PasswordHandler.schema.transform(
-                    PasswordHandler.hash,
+                password: passwordHandler.schema.transform(
+                    passwordHandler.hash,
                 ),
                 clientId: z.string(),
                 phone: z.string().optional(),
@@ -27,5 +27,5 @@ class SignUpDto extends Dto<SignUpSerialized> {
     }
 }
 
-export default SignUpDto;
+export { SignUpDto };
 export type { SignUpSerialized };

@@ -1,56 +1,64 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
-import AbsolutePath from "@source/application/utilities/AbsolutePath";
+import { absolutePath } from "@source/application/utilities/AbsolutePath";
 import path from "path";
 
 class ServerManager {
-    private static sInstance: ServerManager;
+    private static _instance: ServerManager;
 
-    private mServer: grpc.Server;
-    private mConnection: string;
-    private mCredentials: grpc.ServerCredentials;
+    private _server: grpc.Server;
+    private _connection: string;
+    private _credentials: grpc.ServerCredentials;
 
     private constructor(
         connection: string,
         credentials: grpc.ServerCredentials,
     ) {
-        this.mServer = new grpc.Server();
+        this._server = new grpc.Server();
 
-        this.mConnection = connection;
-        this.mCredentials = credentials;
+        this._connection = connection;
+        this._credentials = credentials;
     }
 
-    public static CreateInstance(
+    public static createInstance(
         connection: string,
         credentials: grpc.ServerCredentials,
     ): ServerManager {
-        if (ServerManager.sInstance) return ServerManager.sInstance;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!ServerManager._instance)
+            ServerManager._instance = new ServerManager(
+                connection,
+                credentials,
+            );
 
-        ServerManager.sInstance = new ServerManager(connection, credentials);
-
-        return ServerManager.sInstance;
+        return ServerManager._instance;
     }
 
     public static get instance(): ServerManager {
-        if (!ServerManager.sInstance) throw new Error("Instance not created");
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!ServerManager._instance)
+            throw new Error("ServerManager instance not created");
 
-        return ServerManager.sInstance;
+        return ServerManager._instance;
     }
 
-    public async StartServer(): Promise<number> {
+    public async startServer(): Promise<number> {
         return new Promise((resolve, reject) => {
-            this.mServer.bindAsync(
-                this.mConnection,
-                this.mCredentials,
+            this._server.bindAsync(
+                this._connection,
+                this._credentials,
                 (error, port) => {
-                    if (error) return reject(error);
-                    return resolve(port);
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+                    resolve(port);
                 },
             );
         });
     }
 
-    public AddService(
+    public addService(
         protosPath: string,
         proto: {
             file: string;
@@ -58,9 +66,9 @@ class ServerManager {
             serviceName: string;
             serviceImplementation: grpc.UntypedServiceImplementation;
         },
-    ) {
+    ): void {
         const { file, packageName, serviceName, serviceImplementation } = proto;
-        const currentPath = AbsolutePath(import.meta.url);
+        const currentPath = absolutePath(import.meta.url);
 
         const packageDefinition = protoLoader.loadSync(
             // Resolve the given path to the current file as an absolute path
@@ -72,20 +80,31 @@ class ServerManager {
             { includeDirs: [protosPath] },
         );
         const grpcObject = grpc.loadPackageDefinition(packageDefinition);
-        const grpcPackage = grpcObject[packageName] as any;
+        const grpcPackage = grpcObject[packageName] as unknown;
         if (!grpcPackage)
             throw new Error(
                 `Package ${packageName} not found in the proto file ${file}`,
             );
-
-        const grpcService = grpcPackage[serviceName] as any;
-        if (!grpcService || !grpcService.service)
+        else if (
+            typeof grpcPackage !== "object" &&
+            !Object.hasOwn(grpcPackage, serviceName)
+        )
             throw new Error(
                 `Service ${serviceName} not found in the package ${packageName}`,
             );
 
-        this.mServer.addService(grpcService.service, serviceImplementation);
+        const grpcService = grpcPackage[serviceName as keyof object] as unknown;
+        if (!grpcService || !Object.hasOwn(grpcService, "service"))
+            throw new Error(
+                `Service ${serviceName} not found in the package ${packageName}`,
+            );
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        this._server.addService(
+            grpcService["service" as keyof object],
+            serviceImplementation,
+        );
     }
 }
 
-export default ServerManager;
+export { ServerManager };

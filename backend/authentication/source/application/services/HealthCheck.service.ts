@@ -6,10 +6,13 @@ import { HealthCheckResponse } from "@source/types/generated/protos/health_check
 class HealthCheckService implements HealthCheckHandlers {
     [name: string]: import("@grpc/grpc-js").UntypedHandleCall;
 
-    Check = (
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    public Check = (
         _request: grpc.ServerUnaryCall<EmptyObject, HealthCheckResponse>,
         respond: grpc.sendUnaryData<HealthCheckResponse>,
-    ) => respond(null, { status: "SERVING" });
+    ): void => {
+        respond(null, { status: "SERVING" });
+    };
 }
 
-export default new HealthCheckService();
+export { HealthCheckService };

@@ -13,21 +13,24 @@ interface AccountEntity {
     updatedAt: string;
 }
 
-function IsAccountEntity(data: any): data is AccountEntity {
+function isAccountEntity(data: unknown): data is AccountEntity {
+    if (typeof data != "object" || data == null || Array.isArray(data))
+        return false;
+
+    const checker = data as AccountEntity;
+
     return (
-        data &&
-        typeof data === "object" &&
-        !Array.isArray(data) &&
-        typeof data.id === "string" &&
-        typeof data.email === "string" &&
-        typeof data.isEmailVerified === "boolean" &&
-        typeof data.password === "string" &&
-        typeof data.phone === "string" &&
-        typeof data.isPhoneVerified === "boolean" &&
-        typeof data.createdAt === "string" &&
-        typeof data.updatedAt === "string"
+        typeof checker.id === "string" &&
+        typeof checker.email === "string" &&
+        typeof checker.isEmailVerified === "boolean" &&
+        (checker.password === undefined ||
+            typeof checker.password === "string") &&
+        (checker.phone === undefined || typeof checker.phone === "string") &&
+        typeof checker.isPhoneVerified === "boolean" &&
+        typeof checker.createdAt === "string" &&
+        typeof checker.updatedAt === "string"
     );
 }
 
-export default AccountEntity;
-export { IsAccountEntity };
+export type { AccountEntity };
+export { isAccountEntity };

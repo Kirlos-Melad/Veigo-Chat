@@ -8,9 +8,9 @@ const schema = z
         "The password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character and must be at least 8 characters long with no spaces",
     );
 
-const hash = (value: string) => {
+const hash = (value: string): string => {
     const salt = bcrypt.genSaltSync();
     return bcrypt.hashSync(value, salt);
 };
 
-export default { schema, hash };
+export const passwordHandler = { schema, hash };

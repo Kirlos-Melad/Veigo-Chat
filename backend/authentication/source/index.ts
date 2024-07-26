@@ -1,67 +1,79 @@
 import grpc from "@grpc/grpc-js";
 
-import ServerManager from "@source/infrastructure/grpc/ServerManager";
-import Environments from "@source/configurations/Environments";
-import Logger from "@source/application/utilities/Logger";
-import DatabaseManager from "@source/infrastructure/database/DatabaseManager";
-import AuthenticationService from "@source/application/services/Authentication.service";
-import HealthCheckService from "@source/application/services/HealthCheck.service";
+import { ServerManager } from "@source/infrastructure/grpc/ServerManager";
+import { environments } from "@source/configurations/Environments";
 
-async function Migrate() {
-    Logger.information("Creating database manager");
-    const databaseManager = DatabaseManager.CreateInstance({
-        connection: Environments.DATABASE_CONNECTION,
-        debug: Environments.IS_DEVELOPMENT,
+import { DatabaseManager } from "@source/infrastructure/database/DatabaseManager";
+import { AuthenticationService } from "@source/application/services/Authentication.service";
+import { HealthCheckService } from "@source/application/services/HealthCheck.service";
+import { Logger } from "./application/utilities/Logger";
+import { DateFormatter } from "./application/utilities/DateFormatter";
+import { JsonWebTokenManager } from "./application/utilities/JsonWebTokenManager";
+import { AuthorizationManager } from "./application/utilities/AuthorizationManager";
+import { DeviceRepository } from "./infrastructure/database/repositories/Device.repository";
+
+const logger = Logger.createInstance(new DateFormatter());
+
+async function migrate(): Promise<void> {
+    logger.information("Creating database manager");
+    const databaseManager = DatabaseManager.createInstance({
+        connection: environments.DATABASE_CONNECTION,
+        debug: environments.IS_DEVELOPMENT,
     });
 
-    Logger.information("Running database migrations");
-    await databaseManager.Migrate();
+    logger.information("Running database migrations");
+    await databaseManager.migrate();
 }
 
-async function Start() {
-    Logger.information("Creating database manager");
-    const databaseManager = DatabaseManager.CreateInstance({
-        connection: Environments.DATABASE_CONNECTION,
-        debug: Environments.IS_DEVELOPMENT,
+async function start(): Promise<void> {
+    logger.information("Creating database manager");
+    const dbManager = DatabaseManager.createInstance({
+        connection: environments.DATABASE_CONNECTION,
+        debug: environments.IS_DEVELOPMENT,
     });
 
-    Logger.information("Creating services");
+    const jwtManager = JsonWebTokenManager.createInstance({
+        secretKey: environments.SECRET_KEY,
+        ...environments.JWT_CONFIGURATION,
+    });
 
-    const serverManager = ServerManager.CreateInstance(
-        Environments.SERVICE_ADDRESS,
+    AuthorizationManager.createInstance({
+        jwtManager: jwtManager,
+        dbManager: dbManager,
+        deviceRepository: new DeviceRepository(),
+    });
+
+    logger.information("Creating services");
+    const serverManager = ServerManager.createInstance(
+        environments.SERVICE_ADDRESS,
         grpc.ServerCredentials.createInsecure(),
     );
 
     const PROTOS_PATH = "source/types/generated/protos/definitions";
-    serverManager.AddService(PROTOS_PATH, {
+    serverManager.addService(PROTOS_PATH, {
         file: "health_check.proto",
         packageName: "health_check",
         serviceName: "HealthCheck",
-        serviceImplementation: HealthCheckService,
+        serviceImplementation: new HealthCheckService(),
     });
 
-    serverManager.AddService(PROTOS_PATH, {
+    serverManager.addService(PROTOS_PATH, {
         file: "authentication.proto",
         packageName: "authentication",
         serviceName: "Authentication",
-        serviceImplementation: AuthenticationService,
+        serviceImplementation: new AuthenticationService(),
     });
 
-    Logger.information("Starting server");
-    const port = await serverManager.StartServer();
+    logger.information("Starting server");
+    const port = await serverManager.startServer();
 
-    Logger.information(`Server running on port ${port}`);
-
-    return {
-        Server: serverManager,
-        Database: databaseManager,
-    };
+    logger.information(`Server running on port ${port}`);
 }
 
-function Help() {
-    Logger.information("Available commands:");
-    Logger.information("migrate: Run the database migrations");
-    Logger.information("start: Start the server");
+function help(): void {
+    logger.information("Available commands:");
+    logger.information("migrate: Run the database migrations");
+    logger.information("start: Start the server");
 }
 
 try {
@@ -75,15 +87,15 @@ try {
 
     switch (command) {
         case "migrate":
-            await Migrate();
+            await migrate();
             break;
 
         case "start":
-            await Start();
+            await start();
             break;
 
         case "help":
-            Help();
+            help();
             break;
 
         default:
@@ -91,9 +103,7 @@ try {
                 "Invalid argument. Try 'help' for more information.",
             );
     }
-} catch (error: any) {
-    Logger.error(error);
+} catch (error: unknown) {
+    logger.error(error);
     process.exit(1);
 }
-
-export { Start, Migrate, Help };

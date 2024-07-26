@@ -1,6 +1,8 @@
 import { ZodError } from "zod";
 import pg from "pg";
-import Logger from "@source/application/utilities/Logger";
+import { Logger } from "@source/application/utilities/Logger";
+
+const logger = Logger.instance;
 
 const ERROR = {
     INTERNAL_SERVER_ERROR: {
@@ -10,73 +12,68 @@ const ERROR = {
     DATA_INTEGRITY_ERROR: {
         name: "Data Integrity Error",
     },
-};
+} as const;
 
 const DB_ERROR_CODE = {
     SYNTAX_ERROR: "42601",
     FOREIGN_KEY_VIOLATION: "23503",
     DATA_ALREADY_EXISTS: "23505",
-};
+} as const;
 
 class ErrorSerializer {
-    private mError: any;
-    private mSerializedError?: Record<string, any>;
+    private databaseErrorInstanceSerializer(
+        error: unknown,
+    ): Record<string, unknown> {
+        const dbError = error as pg.DatabaseError;
 
-    public constructor(error: any) {
-        this.mError = error;
-    }
-
-    private DatabaseErrorInstanceSerializer(): Record<string, any> {
-        const error = this.mError as pg.DatabaseError;
-
-        if (error.code === DB_ERROR_CODE.SYNTAX_ERROR) {
+        if (dbError.code === DB_ERROR_CODE.SYNTAX_ERROR) {
             return ERROR.INTERNAL_SERVER_ERROR;
-        } else if (error.code === DB_ERROR_CODE.FOREIGN_KEY_VIOLATION) {
+        } else if (dbError.code === DB_ERROR_CODE.FOREIGN_KEY_VIOLATION) {
             return {
                 name: ERROR.DATA_INTEGRITY_ERROR.name,
                 message:
                     "A data integrity error occurred. Please make sure the data is correct and try again.",
             };
-        } else if (error.code === DB_ERROR_CODE.DATA_ALREADY_EXISTS) {
+        } else if (dbError.code === DB_ERROR_CODE.DATA_ALREADY_EXISTS) {
             return {
                 name: ERROR.DATA_INTEGRITY_ERROR.name,
                 message: "The data you are trying to add already exists.",
             };
         }
         // TODO: Implement serialization for DatabaseError
-        return error;
+        return ERROR.INTERNAL_SERVER_ERROR;
     }
 
-    private ZodErrorInstanceSerializer(): Record<string, any> {
-        const error = this.mError as ZodError;
-        return error.flatten();
+    private zodErrorInstanceSerializer(
+        error: unknown,
+    ): Record<string, unknown> {
+        const zError = error as ZodError;
+        return zError.flatten();
     }
 
-    private ErrorInstanceSerializer(): Record<string, any> {
-        const error = this.mError as Error;
+    private generalErrorInstanceSerializer(
+        error: unknown,
+    ): Record<string, unknown> {
+        const gError = error as Error;
         return {
-            name: error.name,
-            message: error.message,
-            cause: error.cause,
+            name: gError.name,
+            message: gError.message,
+            cause: gError.cause,
         };
     }
 
-    public Serialize(): void {
-        if (this.mError instanceof pg.DatabaseError) {
-            this.mSerializedError = this.DatabaseErrorInstanceSerializer();
-        } else if (this.mError instanceof ZodError) {
-            this.mSerializedError = this.ZodErrorInstanceSerializer();
-        } else if (this.mError instanceof Error) {
-            this.mSerializedError = this.ErrorInstanceSerializer();
+    public serialize(error: unknown): Record<string, unknown> | undefined {
+        if (error instanceof pg.DatabaseError) {
+            return this.databaseErrorInstanceSerializer(error);
+        } else if (error instanceof ZodError) {
+            return this.zodErrorInstanceSerializer(error);
+        } else if (error instanceof Error) {
+            return this.generalErrorInstanceSerializer(error);
         } else {
-            Logger.error("Unable to serialize error", this.mError);
-            this.mSerializedError = ERROR.INTERNAL_SERVER_ERROR;
+            logger.error("Unable to serialize error", error);
+            return ERROR.INTERNAL_SERVER_ERROR;
         }
-    }
-
-    public get serializedError(): Record<string, any> | undefined {
-        return this.mSerializedError;
     }
 }
 
-export default ErrorSerializer;
+export { ErrorSerializer };

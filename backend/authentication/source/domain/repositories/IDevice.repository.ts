@@ -1,4 +1,4 @@
-import DeviceEntity from "@source/domain/entities/Device.entity";
+import { DeviceEntity } from "@source/domain/entities/Device.entity";
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
 type DeviceCreate = {
@@ -27,33 +27,38 @@ type DeviceUpdate = {
 };
 
 interface IDeviceRepository {
-    Create(
+    create(
         connection: DatabaseClient,
         device: DeviceCreate,
     ): Promise<DeviceEntity>;
 
-    Read(
+    read(
         connection: DatabaseClient,
         device: DeviceRead,
     ): Promise<DeviceEntity | undefined>;
 
-    List(
+    list(
         connection: DatabaseClient,
         filter: DevicesList,
     ): Promise<DeviceEntity[]>;
 
-    Update(
+    update(
         connection: DatabaseClient,
         filter: DeviceRead,
         update: DeviceUpdate,
     ): Promise<DeviceEntity>;
 
-    Upsert(
+    upsert(
         connection: DatabaseClient,
         filter: DeviceRead,
         update: DeviceUpdate,
     ): Promise<DeviceEntity>;
 }
 
-export default IDeviceRepository;
-export type { DeviceCreate, DeviceRead, DevicesList, DeviceUpdate };
+export type {
+    IDeviceRepository,
+    DeviceCreate,
+    DeviceRead,
+    DevicesList,
+    DeviceUpdate,
+};

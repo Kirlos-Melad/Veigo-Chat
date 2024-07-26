@@ -7,9 +7,8 @@ type VerifyEmail = {
 };
 
 class VerifyEmailDto extends Dto<VerifyEmail> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 email: z.string().email(),
                 otp: z.string(),
@@ -18,5 +17,5 @@ class VerifyEmailDto extends Dto<VerifyEmail> {
     }
 }
 
-export default VerifyEmailDto;
+export { VerifyEmailDto };
 export type { VerifyEmail };

@@ -3,26 +3,26 @@ import { format as sqlFormatter } from "sql-formatter";
 import path from "path";
 import { promises as fs } from "fs";
 
-import Logger from "@source/application/utilities/Logger";
-import AbsolutePath from "@source/application/utilities/AbsolutePath";
+import { Logger } from "@source/application/utilities/Logger";
+import { absolutePath } from "@source/application/utilities/AbsolutePath";
 
-const IsolationLevel = {
-    READ_UNCOMMITTED: "READ UNCOMMITTED",
-    READ_COMMITTED: "READ COMMITTED",
-    REPEATABLE_READ: "REPEATABLE READ",
-    SERIALIZABLE: "SERIALIZABLE",
-} as const;
+const logger = Logger.instance;
 
-type IsolationLevel = (typeof IsolationLevel)[keyof typeof IsolationLevel];
+enum IsolationLevel {
+    ReadUncommitted = "READ UNCOMMITTED",
+    ReadCommitted = "READ COMMITTED",
+    RepeatableRead = "REPEATABLE READ",
+    Serializable = "SERIALIZABLE",
+}
 
 abstract class Database {
-    private mDebugMode: boolean;
+    private _debugMode: boolean;
 
     public constructor(debug: boolean) {
-        this.mDebugMode = debug;
+        this._debugMode = debug;
     }
 
-    private Debug(query: string, values: any[] = []) {
+    private debug(query: string, values: unknown[] = []): void {
         try {
             const formattedQuery = sqlFormatter(query, {
                 language: "postgresql",
@@ -30,148 +30,152 @@ abstract class Database {
                 tabWidth: 4,
             });
 
-            Logger.information(
+            logger.information(
                 `Query:\n${formattedQuery}\nValues: ${JSON.stringify(values)}`,
             );
         } catch (error) {
-            Logger.warning("Failed to format SQL query");
-            Logger.information(
+            logger.warning("Failed to format SQL query");
+            logger.information(
                 `Query:\n${query}\nValues: ${JSON.stringify(values)}`,
             );
         }
     }
 
-    protected async ExecuteQuery<T extends QueryResultRow>(
+    protected async executeQuery<T extends QueryResultRow>(
         connection: PoolClient,
         query: string,
-        values: any[] = [],
+        values: unknown[] = [],
     ): Promise<QueryResult<T>> {
-        if (this.mDebugMode) this.Debug(query, values);
+        if (this._debugMode) this.debug(query, values);
 
         try {
             const result = await connection.query<T>(query, values);
             return result;
         } catch (error) {
-            Logger.error(error);
+            logger.error(error);
             throw error;
         }
     }
 }
 
 class DatabaseClient extends Database {
-    private mConnection: PoolClient;
-    private mIsConnected: boolean;
-    private mInTransaction: boolean;
+    private _connection: PoolClient;
+    private _isConnected: boolean;
+    private _inTransaction: boolean;
 
     public constructor(connection: PoolClient, debug: boolean = false) {
         super(debug);
 
-        this.mConnection = connection;
-        this.mIsConnected = true;
-        this.mInTransaction = false;
+        this._connection = connection;
+        this._isConnected = true;
+        this._inTransaction = false;
     }
 
-    public get isConnected() {
-        return this.mIsConnected;
+    public get isConnected(): boolean {
+        return this._isConnected;
     }
 
-    public get inTransaction() {
-        return this.mInTransaction;
+    public get inTransaction(): boolean {
+        return this._inTransaction;
     }
 
-    public async Execute<T extends QueryResultRow>(
+    public async execute<T extends QueryResultRow>(
         query: string,
-        values: any[] = [],
+        values: unknown[] = [],
     ): Promise<QueryResult<T>> {
-        return await this.ExecuteQuery(this.mConnection, query, values);
+        return await this.executeQuery(this._connection, query, values);
     }
 
-    public async StartTransaction(isolationLevel: IsolationLevel) {
-        await this.Execute(
+    public async startTransaction(
+        isolationLevel: IsolationLevel,
+    ): Promise<void> {
+        await this.execute(
             `BEGIN TRANSACTION ISOLATION LEVEL ${isolationLevel}`,
         );
-        this.mInTransaction = true;
+        this._inTransaction = true;
     }
 
-    public async CommitTransaction() {
-        await this.Execute("COMMIT TRANSACTION;");
-        this.mInTransaction = false;
+    public async commitTransaction(): Promise<void> {
+        await this.execute("COMMIT TRANSACTION;");
+        this._inTransaction = false;
     }
 
-    public async RollbackTransaction() {
-        await this.Execute("ROLLBACK TRANSACTION;");
-        this.mInTransaction = false;
+    public async rollbackTransaction(): Promise<void> {
+        await this.execute("ROLLBACK TRANSACTION;");
+        this._inTransaction = false;
     }
 
-    public async Release() {
-        if (this.mInTransaction) {
-            await this.RollbackTransaction();
+    public async release(): Promise<void> {
+        if (this._inTransaction) {
+            await this.rollbackTransaction();
             throw new Error(
                 "Closing connection while still in transaction, Rolled back before closing",
             );
         }
 
         if (this.isConnected) {
-            this.mConnection.release();
-            this.mIsConnected = false;
+            this._connection.release();
+            this._isConnected = false;
         } else throw new Error("Trying to close a connection already closed.");
     }
 }
 
-class DatabaseManager extends Database {
-    private static sInstance: DatabaseManager;
-    private mMigrationsTableName: string;
-    private mMigrationsPath: string;
-    private mPool: pg.Pool;
+export class DatabaseManager extends Database {
+    private static _instance: DatabaseManager;
+    private _migrationsTableName: string;
+    private _migrationsPath: string;
+    private _pool: pg.Pool;
 
-    protected constructor(options: {
+    private constructor(options: {
         connection: string;
         migrationsPath?: string;
         debug?: boolean;
     }) {
         super(options.debug || false);
-        this.mMigrationsTableName = "migrations";
-        this.mMigrationsPath = options.migrationsPath || "migrations";
+        this._migrationsTableName = "migrations";
+        this._migrationsPath = options.migrationsPath || "migrations";
 
-        this.mPool = new pg.Pool({
+        this._pool = new pg.Pool({
             connectionString: options.connection,
         });
     }
 
-    public static CreateInstance(options: {
+    public static createInstance(options: {
         connection: string;
         migrationsPath?: string;
         debug?: boolean;
-    }) {
-        if (!DatabaseManager.sInstance) {
-            DatabaseManager.sInstance = new DatabaseManager(options);
+    }): DatabaseManager {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!DatabaseManager._instance) {
+            DatabaseManager._instance = new DatabaseManager(options);
         }
 
-        return DatabaseManager.sInstance;
+        return DatabaseManager._instance;
     }
 
-    public static get instance() {
-        if (!DatabaseManager.sInstance)
+    public static get instance(): DatabaseManager {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!DatabaseManager._instance)
             throw new Error("DatabaseManager not initialized");
 
-        return DatabaseManager.sInstance;
+        return DatabaseManager._instance;
     }
 
-    public async LeaseConnection(): Promise<DatabaseClient> {
-        const client = await this.mPool.connect();
+    public async leaseConnection(): Promise<DatabaseClient> {
+        const client = await this._pool.connect();
         return new DatabaseClient(client);
     }
 
-    private async MigrationsTableUp(db: DatabaseClient) {
-        await db.Execute(`
-			CREATE TABLE IF NOT EXISTS "${this.mMigrationsTableName}" (
+    private async migrationsTableUp(db: DatabaseClient): Promise<void> {
+        await db.execute(`
+			CREATE TABLE IF NOT EXISTS "${this._migrationsTableName}" (
 				"name" TEXT PRIMARY KEY,
 				"createdAt" TIMESTAMP NOT NULL DEFAULT current_timestamp,
 				"updatedAt" TIMESTAMP NOT NULL DEFAULT current_timestamp
 			);
 		`);
 
-        await db.Execute(`
+        await db.execute(`
 			CREATE OR REPLACE FUNCTION update_updated_at_column()
 				RETURNS TRIGGER
 				LANGUAGE PLPGSQL
@@ -183,80 +187,101 @@ class DatabaseManager extends Database {
 				$$
         `);
 
-        await db.Execute(`
-			CREATE OR REPLACE TRIGGER update_${this.mMigrationsTableName}_updated_at
+        await db.execute(`
+			CREATE OR REPLACE TRIGGER update_${this._migrationsTableName}_updated_at
 				BEFORE UPDATE
-				ON "${this.mMigrationsTableName}"
+				ON "${this._migrationsTableName}"
 				FOR EACH ROW
 				EXECUTE FUNCTION update_updated_at_column()
         `);
     }
 
-    private async MigrationExists(connection: DatabaseClient, name: string) {
+    private async migrationExists(
+        connection: DatabaseClient,
+        name: string,
+    ): Promise<boolean> {
         const query = `
 			SELECT *
-			FROM "${this.mMigrationsTableName}"
+			FROM "${this._migrationsTableName}"
 			WHERE "name" = '${name}';
 		`;
 
-        const result = await connection.Execute(query);
+        const result = await connection.execute(query);
 
-        return result.rowCount && result.rowCount > 0;
+        return result.rowCount != null && result.rowCount > 0;
     }
 
-    private async AddMigration(connection: DatabaseClient, name: string) {
+    private async addMigration(
+        connection: DatabaseClient,
+        name: string,
+    ): Promise<void> {
         const query = `
-			INSERT INTO "${this.mMigrationsTableName}" ("name") VALUES('${name}');
+			INSERT INTO "${this._migrationsTableName}" ("name") VALUES('${name}');
 		`;
 
-        await connection.Execute(query);
+        await connection.execute(query);
     }
 
-    public async Migrate() {
-        const client = await this.LeaseConnection();
-        await client.StartTransaction("SERIALIZABLE");
+    public async migrate(): Promise<void> {
+        const client = await this.leaseConnection();
+        await client.startTransaction(IsolationLevel.Serializable);
 
         try {
-            Logger.information(`Creating ${this.mMigrationsTableName} table`);
-            await this.MigrationsTableUp(client);
+            logger.information(`Creating ${this._migrationsTableName} table`);
+            await this.migrationsTableUp(client);
 
             const migrationsPath = path.join(
-                AbsolutePath(import.meta.url),
-                this.mMigrationsPath,
+                absolutePath(import.meta.url),
+                this._migrationsPath,
             );
 
             const files = await fs.readdir(migrationsPath, {
                 withFileTypes: true,
             });
 
-            Logger.information("Starting Migrations");
+            logger.information("Starting Migrations");
             for (const file of files) {
                 if (!file.isFile()) continue;
 
-                const migration_name = file.name.split(".")[0];
+                const migrationName = file.name.split(".")[0];
 
-                Logger.information(`Checking if ${migration_name} exists`);
-                if (await this.MigrationExists(client, migration_name)) {
-                    Logger.information(`Skipping ${migration_name}`);
+                logger.information(`Checking if ${migrationName} exists`);
+                if (await this.migrationExists(client, migrationName)) {
+                    logger.information(`Skipping ${migrationName}`);
                     continue;
                 }
 
-                Logger.information(`Migration doesn't exist, Migrating...`);
-                (await import(`${file.path}/${file.name}`)).up(client);
-                await this.AddMigration(client, migration_name);
+                logger.information(`Migration doesn't exist, Migrating...`);
+                const migrator = (await import(
+                    `${file.path}/${file.name}`
+                )) as unknown;
 
-                Logger.information(`Migrated ${migration_name}`);
+                if (
+                    typeof migrator !== "object" ||
+                    typeof migrator === "undefined" ||
+                    migrator == null ||
+                    !Object.hasOwn(migrator, "up")
+                )
+                    throw new Error(
+                        `Migration ${migrationName} doesn't have an up function`,
+                    );
+
+                // TODO: Try to find a better solution
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+                (migrator as any).up(client);
+                await this.addMigration(client, migrationName);
+
+                logger.information(`Migrated ${migrationName}`);
             }
 
-            await client.CommitTransaction();
-            await client.Release();
+            await client.commitTransaction();
+            await client.release();
         } catch (error) {
-            await client.RollbackTransaction();
-            await client.Release();
+            await client.rollbackTransaction();
+            await client.release();
             throw error;
         }
     }
 }
 
-export default DatabaseManager;
-export type { DatabaseClient };
+export type { DatabaseClient, IsolationLevel };

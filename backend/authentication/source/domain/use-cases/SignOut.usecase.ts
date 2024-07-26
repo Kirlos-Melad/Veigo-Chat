@@ -1,32 +1,43 @@
-import AuthenticationDto, { SignOutSerialized } from "@source/application/dtos";
-import { EmptyObject } from "@source/types/generated/protos/common_objects/EmptyObject";
 import {
-    AuthorizationFunction,
-    HandlerFunction,
-    SerializerFunction,
-} from "@source/application/utilities/TransactionalCall";
+    Dto,
+    SignOutSerialized,
+} from "@source/application/dtos";
+import { EmptyObject } from "@source/types/generated/protos/common_objects/EmptyObject";
 import { SignOutRequest } from "@source/types/generated/protos/authentication/SignOutRequest";
-import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
+import { IUseCase } from "./IUseCase";
+import { IDeviceRepository } from "../repositories/IDevice.repository";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
 
-export const SignOutUseCase: {
-    Serializer: SerializerFunction<SignOutRequest, SignOutSerialized>;
+class SignOutUseCase
+    implements IUseCase<SignOutRequest, SignOutSerialized, EmptyObject>
+{
+    private _dto: Dto<SignOutSerialized>;
+    private _repository: IDeviceRepository;
 
-    Authorize: AuthorizationFunction<SignOutSerialized>;
+    public constructor(
+        dto: Dto<SignOutSerialized>,
+        repository: IDeviceRepository,
+    ) {
+        this._dto = dto;
+        this._repository = repository;
+    }
 
-    Handler: HandlerFunction<
-        SignOutSerialized & { requesterId: string },
-        EmptyObject
-    >;
-} = {
-    Serializer: (data) => AuthenticationDto.SignOut(data),
+    public serialize = (data: SignOutRequest): SignOutSerialized =>
+        this._dto.serialize(data);
 
-    Authorize: async () => true,
+    public authorize = async (): Promise<boolean> =>
+        await new Promise((resolve) => {
+            resolve(true);
+        });
 
-    Handler: async (connection, data) => {
-        await DeviceRepository.Update(
+    public handle = async (
+        connection: DatabaseClient,
+        data: SignOutSerialized & { requesterId?: string },
+    ): Promise<EmptyObject> => {
+        await this._repository.update(
             connection,
             {
-                accountId: data.requesterId,
+                accountId: data.requesterId!,
                 clientId: data.clientId,
             },
             {
@@ -35,5 +46,7 @@ export const SignOutUseCase: {
         );
 
         return {};
-    },
-};
+    };
+}
+
+export { SignOutUseCase };

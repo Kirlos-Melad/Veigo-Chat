@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { Dto } from "@source/application/dtos/Dto";
-import PasswordHandler from "@source/application/utilities/PasswordHandler";
+import { passwordHandler } from "@source/application/utilities/PasswordHandler";
 
 type ChangePasswordSerialized = {
     oldPassword: string;
@@ -9,18 +9,17 @@ type ChangePasswordSerialized = {
 };
 
 class ChangePasswordDto extends Dto<ChangePasswordSerialized> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
-                oldPassword: PasswordHandler.schema,
-                newPassword: PasswordHandler.schema.transform(
-                    PasswordHandler.hash,
+                oldPassword: passwordHandler.schema,
+                newPassword: passwordHandler.schema.transform(
+                    passwordHandler.hash,
                 ),
             }),
         );
     }
 }
 
-export default ChangePasswordDto;
+export { ChangePasswordDto };
 export type { ChangePasswordSerialized };

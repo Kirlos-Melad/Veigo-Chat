@@ -1,92 +1,124 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+import grpc from "@grpc/grpc-js";
+
 import { AuthenticationHandlers } from "@source/types/generated/protos/authentication/Authentication";
-import TransactionalCall from "@source/application/utilities/TransactionalCall";
-import SignUpUseCase from "@source/domain/use-cases/SignUp.usecase";
-import ValidateAccessTokenUseCase from "@source/domain/use-cases/ValidateAccessToken.usecase";
-import SignInUseCase from "@source/domain/use-cases/SignIn.usecase";
-import RefreshTokenUseCase from "@source/domain/use-cases/RefreshToken.usecase";
+import { SignUpUseCase } from "@source/domain/use-cases/SignUp.usecase";
+import { ValidateAccessTokenUseCase } from "@source/domain/use-cases/ValidateAccessToken.usecase";
+import { SignInUseCase } from "@source/domain/use-cases/SignIn.usecase";
+import { RefreshTokenUseCase } from "@source/domain/use-cases/RefreshToken.usecase";
 import { ListDevicesUseCase } from "@source/domain/use-cases/ListDevices.usecase";
 import { ChangePasswordUseCase } from "@source/domain/use-cases/ChangePassword.usecase";
 import { SignOutUseCase } from "@source/domain/use-cases/SignOut.usecase";
+import {
+    ChangePasswordDto,
+    ListDevicesDto,
+    RefreshTokenDto,
+    SignInDto,
+    SignOutDto,
+    SignUpDto,
+    ValidateAccessTokenDto,
+} from "../dtos";
+import { IAccountRepository } from "@source/domain/repositories/IAccount.repository";
+import { AccountRepository } from "@source/infrastructure/database/repositories/Account.repository";
+import { DeviceRepository } from "@source/infrastructure/database/repositories/Device.repository";
+import { IDeviceRepository } from "@source/domain/repositories/IDevice.repository";
+import { transactionalCall } from "../utilities/TransactionalCall";
+
+const accountRepository: IAccountRepository = new AccountRepository();
+const deviceRepository: IDeviceRepository = new DeviceRepository();
 
 class AuthenticationService implements AuthenticationHandlers {
     [name: string]: import("@grpc/grpc-js").UntypedHandleCall;
-    SignUp = TransactionalCall(
-        SignUpUseCase.Serializer,
-        SignUpUseCase.Authorize,
-        SignUpUseCase.Handler,
+    public SignUp = transactionalCall(
+        new SignUpUseCase(new SignUpDto(), {
+            account: accountRepository,
+            device: deviceRepository,
+        }),
     );
 
-    SignIn = TransactionalCall(
-        SignInUseCase.Serializer,
-        SignInUseCase.Authorize,
-        SignInUseCase.Handler,
+    public SignIn = transactionalCall(
+        new SignInUseCase(new SignInDto(), {
+            account: accountRepository,
+            device: deviceRepository,
+        }),
     );
 
-    ListDevices = TransactionalCall<any, any, any>(
-        ListDevicesUseCase.Serializer,
-        ListDevicesUseCase.Authorize,
-        ListDevicesUseCase.Handler,
+    public ListDevices = transactionalCall(
+        new ListDevicesUseCase(new ListDevicesDto(), deviceRepository),
     );
 
-    ChangePassword = TransactionalCall<any, any, any>(
-        ChangePasswordUseCase.Serializer,
-        ChangePasswordUseCase.Authorize,
-        ChangePasswordUseCase.Handler,
+    public ChangePassword = transactionalCall(
+        new ChangePasswordUseCase(new ChangePasswordDto(), accountRepository),
     );
 
-    ForgetPassword = TransactionalCall<any, any, any>(
-        () => ({}) as any,
-        async () => false,
-        async () => null,
+    public ForgetPassword = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        request: grpc.ServerUnaryCall<any, any>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        respond: grpc.sendUnaryData<any>,
+    ): void => {
+        respond({ name: "ServerError", message: "Not implemented yet!" });
+    };
+
+    public ResetPassword = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        request: grpc.ServerUnaryCall<any, any>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        respond: grpc.sendUnaryData<any>,
+    ): void => {
+        respond({ name: "ServerError", message: "Not implemented yet!" });
+    };
+
+    public SendEmailVerification = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        request: grpc.ServerUnaryCall<any, any>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        respond: grpc.sendUnaryData<any>,
+    ): void => {
+        respond({ name: "ServerError", message: "Not implemented yet!" });
+    };
+
+    public VerifyEmail = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        request: grpc.ServerUnaryCall<any, any>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        respond: grpc.sendUnaryData<any>,
+    ): void => {
+        respond({ name: "ServerError", message: "Not implemented yet!" });
+    };
+
+    public ValidateAccessToken = transactionalCall(
+        new ValidateAccessTokenUseCase(
+            new ValidateAccessTokenDto(),
+            deviceRepository,
+        ),
     );
 
-    ResetPassword = TransactionalCall<any, any, any>(
-        () => ({}) as any,
-        async () => false,
-        async () => null,
+    public ValidateOTP = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        request: grpc.ServerUnaryCall<any, any>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        respond: grpc.sendUnaryData<any>,
+    ): void => {
+        respond({ name: "ServerError", message: "Not implemented yet!" });
+    };
+
+    public RefreshToken = transactionalCall(
+        new RefreshTokenUseCase(new RefreshTokenDto(), deviceRepository),
     );
 
-    SendEmailVerification = TransactionalCall<any, any, any>(
-        () => ({}) as any,
-        async () => false,
-        async () => null,
+    public SignOut = transactionalCall(
+        new SignOutUseCase(new SignOutDto(), deviceRepository),
     );
 
-    VerifyEmail = TransactionalCall<any, any, any>(
-        () => ({}) as any,
-        async () => false,
-        async () => null,
-    );
-
-    ValidateAccessToken = TransactionalCall(
-        ValidateAccessTokenUseCase.Serializer,
-        ValidateAccessTokenUseCase.Authorize,
-        ValidateAccessTokenUseCase.Handler,
-    );
-
-    ValidateOTP = TransactionalCall<any, any, any>(
-        () => ({}) as any,
-        async () => false,
-        async () => null,
-    );
-
-    RefreshToken = TransactionalCall(
-        RefreshTokenUseCase.Serializer,
-        RefreshTokenUseCase.Authorize,
-        RefreshTokenUseCase.Handle,
-    );
-
-    SignOut = TransactionalCall<any, any, any>(
-        SignOutUseCase.Serializer,
-        SignOutUseCase.Authorize,
-        SignOutUseCase.Handler,
-    );
-
-    DeleteAccount = TransactionalCall<any, any, any>(
-        () => ({}) as any,
-        async () => false,
-        async () => null,
-    );
+    public DeleteAccount = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        request: grpc.ServerUnaryCall<any, any>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        respond: grpc.sendUnaryData<any>,
+    ): void => {
+        respond({ name: "ServerError", message: "Not implemented yet!" });
+    };
 }
 
-export default new AuthenticationService();
+export { AuthenticationService };

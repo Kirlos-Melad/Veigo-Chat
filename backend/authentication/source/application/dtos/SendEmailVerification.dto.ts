@@ -4,9 +4,8 @@ import { Dto } from "@source/application/dtos/Dto";
 type SendEmailVerification = { email: string };
 
 class SendEmailVerificationDto extends Dto<SendEmailVerification> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 email: z.string().email(),
             }),
@@ -14,5 +13,5 @@ class SendEmailVerificationDto extends Dto<SendEmailVerification> {
     }
 }
 
-export default SendEmailVerificationDto;
+export { SendEmailVerificationDto };
 export type { SendEmailVerification };

@@ -1,43 +1,89 @@
-import Logger from "@source/application/utilities/Logger";
 import { Metadata } from "@grpc/grpc-js";
-import JsonWebToken from "@source/application/utilities/JsonWebToken";
-import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
-import DatabaseManager from "@source/infrastructure/database/DatabaseManager";
+
+import { Logger } from "@source/application/utilities/Logger";
+import { JsonWebTokenManager } from "@source/application/utilities/JsonWebTokenManager";
+import {
+    DatabaseClient,
+    DatabaseManager,
+} from "@source/infrastructure/database/DatabaseManager";
+import { IDeviceRepository } from "@source/domain/repositories/IDevice.repository";
 
 class AuthorizationManager {
-    private static sInstance: AuthorizationManager;
+    private static _instance: AuthorizationManager;
 
-    public static get instance(): AuthorizationManager {
-        if (!AuthorizationManager.sInstance) {
-            throw new Error("AuthorizationManager not initialized");
-        }
+    private _jwtManager: JsonWebTokenManager;
+    private _dbManager: DatabaseManager;
+    private _deviceRepository: IDeviceRepository;
 
-        return AuthorizationManager.sInstance;
+    private constructor(configurations: {
+        jwtManager: JsonWebTokenManager;
+        dbManager: DatabaseManager;
+        deviceRepository: IDeviceRepository;
+    }) {
+        this._jwtManager = configurations.jwtManager;
+        this._dbManager = configurations.dbManager;
+        this._deviceRepository = configurations.deviceRepository;
     }
 
-    public async GetUserId(metadata: Metadata): Promise<string> {
+    public static createInstance(configurations: {
+        jwtManager: JsonWebTokenManager;
+        dbManager: DatabaseManager;
+        deviceRepository: IDeviceRepository;
+    }): AuthorizationManager {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!AuthorizationManager._instance) {
+            AuthorizationManager._instance = new AuthorizationManager(
+                configurations,
+            );
+        }
+
+        return AuthorizationManager._instance;
+    }
+
+    public static get instance(): AuthorizationManager {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!AuthorizationManager._instance) {
+            throw new Error("AuthorizationManager is not initialized");
+        }
+
+        return AuthorizationManager._instance;
+    }
+
+    public async getUserId(metadata: Metadata): Promise<string> {
         let token: string | null;
         try {
             token = metadata.get("token")[0].toString();
         } catch (error) {
-            Logger.error(error);
+            Logger.instance.error(error);
             throw new Error("Unauthorized action");
         }
 
-        const { id, subject } = await JsonWebToken.VerifyAccessToken(token);
+        const { id, subject } = await this._jwtManager.verifyAccessToken(token);
 
-        const conn = await DatabaseManager.instance.LeaseConnection();
-        const device = await DeviceRepository.Read(conn, {
-            accountId: subject!.accountId,
-            clientId: subject!.clientId,
-        });
+        let conn: DatabaseClient | undefined;
+        try {
+            conn = await this._dbManager.leaseConnection();
+            const device = await this._deviceRepository.read(conn, {
+                accountId: subject.accountId,
+                clientId: subject.clientId,
+            });
 
-        if (!device || device.accessTokenId != id || device.forceRefreshToken) {
-            throw new Error("Unauthorized action");
+            if (
+                !device ||
+                device.accessTokenId != id ||
+                device.forceRefreshToken
+            ) {
+                throw new Error("Unauthorized action");
+            }
+
+            await conn.release();
+
+            return subject.accountId;
+        } catch (error) {
+            await conn?.release();
+            throw error;
         }
-
-        return subject!.accountId;
     }
 }
 
-export default new AuthorizationManager();
+export { AuthorizationManager };

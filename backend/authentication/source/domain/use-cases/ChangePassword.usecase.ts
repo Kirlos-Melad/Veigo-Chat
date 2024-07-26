@@ -1,37 +1,43 @@
 import bcrypt from "bcrypt";
 
-import AuthenticationDto, {
-    ChangePasswordSerialized,
-} from "@source/application/dtos";
+import { ChangePasswordSerialized, Dto } from "@source/application/dtos";
 import { ChangePasswordRequest } from "@source/types/generated/protos/authentication/ChangePasswordRequest";
 import { EmptyObject } from "@source/types/generated/protos/common_objects/EmptyObject";
-import AccountRepository from "@source/infrastructure/database/repositories/Account.repository";
-import {
-    AuthorizationFunction,
-    HandlerFunction,
-    SerializerFunction,
-} from "@source/application/utilities/TransactionalCall";
+import { IUseCase } from "./IUseCase";
+import { Metadata } from "@grpc/grpc-js";
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+import { IAccountRepository } from "../repositories/IAccount.repository";
+import { AuthorizationManager } from "@source/application/utilities/AuthorizationManager";
 
-export const ChangePasswordUseCase: {
-    Serializer: SerializerFunction<
-        ChangePasswordRequest,
-        ChangePasswordSerialized
-    >;
+class ChangePasswordUseCase
+    implements
+        IUseCase<ChangePasswordRequest, ChangePasswordSerialized, EmptyObject>
+{
+    private _dto: Dto<ChangePasswordSerialized>;
+    private _repository: IAccountRepository;
 
-    Authorize: AuthorizationFunction<ChangePasswordSerialized>;
+    public constructor(
+        dto: Dto<ChangePasswordSerialized>,
+        repository: IAccountRepository,
+    ) {
+        this._dto = dto;
+        this._repository = repository;
+    }
 
-    Handler: HandlerFunction<
-        ChangePasswordSerialized & { requesterId: string },
-        EmptyObject
-    >;
-} = {
-    Serializer: (data) => AuthenticationDto.ChangePassword(data),
+    public serialize = (
+        data: ChangePasswordRequest,
+    ): ChangePasswordSerialized => this._dto.serialize(data);
 
-    Authorize: async () => true,
+    //? Guarantee that the user exists
+    public authorize = async (metadata: Metadata): Promise<string> =>
+        await AuthorizationManager.instance.getUserId(metadata);
 
-    Handler: async (connection, data) => {
-        const account = await AccountRepository.FindById(connection, {
-            id: data.requesterId,
+    public handle = async (
+        connection: DatabaseClient,
+        data: ChangePasswordSerialized & { requesterId?: string },
+    ): Promise<EmptyObject> => {
+        const account = await this._repository.findById(connection, {
+            id: data.requesterId!,
         });
 
         if (
@@ -41,12 +47,14 @@ export const ChangePasswordUseCase: {
             throw new Error("Invalid password");
         }
 
-        await AccountRepository.Update(
+        await this._repository.update(
             connection,
-            { id: data.requesterId },
+            { id: data.requesterId! },
             { password: data.newPassword },
         );
 
         return {};
-    },
-};
+    };
+}
+
+export { ChangePasswordUseCase };

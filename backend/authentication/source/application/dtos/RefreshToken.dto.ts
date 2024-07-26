@@ -4,9 +4,8 @@ import { Dto } from "@source/application/dtos/Dto";
 type RefreshTokenSerialized = { token: string };
 
 class RefreshTokenDto extends Dto<RefreshTokenSerialized> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 token: z.string(),
             }),
@@ -14,5 +13,5 @@ class RefreshTokenDto extends Dto<RefreshTokenSerialized> {
     }
 }
 
-export default RefreshTokenDto;
+export { RefreshTokenDto };
 export type { RefreshTokenSerialized };

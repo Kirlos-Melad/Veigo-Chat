@@ -1,87 +1,105 @@
 import { ulid } from "ulidx";
 
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import AuthenticationDto from "@source/application/dtos";
-import JsonWebToken from "@source/application/utilities/JsonWebToken";
+import { Dto } from "@source/application/dtos";
+import { JsonWebTokenManager } from "@source/application/utilities/JsonWebTokenManager";
 import { TokenRequest } from "@source/types/generated/protos/authentication/TokenRequest";
-import Logger from "@source/application/utilities/Logger";
-import DeviceRepository from "@source/infrastructure/database/repositories/Device.repository";
+import { Logger } from "@source/application/utilities/Logger";
 import { RefreshTokenSerialized } from "@source/application/dtos/RefreshToken.dto";
 import { TokenObject } from "@source/types/generated/protos/authentication_objects/TokenObject";
+import { IUseCase } from "./IUseCase";
+import { IDeviceRepository } from "../repositories/IDevice.repository";
 
-const Serializer = (data: TokenRequest) => AuthenticationDto.RefreshToken(data);
+const logger = Logger.instance;
 
-const Authorize = async () => true;
+class RefreshTokenUseCase
+    implements IUseCase<TokenRequest, RefreshTokenSerialized, TokenObject>
+{
+    private _dto: Dto<RefreshTokenSerialized>;
+    private _repository: IDeviceRepository;
 
-const Handle = async (
-    connection: DatabaseClient,
-    data: RefreshTokenSerialized,
-): Promise<TokenObject> => {
-    // Validate the access token
-    const jwt = await JsonWebToken.VerifyRefreshToken(data.token);
-
-    // Check if the claims are present
-    if (!jwt.id || !jwt.subject) {
-        Logger.error(`Claims missing in token`);
-        throw new Error("Invalid token");
+    public constructor(
+        dto: Dto<RefreshTokenSerialized>,
+        repository: IDeviceRepository,
+    ) {
+        this._dto = dto;
+        this._repository = repository;
     }
 
-    // Check if the device exists
-    const device = await DeviceRepository.Read(connection, {
-        accountId: jwt.subject.accountId,
-        clientId: jwt.subject.clientId,
-    });
-    if (!device) {
-        Logger.error(`Device not found`);
-        throw new Error("Invalid token");
-    }
+    public serialize = (data: TokenRequest): RefreshTokenSerialized =>
+        this._dto.serialize(data);
 
-    // Check if the token is still valid
-    if (device.refreshTokenId !== jwt.id || device.forceSignIn) {
-        Logger.error(`User must sign in again`);
-        await DeviceRepository.Update(
+    public authorize = async (): Promise<boolean> =>
+        await new Promise((resolve) => {
+            resolve(true);
+        });
+
+    public handle = async (
+        connection: DatabaseClient,
+        data: RefreshTokenSerialized,
+    ): Promise<TokenObject> => {
+        // Validate the access token
+        const jwt = await JsonWebTokenManager.instance.verifyRefreshToken(
+            data.token,
+        );
+
+        // Check if the device exists
+        const device = await this._repository.read(connection, {
+            accountId: jwt.subject.accountId,
+            clientId: jwt.subject.clientId,
+        });
+        if (!device) {
+            logger.error(`Device not found`);
+            throw new Error("Invalid token");
+        }
+
+        // Check if the token is still valid
+        if (device.refreshTokenId !== jwt.id || device.forceSignIn) {
+            logger.error(`User must sign in again`);
+            await this._repository.update(
+                connection,
+                {
+                    accountId: jwt.subject.accountId,
+                    clientId: jwt.subject.clientId,
+                },
+                { forceSignIn: true },
+            );
+            throw new Error("Invalid token");
+        }
+
+        const nDevice = await this._repository.update(
             connection,
             {
                 accountId: jwt.subject.accountId,
                 clientId: jwt.subject.clientId,
             },
-            { forceSignIn: true },
+            {
+                accessTokenId: ulid(),
+                refreshTokenId: ulid(),
+                forceSignIn: false,
+                forceRefreshToken: false,
+            },
         );
-        throw new Error("Invalid token");
-    }
 
-    const nDevice = await DeviceRepository.Update(
-        connection,
-        {
-            accountId: jwt.subject.accountId,
-            clientId: jwt.subject.clientId,
-        },
-        {
-            accessTokenId: ulid(),
-            refreshTokenId: ulid(),
-            forceSignIn: false,
-            forceRefreshToken: false,
-        },
-    );
+        const [accessToken, refreshToken] = await Promise.all([
+            JsonWebTokenManager.instance.generateAccessToken({
+                id: nDevice.accessTokenId,
+                subject: {
+                    accountId: nDevice.accountId,
+                    clientId: nDevice.clientId,
+                },
+            }),
+            JsonWebTokenManager.instance.generateRefreshToken({
+                id: nDevice.refreshTokenId,
+                subject: {
+                    accountId: nDevice.accountId,
+                    clientId: nDevice.clientId,
+                },
+            }),
+        ]);
 
-    const [accessToken, refreshToken] = await Promise.all([
-        JsonWebToken.GenerateAccessToken({
-            id: nDevice.accessTokenId,
-            subject: {
-                accountId: nDevice.accountId,
-                clientId: nDevice.clientId,
-            },
-        }),
-        JsonWebToken.GenerateRefreshToken({
-            id: nDevice.refreshTokenId,
-            subject: {
-                accountId: nDevice.accountId,
-                clientId: nDevice.clientId,
-            },
-        }),
-    ]);
+        return { access: accessToken, refresh: refreshToken };
+    };
+}
 
-    return { access: accessToken, refresh: refreshToken };
-};
-
-export default { Serializer, Authorize, Handle };
+export { RefreshTokenUseCase };

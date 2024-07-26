@@ -1,6 +1,6 @@
 type Primitive = string | number | boolean;
 
-function ConvertObjectToArrays(object: Record<string, Primitive | undefined>): {
+function convertObjectToArrays(object: Record<string, Primitive | undefined>): {
     fields: string[];
     values: Primitive[];
 } {
@@ -15,4 +15,4 @@ function ConvertObjectToArrays(object: Record<string, Primitive | undefined>): {
     return { fields, values };
 }
 
-export default ConvertObjectToArrays;
+export { convertObjectToArrays };

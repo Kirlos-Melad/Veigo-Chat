@@ -8,15 +8,19 @@ import {
 import wrapAnsi from "wrap-ansi";
 import util from "util";
 
-import DateFormatter from "@source/application/utilities/DateFormatter";
+import { DateFormatter } from "@source/application/utilities/DateFormatter";
 
 const { combine, colorize, printf } = format;
 
 class Logger {
-    private readonly mLogger: winstonLogger;
+    private static _instance: Logger;
 
-    public constructor() {
-        this.mLogger = createLogger({
+    private readonly _logger: winstonLogger;
+    private readonly _dateFormatter: DateFormatter;
+
+    private constructor(dateFormatter: DateFormatter) {
+        this._dateFormatter = dateFormatter;
+        this._logger = createLogger({
             level: "MESSAGE",
             levels: {
                 ERROR: 0,
@@ -25,28 +29,47 @@ class Logger {
                 MESSAGE: 3,
             },
             format: combine(
-                this.SplatMessage(),
-                this.FormatMessage(),
-                this.AddMessageHeader(),
+                this.splatMessage(),
+                this.formatMessage(),
+                this.addMessageHeader(),
             ),
             transports: [new transports.Console()],
         });
     }
 
-    private SplatMessage(): Logform.Format {
+    public static createInstance(dateFormatter: DateFormatter): Logger {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!Logger._instance) {
+            Logger._instance = new Logger(dateFormatter);
+        }
+
+        return Logger._instance;
+    }
+
+    public static get instance(): Logger {
+        return Logger._instance;
+    }
+
+    private splatMessage(): Logform.Format {
         return {
-            transform: (info: Logform.TransformableInfo) => {
+            transform: (
+                info: Logform.TransformableInfo,
+            ): Logform.TransformableInfo | boolean => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 info.message = util.format(...info[Symbol.for("splat")]);
                 return info;
             },
         };
     }
 
-    private FormatMessage(): Logform.Format {
+    private formatMessage(): Logform.Format {
         return {
-            transform: (info: Logform.TransformableInfo) => {
+            transform: (
+                info: Logform.TransformableInfo,
+            ): Logform.TransformableInfo | boolean => {
                 const indentation = " ".repeat(10);
 
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 const wrappedMessage = wrapAnsi(info.message, 140, {
                     trim: false,
                     hard: true,
@@ -72,9 +95,9 @@ class Logger {
         };
     }
 
-    private AddMessageHeader(): Logform.Format {
+    private addMessageHeader(): Logform.Format {
         return printf(({ level, message }) => {
-            let headerMessage = `[${DateFormatter.FormatLong(Date.now())}] `;
+            let headerMessage = `[${this._dateFormatter.formatLong(Date.now())}] `;
             headerMessage += `[${level}] `;
             headerMessage += "\n";
 
@@ -88,22 +111,23 @@ class Logger {
                         INFORMATION: "green",
                         MESSAGE: "bold green",
                     },
+                    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 }).colorize(level, headerMessage) + message
             );
         });
     }
 
-    public information(...messages: any[]) {
-        this.mLogger.log("INFORMATION", "", ...messages);
+    public information(...messages: unknown[]): void {
+        this._logger.log("INFORMATION", "", ...messages);
     }
 
-    public warning(...messages: any[]) {
-        this.mLogger.log("WARNING", "", ...messages);
+    public warning(...messages: unknown[]): void {
+        this._logger.log("WARNING", "", ...messages);
     }
 
-    public error(...messages: any[]) {
-        this.mLogger.log("ERROR", "", ...messages);
+    public error(...messages: unknown[]): void {
+        this._logger.log("ERROR", "", ...messages);
     }
 }
 
-export default new Logger();
+export { Logger };

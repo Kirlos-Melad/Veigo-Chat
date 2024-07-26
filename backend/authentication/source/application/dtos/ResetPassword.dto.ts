@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { Dto } from "@source/application/dtos/Dto";
-import PasswordHandler from "@source/application/utilities/PasswordHandler";
+import { passwordHandler } from "@source/application/utilities/PasswordHandler";
 
 type ResetPassword = {
     email: string;
@@ -10,19 +10,18 @@ type ResetPassword = {
 };
 
 class ResetPasswordDto extends Dto<ResetPassword> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 email: z.string().email(),
                 otp: z.string(),
-                newPassword: PasswordHandler.schema.transform(
-                    PasswordHandler.hash,
+                newPassword: passwordHandler.schema.transform(
+                    passwordHandler.hash,
                 ),
             }),
         );
     }
 }
 
-export default ResetPasswordDto;
+export { ResetPasswordDto };
 export type { ResetPassword };

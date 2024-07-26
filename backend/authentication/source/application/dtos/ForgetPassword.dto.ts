@@ -4,9 +4,8 @@ import { Dto } from "@source/application/dtos/Dto";
 type ForgetPassword = { email: string };
 
 class ForgetPasswordDto extends Dto<ForgetPassword> {
-    constructor(data: any) {
+    public constructor() {
         super(
-            data,
             z.object({
                 email: z.string().email(),
             }),
@@ -14,5 +13,5 @@ class ForgetPasswordDto extends Dto<ForgetPassword> {
     }
 }
 
-export default ForgetPasswordDto;
+export { ForgetPasswordDto };
 export type { ForgetPassword };

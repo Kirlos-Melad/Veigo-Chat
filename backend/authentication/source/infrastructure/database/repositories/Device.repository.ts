@@ -1,7 +1,8 @@
-import DeviceEntity from "@source/domain/entities/Device.entity";
+import { DeviceEntity } from "@source/domain/entities/Device.entity";
 import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
-import ConvertObjectToArrays from "@source/application/utilities/ConvertObjectToArrays";
-import IDeviceRepository, {
+import { convertObjectToArrays } from "@source/application/utilities/ConvertObjectToArrays";
+import {
+    IDeviceRepository,
     DeviceCreate,
     DeviceRead,
     DevicesList,
@@ -9,8 +10,11 @@ import IDeviceRepository, {
 } from "@source/domain/repositories/IDevice.repository";
 
 class DeviceRepository implements IDeviceRepository {
-    public async Create(connection: DatabaseClient, device: DeviceCreate) {
-        const { fields, values } = ConvertObjectToArrays(device);
+    public async create(
+        connection: DatabaseClient,
+        device: DeviceCreate,
+    ): Promise<DeviceEntity> {
+        const { fields, values } = convertObjectToArrays(device);
 
         const fieldsString = fields.join(", ");
         const valuesString = values.map((_, idx) => `$${idx + 1}`).join(", ");
@@ -21,10 +25,13 @@ class DeviceRepository implements IDeviceRepository {
 				VALUES(${valuesString})
 				RETURNING *;
 				`;
-        return (await connection.Execute<DeviceEntity>(query, values)).rows[0];
+        return (await connection.execute<DeviceEntity>(query, values)).rows[0];
     }
 
-    public async Read(connection: DatabaseClient, filter: DeviceRead) {
+    public async read(
+        connection: DatabaseClient,
+        filter: DeviceRead,
+    ): Promise<DeviceEntity | undefined> {
         const query = `
 			SELECT *
 			FROM devices
@@ -32,7 +39,7 @@ class DeviceRepository implements IDeviceRepository {
 			AND "clientId" = $2;
 		`;
 
-        const result = await connection.Execute<DeviceEntity>(query, [
+        const result = await connection.execute<DeviceEntity>(query, [
             filter.accountId,
             filter.clientId,
         ]);
@@ -40,8 +47,11 @@ class DeviceRepository implements IDeviceRepository {
         return result.rowCount ? result.rows[0] : undefined;
     }
 
-    public async List(connection: DatabaseClient, filter: DevicesList) {
-        let values: any[] = [filter.accountId];
+    public async list(
+        connection: DatabaseClient,
+        filter: DevicesList,
+    ): Promise<DeviceEntity[]> {
+        const values: unknown[] = [filter.accountId];
         let query = `
 			SELECT *
 			FROM devices
@@ -59,20 +69,20 @@ class DeviceRepository implements IDeviceRepository {
 			LIMIT $${values.length}\n
 		`;
 
-        const result = await connection.Execute<DeviceEntity>(query, values);
+        const result = await connection.execute<DeviceEntity>(query, values);
 
         return result.rows;
     }
 
-    public async Update(
+    public async update(
         connection: DatabaseClient,
         filter: DeviceRead,
         update: DeviceUpdate,
-    ) {
-        const { fields, values } = ConvertObjectToArrays(update);
+    ): Promise<DeviceEntity> {
+        const { fields, values } = convertObjectToArrays(update);
 
         if (!values.length) {
-            const result = await this.Read(connection, filter);
+            const result = await this.read(connection, filter);
             if (!result) throw new Error("Device not found");
             return result;
         }
@@ -90,7 +100,7 @@ class DeviceRepository implements IDeviceRepository {
 		`;
 
         return (
-            await connection.Execute<DeviceEntity>(query, [
+            await connection.execute<DeviceEntity>(query, [
                 ...values,
                 filter.accountId,
                 filter.clientId,
@@ -98,13 +108,13 @@ class DeviceRepository implements IDeviceRepository {
         ).rows[0];
     }
 
-    public async Upsert(
+    public async upsert(
         connection: DatabaseClient,
         filter: DeviceRead,
         update: DeviceUpdate,
     ): Promise<DeviceEntity> {
-        const readArrays = ConvertObjectToArrays(filter);
-        const updateArrays = ConvertObjectToArrays(update);
+        const readArrays = convertObjectToArrays(filter);
+        const updateArrays = convertObjectToArrays(update);
 
         const createFieldsArray = [
             ...readArrays.fields,
@@ -135,9 +145,9 @@ class DeviceRepository implements IDeviceRepository {
 		`;
 
         return (
-            await connection.Execute<DeviceEntity>(query, createValuesArray)
+            await connection.execute<DeviceEntity>(query, createValuesArray)
         ).rows[0];
     }
 }
 
-export default new DeviceRepository();
+export { DeviceRepository };
