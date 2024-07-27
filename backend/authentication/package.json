@@ -6,7 +6,7 @@
     "license": "MIT",
     "type": "module",
     "scripts": {
-        "build": "bash \"./scripts/Protocol Buffers Builder.sh\"",
+        "generate:protos": "bash \"./scripts/Protocol Buffers Builder.sh\"",
         "format:check": "prettier --check .",
         "format:fix": "prettier --write .",
         "lint:check": "eslint ./source",

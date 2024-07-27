@@ -2,7 +2,6 @@ import grpc from "@grpc/grpc-js";
 
 import { ServerManager } from "@source/infrastructure/grpc/ServerManager";
 import { environments } from "@source/configurations/Environments";
-
 import { DatabaseManager } from "@source/infrastructure/database/DatabaseManager";
 import { AuthenticationService } from "@source/application/services/Authentication.service";
 import { HealthCheckService } from "@source/application/services/HealthCheck.service";

@@ -57,7 +57,11 @@ class AuthenticationService implements AuthenticationHandlers {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         respond: grpc.sendUnaryData<any>,
     ): void => {
-        respond({ name: "ServerError", message: "Not implemented yet!" });
+        respond({
+            name: "ServerError",
+            message: "Not implemented yet!",
+            code: grpc.status.UNIMPLEMENTED,
+        });
     };
 
     public ResetPassword = (
@@ -66,7 +70,11 @@ class AuthenticationService implements AuthenticationHandlers {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         respond: grpc.sendUnaryData<any>,
     ): void => {
-        respond({ name: "ServerError", message: "Not implemented yet!" });
+        respond({
+            name: "ServerError",
+            message: "Not implemented yet!",
+            code: grpc.status.UNIMPLEMENTED,
+        });
     };
 
     public SendEmailVerification = (
@@ -75,7 +83,11 @@ class AuthenticationService implements AuthenticationHandlers {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         respond: grpc.sendUnaryData<any>,
     ): void => {
-        respond({ name: "ServerError", message: "Not implemented yet!" });
+        respond({
+            name: "ServerError",
+            message: "Not implemented yet!",
+            code: grpc.status.UNIMPLEMENTED,
+        });
     };
 
     public VerifyEmail = (
@@ -84,7 +96,11 @@ class AuthenticationService implements AuthenticationHandlers {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         respond: grpc.sendUnaryData<any>,
     ): void => {
-        respond({ name: "ServerError", message: "Not implemented yet!" });
+        respond({
+            name: "ServerError",
+            message: "Not implemented yet!",
+            code: grpc.status.UNIMPLEMENTED,
+        });
     };
 
     public ValidateAccessToken = transactionalCall(
@@ -100,7 +116,11 @@ class AuthenticationService implements AuthenticationHandlers {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         respond: grpc.sendUnaryData<any>,
     ): void => {
-        respond({ name: "ServerError", message: "Not implemented yet!" });
+        respond({
+            name: "ServerError",
+            message: "Not implemented yet!",
+            code: grpc.status.UNIMPLEMENTED,
+        });
     };
 
     public RefreshToken = transactionalCall(
@@ -117,7 +137,11 @@ class AuthenticationService implements AuthenticationHandlers {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         respond: grpc.sendUnaryData<any>,
     ): void => {
-        respond({ name: "ServerError", message: "Not implemented yet!" });
+        respond({
+            name: "ServerError",
+            message: "Not implemented yet!",
+            code: grpc.status.UNIMPLEMENTED,
+        });
     };
 }
 

@@ -284,4 +284,5 @@ export class DatabaseManager extends Database {
     }
 }
 
-export type { DatabaseClient, IsolationLevel };
+export { IsolationLevel };
+export type { DatabaseClient };
