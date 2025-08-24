@@ -14,20 +14,20 @@ class ChatMessageEvent extends Event<SocketClientEvents, "JOIN_ROOM"> {
 
 	public listener = async (
 		connection: SocketClient,
-		data: { name: string },
+		data: { id: string },
 	) => {
-		if (
-			!(await AuthorizationManager.instance.CanJoinRoom(
-				connection.userId,
-				data.name,
-			))
-		)
-			return connection.Send("ERROR", {
-				reason: `Unauthorized to join ${data.name}`,
-			});
-		ServerManager.instance.JoinRoom(connection, data.name);
+		// if (
+		// 	!(await AuthorizationManager.instance.CanJoinRoom(
+		// 		connection.userId,
+		// 		data.id,
+		// 	))
+		// )
+		// 	return connection.Send("ERROR", {
+		// 		reason: `Unauthorized to join ${data.name}`,
+		// 	});
+		ServerManager.instance.JoinRoom(connection, data.id);
 		Logger.information(
-			`[${connection.userId}:${connection.id}]=> Joined ${data.name}`,
+			`[${connection.userId}:${connection.id}]=> Joined ${data.id}`,
 		);
 	};
 }

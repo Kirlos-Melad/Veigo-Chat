@@ -10,10 +10,10 @@ class ChatMessageEvent extends Event<SocketClientEvents, "LEAVE_ROOM"> {
 		super("LEAVE_ROOM");
 	}
 
-	public listener = (connection: SocketClient, data: { name: string }) => {
-		ServerManager.instance.LeaveRoom(connection, data.name);
+	public listener = (connection: SocketClient, data: { id: string }) => {
+		ServerManager.instance.LeaveRoom(connection, data.id);
 		Logger.information(
-			`[${connection.userId}${connection.id}]=> Left ${data.name}`,
+			`[${connection.userId}${connection.id}]=> Left ${data.id}`,
 		);
 	};
 }

@@ -1,87 +1,68 @@
-import { Consumer, Kafka, KafkaMessage, EachMessagePayload } from "kafkajs";
+import { Kafka, Consumer, EachMessagePayload } from "kafkajs";
 import path from "path";
+import { z } from "zod";
 
 import AbsolutePath from "../utilities/AbsolutePath";
 import EventEmitter from "../types/EventEmitter";
+import { KafkaEvents, KafkaEventsSchema } from "./Schemas";
 
-type Configurations = {
-	groupId: string;
+interface ConsumerConfig {
 	clientId: string;
+	groupId: string;
 	brokers: string[];
-};
-
-type CHAT_DB_PREFIX = "CHAT";
-type CHAT_DB_SUFFIX = "MEMBERS_ROOMS" | "MESSAGES";
-
-type KafkaEvents = {
-	[K in `${CHAT_DB_PREFIX}_DB_PUBLIC_${CHAT_DB_SUFFIX}`]: [
-		message: KafkaMessage,
-	];
-};
-function GetTopic<T extends CHAT_DB_PREFIX, U extends CHAT_DB_SUFFIX>(
-	prefix: T,
-	suffix: U,
-): `${Lowercase<T>}.db.public.${Lowercase<U>}` {
-	return `${prefix.toLowerCase()}.db.public.${suffix.toLowerCase()}` as `${Lowercase<T>}.db.public.${Lowercase<U>}`;
-}
-
-function TopicToEvent(topic: string): keyof KafkaEvents {
-	const chatRegex =
-		/^chat\.db\.public\.(profiles|rooms|members_rooms|messages)$/;
-
-	if (chatRegex.test(topic)) {
-		const suffix = topic.split(".")[3].toUpperCase() as CHAT_DB_SUFFIX;
-		return `CHAT_DB_PUBLIC_${suffix}` as keyof KafkaEvents;
-	}
-
-	throw new Error("Invalid topic format");
 }
 
 class KafkaConsumer extends EventEmitter<KafkaEvents> {
-	private mClient: Consumer;
+	private consumer: Consumer;
+	private readonly topics: Record<keyof KafkaEvents, string> = {
+		MESSAGE_SENT: "MESSAGE_SENT",
+		MESSAGE_DELIVERED: "MESSAGE_DELIVERED",
+		MESSAGE_READ: "MESSAGE_READ",
+		ERROR: "ERROR",
+	};
 
-	public constructor(configs: Configurations) {
+	constructor(config: ConsumerConfig) {
 		super(path.join(AbsolutePath(import.meta.url), "events"));
 
-		const { groupId, clientId, brokers } = configs;
-
-		this.mClient = this.InitializeConsumer(groupId, clientId, brokers);
-	}
-
-	private InitializeConsumer(
-		groupId: string,
-		clientId: string,
-		brokers: string[],
-	): Consumer {
 		const kafka = new Kafka({
-			clientId: clientId,
-			brokers: brokers,
+			clientId: config.clientId,
+			brokers: config.brokers,
 		});
-		const consumer = kafka.consumer({ groupId: groupId });
-		return consumer;
+
+		this.consumer = kafka.consumer({ groupId: config.groupId });
 	}
 
-	public async Start(): Promise<void> {
-		await this.mClient.connect();
-		await this.mClient.subscribe({
-			topics: [
-				GetTopic("CHAT", "MEMBERS_ROOMS"),
-				GetTopic("CHAT", "MESSAGES"),
-			],
-			fromBeginning: false,
-		});
-		await this.mClient.run({
-			eachMessage: async (messagePayload: EachMessagePayload) => {
-				const { topic, message } = messagePayload;
-				this.emit(TopicToEvent(topic), message);
-			},
+	public async Start() {
+		await this.consumer.connect();
+
+		// Subscribe to all topics in KafkaEvents
+		for (const topic of Object.values(this.topics)) {
+			await this.consumer.subscribe({ topic, fromBeginning: false });
+		}
+
+		await this.consumer.run({
+			eachMessage: async ({ topic, message }: EachMessagePayload) => {
+				if (!message.value) return;
+
+				const topicKey = (Object.keys(this.topics) as (keyof KafkaEvents)[])
+					.find(key => this.topics[key] === topic);
+
+				if (!topicKey) return;
+
+				try {
+					const parsed = KafkaEventsSchema.shape[topicKey].parse([JSON.parse(message.value.toString())]);
+					this.emit(topicKey, parsed);
+				} catch (err) {
+					this.emit("ERROR", err instanceof Error ? err : new Error(String(err)));
+				}
+			}
 		});
 	}
 
-	public async Shutdown(): Promise<void> {
-		await this.mClient.disconnect();
+	public async Shutdown() {
+		await this.consumer.disconnect();
 	}
 }
 
 export default KafkaConsumer;
-export type { KafkaEvents };
+export type { ConsumerConfig };

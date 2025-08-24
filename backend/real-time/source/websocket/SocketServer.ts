@@ -8,10 +8,12 @@ import EventEmitter from "../types/EventEmitter";
 import JsonWebToken from "../utilities/JsonWebToken";
 import Environments from "../configurations/Environments";
 import AuthorizationManager from "../utilities/AuthorizationManager";
+import KafkaProducer from "@source/kafka/KafkaProducer";
 
 type ClientToServer = {
-	JOIN_ROOM: [connection: SocketClient, { name: string }];
-	LEAVE_ROOM: [connection: SocketClient, { name: string }];
+	JOIN_ROOM: [connection: SocketClient, { id: string }];
+	LEAVE_ROOM: [connection: SocketClient, { id: string }];
+	SEND_MESSAGE: [connection: SocketClient, { roomId: string; content: string }];
 };
 
 type ServerToClient = {
@@ -22,14 +24,17 @@ type ServerToClient = {
 type SocketClientEvents = ClientToServer & ServerToClient;
 
 const ClientToServerSchema = z.object({
-	JOIN_ROOM: z.tuple([z.object({ name: z.string() })]),
-	LEAVE_ROOM: z.tuple([z.object({ name: z.string() })]),
+	JOIN_ROOM: z.tuple([z.object({ id: z.string() })]),
+	LEAVE_ROOM: z.tuple([z.object({ id: z.string() })]),
+	SEND_MESSAGE: z.tuple([
+		z.object({ roomId: z.string(), content: z.string() }),
+	]),
 });
 
 const ServerToClientSchema = z.object({
 	MESSAGE: z.tuple([
 		z.object({
-			type: z.string(),
+			type: z.literal("SENT_ACK"),
 			content: z.any(),
 		}),
 	]),
@@ -133,32 +138,36 @@ class SocketClient extends EventEmitter<SocketClientEvents> {
 
 class SocketServer extends EventEmitter<{}> {
 	private static sInstance: SocketServer;
+	private mKafkaProducer: KafkaProducer;
 
 	private mConnection: websocket.server;
 	private mClients: Record<string, SocketClient>; // connId, conn
 	private mRooms: Record<string, string[]>; // roomId, connId[]
 
-	private constructor(configs: websocket.IServerConfig) {
+	private constructor(configs: websocket.IServerConfig, kafkaProducer: KafkaProducer) {
 		super(path.join(AbsolutePath(import.meta.url), "server-events"));
 
 		this.mClients = {};
 		this.mRooms = {};
+		this.mKafkaProducer = kafkaProducer;
 
 		this.mConnection = new websocket.server(configs);
 		this.mConnection.on("request", async (request) => {
 			try {
-				if (request.origin !== Environments.ACCEPTED_ORIGIN) {
-					throw new Error("Invalid origin");
-				}
+				// if (request.origin !== Environments.ACCEPTED_ORIGIN) {
+				// 	throw new Error("Invalid origin");
+				// }
 
-				const data = await AuthorizationManager.instance.GetUserId(
-					request.resourceURL.query["token"] as string,
-				);
+				// const data = await AuthorizationManager.instance.GetUserId(
+				// 	request.resourceURL.query["token"] as string,
+				// );
 				const connection = request.accept(null, request.origin);
 
 				const client = new SocketClient(
-					data.clientId,
-					data.accountId,
+					// data.clientId,
+					// data.accountId,
+					"client-" + Math.random().toString(36).substring(2, 15),
+					"account-" + Math.random().toString(36).substring(2, 15),
 					connection,
 				);
 				await client.LoadEvents();
@@ -171,9 +180,9 @@ class SocketServer extends EventEmitter<{}> {
 		});
 	}
 
-	public static CreateInstance(configs: websocket.IServerConfig) {
+	public static CreateInstance(configs: websocket.IServerConfig, kafkaProducer: KafkaProducer) {
 		if (!SocketServer.sInstance)
-			SocketServer.sInstance = new SocketServer(configs);
+			SocketServer.sInstance = new SocketServer(configs, kafkaProducer);
 
 		return SocketServer.sInstance;
 	}
@@ -182,28 +191,44 @@ class SocketServer extends EventEmitter<{}> {
 		return SocketServer.sInstance;
 	}
 
-	public JoinRoom(connection: SocketClient, roomName: string) {
-		if (!this.mRooms[roomName]) {
-			this.mRooms[roomName] = [connection.id];
+	public get kafkaProducer() {
+		return this.mKafkaProducer;
+	}
+
+	public JoinRoom(connection: SocketClient, roomId: string) {
+		if (!this.mRooms[roomId]) {
+			this.mRooms[roomId] = [connection.id];
 		} else {
-			this.mRooms[roomName].push(connection.id);
+			this.mRooms[roomId].push(connection.id);
 		}
 	}
 
-	public LeaveRoom(connection: SocketClient, roomName: string) {
-		if (!this.mRooms[roomName]) return;
+	public LeaveRoom(connection: SocketClient, roomId: string) {
+		if (!this.mRooms[roomId]) return;
 
-		this.mRooms[roomName] = this.mRooms[roomName].filter(
+		this.mRooms[roomId] = this.mRooms[roomId].filter(
 			(value) => value !== connection.id,
 		);
 	}
 
-	public Send(room: string, ...payload: ServerToClient["MESSAGE"]) {
-		if (!this.mRooms[room]) return;
+	public Broadcast(roomId: string, ...payload: ServerToClient["MESSAGE"]) {
+		if (!this.mRooms[roomId]) return;
 
-		const clientsId = this.mRooms[room];
+		const clientsId = this.mRooms[roomId];
 
 		for (const cid of clientsId) {
+			this.mClients[cid].Send("MESSAGE", ...payload);
+		}
+	}
+
+	public Multicast(roomId: string, clients: string[], ...payload: ServerToClient["MESSAGE"]) {
+		if (!this.mRooms[roomId]) return;
+
+		const clientsId = this.mRooms[roomId];
+
+		for (const cid of clientsId) {
+			if (!clients.includes(cid)) continue;
+
 			this.mClients[cid].Send("MESSAGE", ...payload);
 		}
 	}

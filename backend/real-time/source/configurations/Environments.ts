@@ -1,3 +1,4 @@
+import "dotenv/config"; // DELETE THIS AFTER SETUP
 import { z } from "zod";
 
 const environmentVariables = z.object({
@@ -10,10 +11,10 @@ const environmentVariables = z.object({
 		.string()
 		.transform((value) => Number(value))
 		.pipe(z.number()),
-	ACCEPTED_ORIGIN: z.string(),
-	JWT_SECRET_KEY: z.string(),
-	JWT_ISSUER: z.string(),
-	AUTHORIZATION_CONNECTION: z.string(),
+	// ACCEPTED_ORIGIN: z.string(),
+	// JWT_SECRET_KEY: z.string(),
+	// JWT_ISSUER: z.string(),
+	// AUTHORIZATION_CONNECTION: z.string(),
 	KAFKA_GROUP_ID: z.string(),
 	KAFKA_CLIENT_ID: z.string(),
 	KAFKA_BROKERS: z
