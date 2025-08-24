@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-server-deployment
+  labels:
+    app: temporal-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-server-deployment
+  template:
+    metadata:
+      labels:
+        app: temporal-server-deployment
+    spec:
+      containers:
+        - name: temporal-server-deployment
+          image: temporalio/server:1.27
+          ports:
+            - containerPort: 7233
+          envFrom:
+            - configMapRef:
+                name: temporal-server-env
+          env:
+            - name: CASSANDRA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cassandra-secret
+                  key: CASSANDRA_USER
+            - name: CASSANDRA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cassandra-secret
+                  key: CASSANDRA_PASSWORD
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          volumeMounts:
+            - name: temporal-server-config
+              mountPath: /etc/temporal/config/dynamicconfig/
+      volumes:
+        - name: temporal-server-config
+          configMap:
+            name: temporal-server-config

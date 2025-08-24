@@ -1,0 +1,8 @@
+{
+    "require": [
+        "tsx",
+        "./tests/hooks/containers.hooks.ts"
+    ],
+    "spec": "./tests/**/*.test.ts",
+    "recursive": true
+}

@@ -1,0 +1,29 @@
+# Use an official Python base image
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    WORKDIR=/app
+
+# Set working directory
+WORKDIR $WORKDIR
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv package manager
+RUN pip install --no-cache-dir uv
+
+# Copy only dependency files first (for better caching)
+COPY pyproject.toml uv.lock ./
+
+# Install dependencies using uv
+RUN uv pip install --system --no-deps --requirement <(uv pip compile)
+
+# Copy the application source code
+COPY . .
+
+# Command to start the Temporal worker
+CMD ["python", "-m", "auth_worker"]

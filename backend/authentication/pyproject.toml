@@ -1,0 +1,39 @@
+[project]
+name = "authentication"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.15.2",
+    "asyncpg>=0.30.0",
+    "bcrypt>=4.3.0",
+    "psycopg2-binary>=2.9.10",
+    "pydantic[email]>=2.11.1",
+    "pydantic-settings>=2.8.1",
+    "pyjwt[crypto]>=2.10.1",
+    "sqlalchemy[asyncio]>=2.0.40",
+    "temporalio>=1.10.0",
+    "fastapi[standard]>=0.116.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.2",
+]
+
+[tool.ruff]
+line-length = 119
+target-version = "py312"  # Python version
+
+[tool.ruff.format]
+exclude = [] # Do not format
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]  # "E" and "F" for Flake8, "I" for isort, "UP" for Pyupgrade
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["source"] # List of first-party packages
+combine-as-imports = true # Combine as imports

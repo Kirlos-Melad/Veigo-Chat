@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: temporal-setup
+  namespace: vchat
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: temporal-setup
+          image: temporalio/admin-tools:1.26
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              tctl --address temporal-server-service:7233 --namespace $TEMPORAL_NAMESPACE namespace register
+          env:
+          - name: TEMPORAL_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: temporal-server-env
+                key: TEMPORAL_NAMESPACE

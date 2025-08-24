@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "authentication"
+version = "1.0.0"
+description = ""
+authors = ["Kirlos Melad <kirlosmelad2000@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["standard"], version = "^0.115.3"}
+bcrypt = "^4.2.0"
+pyjwt = {extras = ["crypto"], version = "^2.10.1"}
+pydantic-settings = "^2.7.0"
+mysqlclient = "^2.2.6"
+alembic = "^1.14.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+flake8 = "^7.1.1"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# Black configuration
+[tool.black]
+line-length = 88                      # Maximum line length (common in Python community)
+
+# isort configuration
+[tool.isort]
+profile = "black"                     # Matches `black`'s formatting style for consistency
+line_length = 88                      # Maximum line length, matching `black`
+
+# flake8 configuration
+[tool.flake8]
+max-line-length = 88                  # Maximum line length, consistent with `black`
+ignore = [
+   "E203", # Whitespace before ':' in slice notation (conflicts with `black`)
+   "E266", # Excessive leading comments (often subjective, hence commonly ignored)
+   "E501", # Line too long (handled by `black`, so ignored here)
+   "W503"  # Line break before a binary operator (consistent with `black`)
+]

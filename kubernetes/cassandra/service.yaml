@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra-service
+  labels:
+    app: cassandra-service
+spec:
+  type: ClusterIP
+  selector:
+    app: cassandra-deployment
+  ports:
+    - name: cql-port
+      port: 9042
+      targetPort: 9042
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra-headless-service
+  labels:
+    app: cassandra-headless-service
+spec:
+  clusterIP: None
+  selector:
+    app: cassandra-deployment
+  ports:
+  - name: gossip-port
+    port: 7000

@@ -1,0 +1,29 @@
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: cassandra-config
+# data:
+#   cassandra.yaml: |
+#     cluster_name: 'TemporalCluster'
+#     num_tokens: 256
+#     allocate_tokens_for_keyspace: temporal
+#     seed_provider:
+#       - class_name: org.apache.cassandra.locator.SimpleSeedProvider
+#         parameters:
+#           - seeds: "cassandra-service"
+
+# ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cassandra-env
+data:
+  MAX_HEAP_SIZE: "500M"
+  HEAP_NEWSIZE: "300M"
+  # CASSANDRA_NUM_TOKENS: "256"
+  # CASSANDRA_RPC_ADDRESS: "0.0.0.0"
+  # CASSANDRA_SEEDS: "cassandra-headless-service"
+  CASSANDRA_CLUSTER_NAME: "TemporalCluster"
+  CASSANDRA_DC: "TemporalDC1"
+  CASSANDRA_RACK: "TemporalR1"
+  CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"

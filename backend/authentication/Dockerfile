@@ -1,33 +1,32 @@
-FROM node:20.12.2-slim
+# syntax=docker/dockerfile:1.4
+FROM python:3.12-slim AS base
 
-RUN apt-get update && apt-get install -y curl jq
+# Avoids prompts from apt
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Set grpcurl version
-ENV GRPCURL_VERSION=1.9.1
-
-# Download grpcurl and its checksum
-RUN curl -LO https://github.com/fullstorydev/grpcurl/releases/download/v${GRPCURL_VERSION}/grpcurl_${GRPCURL_VERSION}_linux_x86_64.tar.gz
-RUN curl -LO https://github.com/fullstorydev/grpcurl/releases/download/v${GRPCURL_VERSION}/grpcurl_${GRPCURL_VERSION}_checksums.txt
-
-# Verify the checksum of the downloaded file
-RUN CHECKSUM_EXPECTED=$(grep grpcurl_${GRPCURL_VERSION}_linux_x86_64.tar.gz ./grpcurl_${GRPCURL_VERSION}_checksums.txt | awk '{ print $1 }') && \
-	echo "${CHECKSUM_EXPECTED} ./grpcurl_${GRPCURL_VERSION}_linux_x86_64.tar.gz" | sha256sum -c -
-
-# Install grpcurl
-RUN tar -xzf grpcurl_${GRPCURL_VERSION}_linux_x86_64.tar.gz
-RUN rm -rf grpcurl_${GRPCURL_VERSION}_linux_x86_64.tar.gz
-RUN mv grpcurl /usr/local/bin/grpcurl
-RUN chmod +x /usr/local/bin/grpcurl
-
+# Set working directory
 WORKDIR /app
 
-COPY package.json .
+# Install system dependencies for psycopg2 and other binaries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev curl netcat \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN npm install
+# Install pipx and poetry-core (PEP 621-compatible)
+RUN pip install --no-cache-dir pip setuptools wheel
 
+# Copy pyproject.toml and other config files
+COPY pyproject.toml ./
+
+# Install dependencies (without dev dependencies by default)
+RUN pip install --no-cache-dir ".[dev]"
+
+# Copy the rest of the source code
 COPY . .
 
-# Make healthy script executable
-RUN chmod +x ./scripts/is_healthy.sh
+# Expose port (if running FastAPI via uvicorn)
+EXPOSE 8000
 
-CMD npm run migrate && npm run start:watch
+# Default command (adjust as needed)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

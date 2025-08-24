@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-ui-deployment
+  labels:
+    app: temporal-ui-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-ui-deployment
+  template:
+    metadata:
+      labels:
+        app: temporal-ui-deployment
+    spec:
+      initContainers:
+        - name: wait-for-cassandra
+          image: busybox
+          command: ['sh', '-c', 'until nc -z cassandra-service 9042; do echo waiting for cassandra; sleep 2; done;']
+      containers:
+        - name: temporal-ui-deployment
+          image: temporalio/ui:2.34.0
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: temporal-ui-env
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: temporal-ui-deployment-data
+              mountPath: /var/lib/temporal-ui/data
+      volumes:
+        - name: temporal-ui-deployment-data
+          emptyDir: {}

@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "fastapi",
+            "args": [
+                "dev",
+                "${workspaceFolder}/backend/authentication/source/main.py"
+            ],
+            "envFile": "${workspaceFolder}/backend/authentication/.env",
+        },
+
+        {
+            "name": "Alembic",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "alembic",
+            "args": [
+                "revision",
+                "-m", "init accounts and devices",
+            ],
+            "envFile": "${workspaceFolder}/backend/authentication/.env",
+        }
+    ]
+}

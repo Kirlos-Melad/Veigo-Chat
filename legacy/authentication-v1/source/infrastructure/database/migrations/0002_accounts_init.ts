@@ -1,0 +1,37 @@
+import { DatabaseClient } from "@source/infrastructure/database/DatabaseManager";
+
+async function up(connection: DatabaseClient): Promise<void> {
+    await connection.execute(`
+        CREATE TABLE "accounts" (
+            "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+            "email" TEXT UNIQUE NOT NULL,
+            "isEmailVerified" BOOLEAN NOT NULL DEFAULT FALSE,
+            
+            "phone" TEXT UNIQUE,
+            "isPhoneVerified" BOOLEAN NOT NULL DEFAULT FALSE,
+
+            "password" TEXT NOT NULL,
+
+            "createdAt" TIMESTAMP NOT NULL DEFAULT current_timestamp,
+            "updatedAt" TIMESTAMP NOT NULL DEFAULT current_timestamp
+        );
+    `);
+
+    await connection.execute(`
+        CREATE TRIGGER update_accounts_updated_at
+            BEFORE UPDATE
+            ON "accounts"
+            FOR EACH ROW
+            EXECUTE FUNCTION update_updated_at_column()
+        `);
+}
+
+async function down(connection: DatabaseClient): Promise<void> {
+    await connection.execute(
+        `DROP TRIGGER update_accounts_updated_at ON "accounts";`,
+    );
+    await connection.execute(`DROP TABLE IF EXISTS "accounts";`);
+}
+
+export { up, down };

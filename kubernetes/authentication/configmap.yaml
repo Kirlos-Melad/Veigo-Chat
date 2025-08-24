@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-env
+data:
+  ENVIRONMENT: "development"
+  DEBUG: "true"
+  JWT_CONFIG: '{ "algorithm": "HS256", "secret_key": "very secret", "issuer": "vauth", "access_audience": "vchat", "refresh_audience": "vauth", "duration": { "amount": 1, "unit": "hours" } }'
+  DB_CONFIG: '{ "user": "postgres", "password": "postgres", "host": "pg-service", "port": 5432, "name": "authentication" }'

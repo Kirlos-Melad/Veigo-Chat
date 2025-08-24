@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-env
+data:
+  cluster.routing.allocation.disk.threshold_enabled: "true"
+  cluster.routing.allocation.disk.watermark.low: "512mb"
+  cluster.routing.allocation.disk.watermark.high: "256mb"
+  cluster.routing.allocation.disk.watermark.flood_stage: "128mb"
+  discovery.type: single-node
+  ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+  xpack.security.enabled: "false"

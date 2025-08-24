@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg-deployment
+  labels:
+    app: pg-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pg-deployment
+  template:
+    metadata:
+      labels:
+        app: pg-deployment
+    spec:
+      containers:
+        - name: pg-deployment
+          image: postgres:17-alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: pg-secret
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: pg-data
+              mountPath: /var/lib/postgresql/data
+            - name: pg-config
+              mountPath: /docker-entrypoint-initdb.d
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+      volumes:
+        - name: pg-data
+          persistentVolumeClaim:
+            claimName: pg-pvc
+        - name: pg-config
+          configMap:
+            name: pg-config
+            defaultMode: 0777

@@ -1,0 +1,3 @@
+resources:
+  - cassandra-setup.yaml
+  - temporal-setup.yaml

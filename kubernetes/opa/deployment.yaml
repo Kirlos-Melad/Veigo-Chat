@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opa-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+    spec:
+      initContainers:
+        - name: opa-downloader
+          image: alpine:3.20.0
+          command:
+            - sh
+            - -c
+            - |
+              apk update && apk add --no-cache curl perl-utils && \
+              curl -L -o /opa/opa https://openpolicyagent.org/downloads/v0.65.0/opa_linux_amd64_static && \
+              curl -L -o /opa/opa.sha256 https://openpolicyagent.org/downloads/v0.65.0/opa_linux_amd64_static.sha256 && \
+              shasum -c /opa/opa.sha256 && \
+              chmod 755 /opa/opa
+          volumeMounts:
+            - name: opa-bin
+              mountPath: /opa
+      containers:
+        - name: opa
+          image: alpine:3.20.0
+          command: ["/opa/opa"]
+          args:
+            - run
+            - --server
+            - --log-level=debug
+            - --log-format=json-pretty
+            - --watch
+            - /policies
+          volumeMounts:
+            - name: opa-bin
+              mountPath: /opa
+            - name: opa-policies
+              mountPath: /policies
+      volumes:
+        - name: opa-bin
+          emptyDir: {}
+        - name: opa-policies
+          configMap:
+            name: opa-policies

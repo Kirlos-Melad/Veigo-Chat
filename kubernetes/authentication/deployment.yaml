@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication-deployment
+  labels:
+    app: authentication-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication-deployment
+  template:
+    metadata:
+      labels:
+        app: authentication-deployment
+    spec:
+      containers:
+        - name: authentication-deployment
+          image: authentication:latest
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: auth-env
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

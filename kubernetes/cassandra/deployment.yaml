@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cassandra-deployment
+  labels:
+    app: cassandra-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cassandra-deployment
+  template:
+    metadata:
+      labels:
+        app: cassandra-deployment
+    spec:
+      containers:
+      - name: cassandra-deployment
+        image: cassandra:5.0
+        ports:
+          - containerPort: 9042
+          - containerPort: 7000
+        envFrom:
+            - secretRef:
+                name: cassandra-secret
+            - configMapRef:
+                name: cassandra-env
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+        volumeMounts:
+        - name: cassandra-data
+          mountPath: /var/lib/cassandra
+        # - name: cassandra-config
+        #   mountPath: /config
+        readinessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - cqlsh localhost 9042 -e "DESCRIBE KEYSPACES;"
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+      volumes:
+        - name: cassandra-data
+          persistentVolumeClaim:
+            claimName: cassandra-pvc
+        # - name: cassandra-config
+        #   configMap:
+        #     name: cassandra-config
+        #     defaultMode: 0777
+      # initContainers: # for dev !
+      # - name: clear-data
+      #   image: busybox
+      #   command: ["sh", "-c", "rm -rf /var/lib/cassandra/*"]
+      #   volumeMounts:
+      #   - name: cassandra-data
+      #     mountPath: /var/lib/cassandra
