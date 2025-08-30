@@ -1,0 +1,16 @@
+[package]
+name = "chat"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "chat"
+path = "source/main.rs"
+
+[dependencies]
+actix-web = "4.11.0"                # Web framework (HTTP server, routing, request/response types)
+serde = { version = "1.0.219", features = ["derive"] }  # Serialization/Deserialization + #[derive]
+serde_json = "1.0.143"               # JSON support built on serde
+uuid = { version = "1.18.0", features = ["v4"] }       # Random UUID generation for task IDs
+tokio = { version = "1.47.1", features = ["full"] }    # Async runtime that Actix uses under the hood
+
