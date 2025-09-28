@@ -1,12 +1,12 @@
 namespace: vchat
 resources:
   - namespace.yaml
-  - registry-server/
-  - cassandra/
-  - temporal-admin-tools/
-  - pg/
-  - elasticsearch/
-  - temporal-server/
-  - temporal-ui/
-  - authentication/
-  # - kafka/
+  # - registry-server/
+  # - cassandra/
+  # - temporal-admin-tools/
+  # - pg/
+  # - elasticsearch/
+  # - temporal-server/
+  # - temporal-ui/
+  # - authentication/
+  - kafka/
