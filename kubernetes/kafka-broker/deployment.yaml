@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka-broker-deployment
+  labels:
+    app: kafka-broker-deployment
+spec:
+  replicas: 3
+  serviceName: kafka-broker-service
+  selector:
+    matchLabels:
+      app: kafka-broker-deployment
+  template:
+    metadata:
+      labels:
+        app: kafka-broker-deployment
+    spec:
+      containers:
+        - name: kafka-broker-deployment
+          image: apache/kafka:4.1.1
+          envFrom:
+            - configMapRef:
+                name: kafka-broker-env
+          env:
+            # Inject Namespace for dynamic DNS
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            # Replicas count (Must match spec.replicas)
+            - name: REPLICAS
+              value: "3"
+          command:
+            - bash
+            - -c
+            - |
+              # --- Dynamic Configuration Logic ---
+              # This script fills in the missing pieces that ConfigMap cannot handle
+              # (Node ID, specific DNS names, Voter list)
+
+              # 1. Get Node ID from Pod Name (kafka-broker-deployment-0 -> 0)
+              # Official image uses 0-based IDs usually, or we can add 1. 
+              # Let's keep your +1 logic: 0 -> 1
+              ORD=${HOSTNAME##*-}
+              NODE_ID=$((ORD + 1))
+              export KAFKA_NODE_ID=$NODE_ID
+
+              # 2. Build Dynamic DNS Name
+              POD_DNS="${HOSTNAME}.kafka-broker-service.${POD_NAMESPACE}.svc.cluster.local"
+
+              # 3. Generate Quorum Voters List (Dynamic)
+              # Result: "1@host-0:9093,2@host-1:9093,..."
+              VOTERS=""
+              for i in $(seq 0 $(($REPLICAS - 1))); do
+                  V_NODE_ID=$((i + 1))
+                  V_HOST="kafka-broker-deployment-${i}.kafka-broker-service.${POD_NAMESPACE}.svc.cluster.local"
+                  VOTERS="${VOTERS}${V_NODE_ID}@${V_HOST}:9093,"
+              done
+              export KAFKA_CONTROLLER_QUORUM_VOTERS=${VOTERS%,}
+
+              # 4. Generate Advertised Listeners
+              # Tells clients exactly where THIS specific pod is
+              export KAFKA_ADVERTISED_LISTENERS="BROKER://${POD_DNS}:9092,CONTROLLER://${POD_DNS}:9093,EXTERNAL://127.0.0.1:9094"
+
+              echo "--- Configuration Generated ---"
+              echo "Node ID: $KAFKA_NODE_ID"
+              echo "Voters:  $KAFKA_CONTROLLER_QUORUM_VOTERS"
+              echo "Advertised: $KAFKA_ADVERTISED_LISTENERS"
+              
+              # 5. Start Apache Kafka
+              # The official image entrypoint script handles formatting storage 
+              # using KAFKA_CLUSTER_ID provided in ConfigMap
+              . /etc/kafka/docker/run
+          ports:
+            - name: broker
+              containerPort: 9092
+            - name: controller
+              containerPort: 9093
+            - name: external
+              containerPort: 9094
+          volumeMounts:
+            - name: kafka-broker-data
+              mountPath: /var/lib/kafka/data
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+      volumes:
+        - name: kafka-broker-data
+          emptyDir: {}
+
