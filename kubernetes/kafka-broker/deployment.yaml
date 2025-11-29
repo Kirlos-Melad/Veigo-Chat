@@ -22,34 +22,31 @@ spec:
             - configMapRef:
                 name: kafka-broker-env
           env:
-            # Inject Namespace for dynamic DNS
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            # Replicas count (Must match spec.replicas)
             - name: REPLICAS
               value: "3"
           command:
             - bash
             - -c
             - |
-              # --- Dynamic Configuration Logic ---
-              # This script fills in the missing pieces that ConfigMap cannot handle
-              # (Node ID, specific DNS names, Voter list)
-
-              # 1. Get Node ID from Pod Name (kafka-broker-deployment-0 -> 0)
-              # Official image uses 0-based IDs usually, or we can add 1. 
-              # Let's keep your +1 logic: 0 -> 1
-              ORD=${HOSTNAME##*-}
-              NODE_ID=$((ORD + 1))
+              # 1. Get Node ID and Ordinal
+              ORD=${HOSTNAME##*-}           # e.g., "0"
+              NODE_ID=$((ORD + 1))          # e.g., "1"
               export KAFKA_NODE_ID=$NODE_ID
 
-              # 2. Build Dynamic DNS Name
+              # 2. Calculate Dynamic External Port
+              # Broker 0 -> 9094
+              # Broker 1 -> 9095
+              # Broker 2 -> 9096
+              EXTERNAL_PORT=$((9094 + ORD))
+
+              # 3. Build Dynamic DNS Name
               POD_DNS="${HOSTNAME}.kafka-broker-service.${POD_NAMESPACE}.svc.cluster.local"
 
-              # 3. Generate Quorum Voters List (Dynamic)
-              # Result: "1@host-0:9093,2@host-1:9093,..."
+              # 4. Generate Voters List
               VOTERS=""
               for i in $(seq 0 $(($REPLICAS - 1))); do
                   V_NODE_ID=$((i + 1))
@@ -58,18 +55,15 @@ spec:
               done
               export KAFKA_CONTROLLER_QUORUM_VOTERS=${VOTERS%,}
 
-              # 4. Generate Advertised Listeners
-              # Tells clients exactly where THIS specific pod is
-              export KAFKA_ADVERTISED_LISTENERS="BROKER://${POD_DNS}:9092,CONTROLLER://${POD_DNS}:9093,EXTERNAL://127.0.0.1:9094"
+              # 5. Generate Advertised Listeners
+              # Note: We still listen on 9094 internally, but we ADVERTISE 127.0.0.1:$EXTERNAL_PORT
+              # This tells the client: "To talk to me, use localhost:$EXTERNAL_PORT"
+              export KAFKA_ADVERTISED_LISTENERS="BROKER://${POD_DNS}:9092,CONTROLLER://${POD_DNS}:9093,EXTERNAL://127.0.0.1:${EXTERNAL_PORT}"
 
-              echo "--- Configuration Generated ---"
-              echo "Node ID: $KAFKA_NODE_ID"
-              echo "Voters:  $KAFKA_CONTROLLER_QUORUM_VOTERS"
-              echo "Advertised: $KAFKA_ADVERTISED_LISTENERS"
-              
-              # 5. Start Apache Kafka
-              # The official image entrypoint script handles formatting storage 
-              # using KAFKA_CLUSTER_ID provided in ConfigMap
+              echo "--- Configuration ---"
+              echo "Broker: $HOSTNAME (ID: $NODE_ID)"
+              echo "Advertising External: 127.0.0.1:${EXTERNAL_PORT}"
+
               . /etc/kafka/docker/run
           ports:
             - name: broker
@@ -91,4 +85,3 @@ spec:
       volumes:
         - name: kafka-broker-data
           emptyDir: {}
-

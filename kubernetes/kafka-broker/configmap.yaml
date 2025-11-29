@@ -7,24 +7,28 @@ data:
 
   # Roles & Cluster
   KAFKA_PROCESS_ROLES: "broker,controller"
-  # UUID for KRaft (Required by official image to format storage)
   KAFKA_CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
 
-  # Replication Settings (Set to 1 for Dev/Single node, 3 for Prod)
-  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
-  KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
-  KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
-  KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  # --- REPLICATION SETTINGS FOR 3 NODES ---
+  # If you have 3 brokers, you want 3 copies of the data for safety.
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "3"
+  KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "3"
+  KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "2"
 
-  # Listener definitions (Internal ports are static)
-  # We define the *names* and *ports* here.
-  # The *Advertised* addresses are calculated in the script.
-  KAFKA_LISTENERS: "BROKER://:9092,CONTROLLER://:9093,EXTERNAL://:9094"
+  # Auto create is fine, but it will use default replication (usually 1)
+  # unless you configure KAFKA_DEFAULT_REPLICATION_FACTOR too.
+  KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  KAFKA_DEFAULT_REPLICATION_FACTOR: "3"
+
+  # --- LISTENER SETTINGS ---
+  # We bind to 0.0.0.0 (all interfaces) inside the container.
+  # The "Advertised" addresses are handled dynamically in the StatefulSet script.
+  KAFKA_LISTENERS: "BROKER://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094"
   KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "BROKER:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT"
 
   # Mapping
   KAFKA_INTER_BROKER_LISTENER_NAME: "BROKER"
   KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
 
-  # Log Dir (Official image default)
+  # Log Dir
   KAFKA_LOG_DIRS: "/var/lib/kafka/data"
